@@ -44,11 +44,13 @@ public class Login extends javax.swing.JFrame {
         jLabel1.setText("OPTIMAL INVENTORY SYSTEM");
         jPanel1.add(jLabel1);
         jLabel1.setBounds(70, 80, 350, 60);
+
+        username_icon.setIcon(new javax.swing.ImageIcon("C:\\Users\\Hazel Cavite\\Documents\\NetBeansProjects\\Optimal Inventory System\\OptimalInventorySystem\\img\\profile.png")); // NOI18N
         jPanel1.add(username_icon);
         username_icon.setBounds(80, 210, 30, 50);
 
         usernameField.setBackground(new java.awt.Color(238, 238, 238));
-        usernameField.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        usernameField.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
         usernameField.setForeground(new java.awt.Color(255, 255, 255));
         usernameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         usernameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(67, 101, 102), 2, true));
@@ -60,8 +62,10 @@ public class Login extends javax.swing.JFrame {
         });
         jPanel1.add(usernameField);
         usernameField.setBounds(70, 210, 360, 50);
+
+        password_icon.setIcon(new javax.swing.ImageIcon("C:\\Users\\Hazel Cavite\\Documents\\NetBeansProjects\\Optimal Inventory System\\OptimalInventorySystem\\img\\key.png")); // NOI18N
         jPanel1.add(password_icon);
-        password_icon.setBounds(80, 300, 0, 50);
+        password_icon.setBounds(80, 300, 24, 50);
 
         passwordField.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
         passwordField.setForeground(new java.awt.Color(255, 255, 255));
@@ -88,6 +92,8 @@ public class Login extends javax.swing.JFrame {
         });
         jPanel1.add(login);
         login.setBounds(70, 380, 360, 50);
+
+        background.setIcon(new javax.swing.ImageIcon("C:\\Users\\Hazel Cavite\\Documents\\NetBeansProjects\\Optimal Inventory System\\OptimalInventorySystem\\img\\27037619-geometric-wallpapers.png")); // NOI18N
         jPanel1.add(background);
         background.setBounds(0, 0, 1000, 560);
 

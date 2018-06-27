@@ -9,8 +9,10 @@ import java.sql.Connection;
 import Hash.HashPassword;
 import MySQL.Connect;
 import MySQL.CRUD;
+import java.awt.Color;
 import java.awt.HeadlessException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import javax.swing.JOptionPane;
@@ -25,6 +27,9 @@ public class Register extends javax.swing.JFrame {
      */
     public Register() {
         initComponents();
+        fullnameField.setBackground(new Color(0, 0, 0, 64));
+        usernameField.setBackground(new Color(0, 0, 0, 64));
+        passwordField.setBackground(new Color(0, 0, 0, 64));
     }
 
     /**
@@ -43,110 +48,153 @@ public class Register extends javax.swing.JFrame {
         fnLabel = new javax.swing.JLabel();
         pwLabel = new javax.swing.JLabel();
         unLabel = new javax.swing.JLabel();
-        submitBtn = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        submitBtn = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(7, 45, 46));
 
         jPanel1.setBackground(new java.awt.Color(7, 45, 46));
         jPanel1.setMinimumSize(new java.awt.Dimension(1280, 720));
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel1.setLayout(null);
 
+        fullnameField.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        fullnameField.setForeground(new java.awt.Color(255, 255, 255));
         fullnameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel1.add(fullnameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(477, 196, 309, 49));
+        fullnameField.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102), 2));
+        fullnameField.setOpaque(false);
+        jPanel1.add(fullnameField);
+        fullnameField.setBounds(90, 170, 260, 40);
 
+        usernameField.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        usernameField.setForeground(new java.awt.Color(255, 255, 255));
         usernameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel1.add(usernameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(477, 293, 309, 49));
+        usernameField.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102), 2));
+        usernameField.setOpaque(false);
+        jPanel1.add(usernameField);
+        usernameField.setBounds(90, 260, 260, 40);
 
+        passwordField.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        passwordField.setForeground(new java.awt.Color(255, 255, 255));
         passwordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel1.add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 390, 309, 53));
+        passwordField.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102), 2));
+        passwordField.setOpaque(false);
+        jPanel1.add(passwordField);
+        passwordField.setBounds(90, 360, 260, 40);
 
-        fnLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        fnLabel.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
         fnLabel.setForeground(new java.awt.Color(255, 255, 255));
         fnLabel.setText("Full Name");
-        jPanel1.add(fnLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(477, 167, 146, 28));
+        jPanel1.add(fnLabel);
+        fnLabel.setBounds(90, 140, 146, 28);
 
-        pwLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        pwLabel.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
         pwLabel.setForeground(new java.awt.Color(255, 255, 255));
         pwLabel.setText("Password");
-        jPanel1.add(pwLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(477, 360, 146, 28));
+        jPanel1.add(pwLabel);
+        pwLabel.setBounds(90, 330, 146, 28);
 
-        unLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        unLabel.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
         unLabel.setForeground(new java.awt.Color(255, 255, 255));
         unLabel.setText("Username");
-        jPanel1.add(unLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(477, 263, 146, 28));
+        jPanel1.add(unLabel);
+        unLabel.setBounds(90, 230, 146, 28);
 
-        submitBtn.setBackground(new java.awt.Color(105, 240, 174));
+        submitBtn.setBackground(new java.awt.Color(155, 75, 77));
+        submitBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        submitBtn.setForeground(new java.awt.Color(255, 255, 255));
+        submitBtn.setText("Submit");
+        submitBtn.setBorder(null);
         submitBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 submitBtnMouseClicked(evt);
             }
         });
+        submitBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitBtnActionPerformed(evt);
+            }
+        });
+        jPanel1.add(submitBtn);
+        submitBtn.setBounds(90, 440, 260, 50);
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Submit");
-
-        javax.swing.GroupLayout submitBtnLayout = new javax.swing.GroupLayout(submitBtn);
-        submitBtn.setLayout(submitBtnLayout);
-        submitBtnLayout.setHorizontalGroup(
-            submitBtnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(submitBtnLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        submitBtnLayout.setVerticalGroup(
-            submitBtnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(submitBtnLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        jPanel1.add(submitBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(557, 503, -1, -1));
-
-        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Raleway", 1, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Register");
         jLabel6.setVerifyInputWhenFocusTarget(false);
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(477, 79, 309, 58));
+        jPanel1.add(jLabel6);
+        jLabel6.setBounds(70, 40, 309, 58);
+
+        jLabel2.setIcon(new javax.swing.ImageIcon("C:\\Users\\Hazel Cavite\\Documents\\NetBeansProjects\\Optimal Inventory System\\OptimalInventorySystem\\img\\27037619-geometric-wallpapers.png")); // NOI18N
+        jPanel1.add(jLabel2);
+        jLabel2.setBounds(0, 0, 1000, 560);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 997, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 558, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void submitBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_submitBtnMouseClicked
+        String username = usernameField.getText();
+        String password = passwordField.getText();
+
+        if("".equals(username))
+        JOptionPane.showMessageDialog(null, "Username is required!");
+        else if("".equals(password))
+        JOptionPane.showMessageDialog(null, "Password is required!");
+        else{
+            try{
+                Connection con = Connect.getConnection();
+                if(CRUD.checkUserExists(con,username)){
+                    ResultSet rs = CRUD.selectUserPassword(con, username);
+                    rs.next();
+                    String retrievePassword = rs.getString("password");
+                    if((HashPassword.hashPassword(password)).equals(retrievePassword)){
+                        Home h = new Home();
+                        h.setVisible(true);
+                        dispose();
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Username and Password did not match any account");
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null, "Username and Password did not match any account");
+                }
+            }catch(HeadlessException | NoSuchAlgorithmException | SQLException e){
+                JOptionPane.showMessageDialog(null, "Username and Password did not match any account");
+            }
+        }
+    }//GEN-LAST:event_submitBtnMouseClicked
+
+    private void submitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitBtnActionPerformed
         String fullname = fullnameField.getText();
         String username = usernameField.getText();
         String password = passwordField.getText();
-        
+
         if("".equals(fullname))
-            JOptionPane.showMessageDialog(null, "Full Name is required!");
+        JOptionPane.showMessageDialog(null, "Full Name is required!");
         else if("".equals(username))
-            JOptionPane.showMessageDialog(null, "Username is required!");
+        JOptionPane.showMessageDialog(null, "Username is required!");
         else if("".equals(password))
-            JOptionPane.showMessageDialog(null, "Password is required!");
+        JOptionPane.showMessageDialog(null, "Password is required!");
         else{
             try{
                 Connection con = Connect.getConnection();
                 if(!CRUD.checkUserExists(con,username)){
                     if(password.length() >= 8){
                         password=HashPassword.hashPassword(password);
-                        Date now = new Date(); 
+                        Date now = new Date();
                         java.sql.Date sqlDate = new java.sql.Date(now.getTime());
                         CRUD.insertUser(con,fullname,username,password,-1);
                         JOptionPane.showMessageDialog(null, "User has been successfully created!");
@@ -160,7 +208,7 @@ public class Register extends javax.swing.JFrame {
                 System.out.println(e);
             }
         }
-    }//GEN-LAST:event_submitBtnMouseClicked
+    }//GEN-LAST:event_submitBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -195,12 +243,12 @@ public class Register extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel fnLabel;
     private javax.swing.JTextField fullnameField;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JLabel pwLabel;
-    private javax.swing.JPanel submitBtn;
+    private javax.swing.JButton submitBtn;
     private javax.swing.JLabel unLabel;
     private javax.swing.JTextField usernameField;
     // End of variables declaration//GEN-END:variables
