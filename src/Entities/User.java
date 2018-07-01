@@ -12,25 +12,44 @@ import java.util.Date;
  * @author Ethan
  */
 public class User {
-    private int id;
+    private final int id;
     private String username;
     private String password;
     private String fullname;
-    private String addedBy; //username
+    private int addedBy; //id
     private Date addedOn;
-    private String updatedBy; //username
+    private int updatedBy; //id
     private Date updatedOn;
     private boolean removed;
     
-    User(int ID, String Fullname, String Username, String Password, String Admin){
+    public User(int ID, String Username, String Fullname, String Password, int AddedBy,
+            Date AddedOn, int UpdatedBy, Date UpdatedOn){
         this.id = ID;
         this.fullname = Fullname;
         this.username = Username;
         this.password = Password;
-        this.addedBy = Admin;
+        this.addedBy = AddedBy;
+        this.addedOn = AddedOn;
+        this.updatedBy = UpdatedBy;
+        this.updatedOn = UpdatedOn;
+    }
+    
+    public User(int ID, String Username, String Fullname, int AddedBy,
+            Date AddedOn, int UpdatedBy, Date UpdatedOn){
+        this.id = ID;
+        this.fullname = Fullname;
+        this.username = Username;
+        this.addedBy = AddedBy;
+        this.addedOn = AddedOn;
+        this.updatedBy = UpdatedBy;
+        this.updatedOn = UpdatedOn;
     }
     
     //GETTERS
+    public int getID(){
+        return id;
+    }
+    
     public String getUsername(){
         return username;
     }
@@ -39,11 +58,11 @@ public class User {
         return password;
     }
     
-    public String getFullName(){
+    public String getFullname(){
         return fullname;
     }
     
-    public String getAddedBy(){
+    public int getAddedBy(){
         return addedBy;
     }
     
@@ -51,7 +70,7 @@ public class User {
         return addedOn;
     }
     
-    public String getUpdatedBy(){
+    public int getUpdatedBy(){
         return updatedBy;
     }
     
@@ -72,7 +91,7 @@ public class User {
         this.fullname = name;
     }
     
-    public void setAddedBy(String Admin){
+    public void setAddedBy(int Admin){
         this.addedBy = Admin;
     }
     
@@ -80,7 +99,7 @@ public class User {
         this.addedOn = new Date();
     }
     
-    public void setUpdatedBy(String Admin){
+    public void setUpdatedBy(int Admin){
         this.updatedBy = Admin;
     }
     

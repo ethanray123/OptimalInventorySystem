@@ -13,7 +13,7 @@ import java.awt.Color;
 
 
 public class Login extends javax.swing.JFrame {
-
+    public static int userid = -1;
     public Login() {
         initComponents();
         usernameField.setBackground(new Color(0, 0, 0, 64));
@@ -71,11 +71,11 @@ public class Login extends javax.swing.JFrame {
         jPanel1.add(passwordField);
         passwordField.setBounds(70, 300, 360, 50);
 
-        login.setBackground(new java.awt.Color(155, 75, 77));
+        login.setBackground(new java.awt.Color(73, 185, 168));
         login.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
         login.setForeground(new java.awt.Color(255, 255, 255));
         login.setText("LOGIN");
-        login.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(155, 75, 77), 2, true));
+        login.setBorder(null);
         login.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 loginMouseClicked(evt);
@@ -87,7 +87,11 @@ public class Login extends javax.swing.JFrame {
             }
         });
         jPanel1.add(login);
-        login.setBounds(70, 380, 360, 50);
+        login.setBounds(70, 390, 360, 50);
+
+        background.setBackground(new java.awt.Color(75, 83, 71));
+        background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/27037619-geometric-wallpapers.png"))); // NOI18N
+        background.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jPanel1.add(background);
         background.setBounds(0, 0, 1000, 560);
 
@@ -126,9 +130,10 @@ public class Login extends javax.swing.JFrame {
             try{
                 Connection con = Connect.getConnection();
                 if(CRUD.checkUserExists(con,username)){
-                    ResultSet rs = CRUD.selectUserPassword(con, username);
+                    ResultSet rs = CRUD.selectUserIDPassword(con, username);
                     rs.next();
                     String retrievePassword = rs.getString("password");
+                    userid = rs.getInt("user_id");
                     if((HashPassword.hashPassword(password)).equals(retrievePassword)){
                         Home h = new Home();
                         h.setVisible(true);

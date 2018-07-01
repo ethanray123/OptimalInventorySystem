@@ -1,15 +1,35 @@
 package optimalinventorysystem;
 
 
+import Entities.Category;
+import Entities.User;
+import MySQL.CRUD;
+import MySQL.Connect;
 import java.awt.Color;
+import java.awt.HeadlessException;
+import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+import static optimalinventorysystem.Login.userid;
 
 public class Home extends javax.swing.JFrame {
-    
     // 5,32,33      -- darkest
     // 15, 74, 74   -- middle
     // 8, 40, 41    -- lightest
     public Home() {
         initComponents();
+        try{
+            Connection con = Connect.getConnection();
+            String username = CRUD.selectUsername(con,userid);
+            adminName.setText(username);
+        }catch(HeadlessException | SQLException e){
+            System.out.println(e);
+            this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+        }
         dashboard();
     }
     
@@ -19,16 +39,22 @@ public class Home extends javax.swing.JFrame {
         dashboard_side.setBackground(new Color(15, 74, 74));
         items_side.setBackground(new Color(8, 40, 41));
         jobs_side.setBackground(new Color(8, 40, 41));
+        categories_side.setBackground(new Color(8, 40, 41));
+        users_side.setBackground(new Color(8, 40, 41));
         
         // hide and show right side jPanels
         dashboard.setVisible(true);
         items.setVisible(false);
         jobs.setVisible(false);
+        categories.setVisible(false);
+        users.setVisible(false);
         
         // hide and show upper part jPanels
         upper_dashboard_panel.setVisible(true);
         upper_items_panel.setVisible(false);
         upper_jobs_panel.setVisible(false);
+        upper_categories_panel.setVisible(false);
+        upper_users_panel.setVisible(false);
     }
     
     public void items_sideBar_onclick()
@@ -37,17 +63,22 @@ public class Home extends javax.swing.JFrame {
         items_side.setBackground(new Color(15, 74, 74));
         dashboard_side.setBackground(new Color(8, 40, 41));
         jobs_side.setBackground(new Color(8, 40, 41));
+        categories_side.setBackground(new Color(8, 40, 41));
+        users_side.setBackground(new Color(8, 40, 41));
         
         // hide and show right side jPanels
         items.setVisible(true);
         dashboard.setVisible(false);
         jobs.setVisible(false);
+        categories.setVisible(false);
+        users.setVisible(false);
         
         // hide and show upper part jPanels
         upper_items_panel.setVisible(true);
         upper_dashboard_panel.setVisible(false);
         upper_jobs_panel.setVisible(false);
-        
+        upper_categories_panel.setVisible(false);
+        upper_users_panel.setVisible(false);
     }
     
     public void jobs_sideBar_onclick()
@@ -56,17 +87,154 @@ public class Home extends javax.swing.JFrame {
         jobs_side.setBackground(new Color(15, 74, 74));
         dashboard_side.setBackground(new Color(8, 40, 41));
         items_side.setBackground(new Color(8, 40, 41));
+        categories_side.setBackground(new Color(8, 40, 41));
+        users_side.setBackground(new Color(8, 40, 41));
         
         // hide and show right side jPanels
         jobs.setVisible(true);
         dashboard.setVisible(false);
         items.setVisible(false);
+        categories.setVisible(false);
+        users.setVisible(false);
         
         // hide and show upper part jPanels
         upper_jobs_panel.setVisible(true);
         upper_dashboard_panel.setVisible(false);
         upper_items_panel.setVisible(false);
+        upper_categories_panel.setVisible(false);
+        upper_users_panel.setVisible(false);
+    }
+    
+    public void categories_sideBar_onclick()
+    {
+        //set bg color when sidebar tab clicked
+        categories_side.setBackground(new Color(15, 74, 74));
+        dashboard_side.setBackground(new Color(8, 40, 41));
+        items_side.setBackground(new Color(8, 40, 41));
+        jobs_side.setBackground(new Color(8, 40, 41));
+        users_side.setBackground(new Color(8, 40, 41));
         
+        // hide and show right side jPanels
+        categories.setVisible(true);
+        dashboard.setVisible(false);
+        items.setVisible(false);
+        jobs.setVisible(false);
+        users.setVisible(false);
+        
+        // hide and show upper part jPanels
+        upper_categories_panel.setVisible(true);
+        upper_dashboard_panel.setVisible(false);
+        upper_items_panel.setVisible(false);
+        upper_jobs_panel.setVisible(false);
+        upper_users_panel.setVisible(false);
+        
+    }
+    
+    public void users_sideBar_onclick()
+    {
+        //set bg color when sidebar tab clicked
+        users_side.setBackground(new Color(15, 74, 74));
+        dashboard_side.setBackground(new Color(8, 40, 41));
+        items_side.setBackground(new Color(8, 40, 41));
+        jobs_side.setBackground(new Color(8, 40, 41));
+        categories_side.setBackground(new Color(8, 40, 41));
+        
+        // hide and show right side jPanels
+        users.setVisible(true);
+        dashboard.setVisible(false);
+        items.setVisible(false);
+        jobs.setVisible(false);
+        categories.setVisible(false);
+        
+        // hide and show upper part jPanels
+        upper_users_panel.setVisible(true);
+        upper_dashboard_panel.setVisible(false);
+        upper_items_panel.setVisible(false);
+        upper_jobs_panel.setVisible(false);
+        upper_categories_panel.setVisible(false);
+        
+    }
+    
+    public ArrayList<User> getUserList()
+    {
+        ArrayList<User> userList = new ArrayList<>();
+        Connection con = Connect.getConnection();
+        
+        try{
+            ResultSet rs = CRUD.selectUsersInfo(con);
+            User user;
+            while(rs.next())
+            {
+                user = new User(rs.getInt("user_id"),rs.getString("username"),
+                        rs.getString("full_name"),rs.getInt("added_by"),
+                        rs.getDate("added_date"),rs.getInt("updated_by"),
+                        rs.getDate("updated_date"));
+                userList.add(user);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return userList;
+    }
+    
+    //show data in table
+    
+    public void Show_UsersTable()
+    {
+        ArrayList<User> list = getUserList();
+        DefaultTableModel model = (DefaultTableModel)usersTable.getModel();
+        Object[] row = new Object[7];
+        for(User u : list) {
+            row[0] = u.getID();
+            row[1] = u.getUsername();
+            row[2] = u.getFullname();
+            row[3] = u.getAddedBy();
+            row[4] = u.getAddedOn();
+            row[5] = u.getUpdatedBy();
+            row[6] = u.getUpdatedOn();
+            model.addRow(row);
+        }
+    }
+    
+    public ArrayList<Category> getCategoryList()
+    {
+        ArrayList<Category> categoryList = new ArrayList<>();
+        Connection con = Connect.getConnection();
+        
+        try{
+            ResultSet rs = CRUD.selectCategoriesInfo(con);
+            Category category;
+            while(rs.next())
+            {
+                category = new Category(rs.getInt("category_id"),
+                        rs.getString("category_name"),
+                        rs.getInt("added_by"),
+                        rs.getDate("added_date"),rs.getInt("updated_by"),
+                        rs.getDate("updated_date"));
+                categoryList.add(category);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return categoryList;
+    }
+    
+    //show data in table
+    
+    public void Show_CategoriesTable()
+    {
+        ArrayList<Category> list = getCategoryList();
+        DefaultTableModel model = (DefaultTableModel)categoriesTable.getModel();
+        Object[] row = new Object[6];
+        for(Category u : list) {
+            row[0] = u.getID();
+            row[1] = u.getName();
+            row[2] = u.getAddedBy();
+            row[3] = u.getAddedOn();
+            row[4] = u.getUpdatedBy();
+            row[5] = u.getUpdatedOn();
+            model.addRow(row);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -75,25 +243,51 @@ public class Home extends javax.swing.JFrame {
 
         whole = new javax.swing.JPanel();
         right_sidebar = new javax.swing.JPanel();
+        users = new javax.swing.JPanel();
+        jScrollPane9 = new javax.swing.JScrollPane();
+        usersTable = new javax.swing.JTable();
+        additems_form9 = new javax.swing.JPanel();
+        jLabel15 = new javax.swing.JLabel();
+        oldPasswordField = new javax.swing.JTextField();
+        jLabel49 = new javax.swing.JLabel();
+        newPasswordField = new javax.swing.JTextField();
+        updateUserPasswordBtn = new javax.swing.JButton();
+        jLabel16 = new javax.swing.JLabel();
+        additems_form8 = new javax.swing.JPanel();
+        jLabel13 = new javax.swing.JLabel();
+        usernameField = new javax.swing.JTextField();
+        jLabel48 = new javax.swing.JLabel();
+        fullnameField = new javax.swing.JTextField();
+        saveEditUserInfoBtn = new javax.swing.JButton();
+        categories = new javax.swing.JPanel();
+        jScrollPane11 = new javax.swing.JScrollPane();
+        categoriesTable = new javax.swing.JTable();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        categoryItemTable = new javax.swing.JTable();
+        additems_form1 = new javax.swing.JPanel();
+        categoryNameField = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        addEditBtn = new javax.swing.JButton();
+        categoryDropdown = new javax.swing.JComboBox<>();
+        itemQuantitySpinner = new javax.swing.JSpinner();
+        addCategoryItemBtn = new javax.swing.JButton();
+        itemDropdown = new javax.swing.JComboBox<>();
+        jLabel12 = new javax.swing.JLabel();
+        removeCategoryItemBtn = new javax.swing.JButton();
+        updatedCategoryNameField = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
         dashboard = new javax.swing.JPanel();
         dashboard_label = new javax.swing.JLabel();
+        dashboard_label1 = new javax.swing.JLabel();
+        dashboard_label4 = new javax.swing.JLabel();
+        dashboard_label5 = new javax.swing.JLabel();
+        dashboard_label6 = new javax.swing.JLabel();
         items = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         itemsTable = new javax.swing.JTable();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        itemsTab = new javax.swing.JTabbedPane();
-        additems = new javax.swing.JPanel();
-        additems_form = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        itemname = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        itemmetric = new javax.swing.JTextField();
-        itemtype = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        itemqty = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        addItem_save = new javax.swing.JButton();
-        updateitems = new javax.swing.JPanel();
         additems_form2 = new javax.swing.JPanel();
         jLabel26 = new javax.swing.JLabel();
         itemname3 = new javax.swing.JTextField();
@@ -133,15 +327,23 @@ public class Home extends javax.swing.JFrame {
         items_up_label = new javax.swing.JLabel();
         upper_jobs_panel = new javax.swing.JPanel();
         jobs_up_label = new javax.swing.JLabel();
+        upper_categories_panel = new javax.swing.JPanel();
+        categories_up_label = new javax.swing.JLabel();
+        upper_users_panel = new javax.swing.JPanel();
+        users_up_label = new javax.swing.JLabel();
         left_sidebar = new javax.swing.JPanel();
         userimg = new javax.swing.JLabel();
+        adminName = new javax.swing.JLabel();
         dashboard_side = new javax.swing.JPanel();
         dashboard_side_label = new javax.swing.JLabel();
         items_side = new javax.swing.JPanel();
         items_side_label = new javax.swing.JLabel();
         jobs_side = new javax.swing.JPanel();
         jobs_side_label = new javax.swing.JLabel();
-        dashboard_side_label2 = new javax.swing.JLabel();
+        categories_side = new javax.swing.JPanel();
+        categories_side_label = new javax.swing.JLabel();
+        users_side = new javax.swing.JPanel();
+        users_side_label = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -151,34 +353,323 @@ public class Home extends javax.swing.JFrame {
         right_sidebar.setBackground(new java.awt.Color(5, 32, 33));
         right_sidebar.setLayout(null);
 
+        users.setBackground(new java.awt.Color(5, 32, 33));
+        users.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        usersTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "USER ID", "USERNAME", "FULL NAME", "ADDED BY", "DATE ADDED", "UPDATED BY", "DATE UPDATED"
+            }
+        ));
+        jScrollPane9.setViewportView(usersTable);
+        if (usersTable.getColumnModel().getColumnCount() > 0) {
+            usersTable.getColumnModel().getColumn(0).setResizable(false);
+            usersTable.getColumnModel().getColumn(0).setPreferredWidth(5);
+            usersTable.getColumnModel().getColumn(1).setResizable(false);
+            usersTable.getColumnModel().getColumn(2).setResizable(false);
+            usersTable.getColumnModel().getColumn(3).setResizable(false);
+            usersTable.getColumnModel().getColumn(3).setPreferredWidth(5);
+            usersTable.getColumnModel().getColumn(4).setResizable(false);
+            usersTable.getColumnModel().getColumn(5).setResizable(false);
+            usersTable.getColumnModel().getColumn(6).setResizable(false);
+        }
+
+        users.add(jScrollPane9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 1220, 380));
+
+        additems_form9.setBackground(new java.awt.Color(15, 74, 74));
+        additems_form9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel15.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel15.setText("User:");
+        additems_form9.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 150, 260, 28));
+
+        oldPasswordField.setBackground(new java.awt.Color(15, 74, 74));
+        oldPasswordField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        oldPasswordField.setForeground(new java.awt.Color(255, 255, 255));
+        oldPasswordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        oldPasswordField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        oldPasswordField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        oldPasswordField.setOpaque(false);
+        additems_form9.add(oldPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 89, 260, 40));
+
+        jLabel49.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel49.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel49.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel49.setText("NEW PASSWORD");
+        additems_form9.add(jLabel49, new org.netbeans.lib.awtextra.AbsoluteConstraints(307, 43, 260, 28));
+
+        newPasswordField.setEditable(false);
+        newPasswordField.setBackground(new java.awt.Color(15, 74, 74));
+        newPasswordField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        newPasswordField.setForeground(new java.awt.Color(255, 255, 255));
+        newPasswordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        newPasswordField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        newPasswordField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        newPasswordField.setOpaque(false);
+        additems_form9.add(newPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(307, 89, 260, 40));
+
+        updateUserPasswordBtn.setBackground(new java.awt.Color(0, 204, 51));
+        updateUserPasswordBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        updateUserPasswordBtn.setForeground(new java.awt.Color(255, 255, 255));
+        updateUserPasswordBtn.setText("UPDATE");
+        updateUserPasswordBtn.setBorder(null);
+        updateUserPasswordBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateUserPasswordBtnActionPerformed(evt);
+            }
+        });
+        additems_form9.add(updateUserPasswordBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 163, 127, 42));
+
+        jLabel16.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel16.setText("OLD PASSWORD");
+        additems_form9.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 43, 260, 28));
+
+        users.add(additems_form9, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 440, 590, 250));
+
+        additems_form8.setBackground(new java.awt.Color(15, 74, 74));
+        additems_form8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel13.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel13.setText("USERNAME");
+        additems_form8.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 43, 260, 28));
+
+        usernameField.setBackground(new java.awt.Color(15, 74, 74));
+        usernameField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        usernameField.setForeground(new java.awt.Color(255, 255, 255));
+        usernameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        usernameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        usernameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        usernameField.setOpaque(false);
+        additems_form8.add(usernameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 89, 260, 40));
+
+        jLabel48.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel48.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel48.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel48.setText("FULLNAME");
+        additems_form8.add(jLabel48, new org.netbeans.lib.awtextra.AbsoluteConstraints(307, 43, 260, 28));
+
+        fullnameField.setEditable(false);
+        fullnameField.setBackground(new java.awt.Color(15, 74, 74));
+        fullnameField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        fullnameField.setForeground(new java.awt.Color(255, 255, 255));
+        fullnameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        fullnameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        fullnameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        fullnameField.setOpaque(false);
+        additems_form8.add(fullnameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(307, 89, 260, 40));
+
+        saveEditUserInfoBtn.setBackground(new java.awt.Color(0, 204, 51));
+        saveEditUserInfoBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        saveEditUserInfoBtn.setForeground(new java.awt.Color(255, 255, 255));
+        saveEditUserInfoBtn.setText("SAVE / EDIT");
+        saveEditUserInfoBtn.setBorder(null);
+        saveEditUserInfoBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveEditUserInfoBtnActionPerformed(evt);
+            }
+        });
+        additems_form8.add(saveEditUserInfoBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 163, 127, 42));
+
+        users.add(additems_form8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 590, 250));
+
+        right_sidebar.add(users);
+        users.setBounds(0, 0, 1260, 710);
+
+        categories.setBackground(new java.awt.Color(5, 32, 33));
+        categories.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        categoriesTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Name", "Added By", "Date Added", "Updated By", "Date Updated"
+            }
+        ));
+        jScrollPane11.setViewportView(categoriesTable);
+        if (categoriesTable.getColumnModel().getColumnCount() > 0) {
+            categoriesTable.getColumnModel().getColumn(0).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(0).setPreferredWidth(5);
+            categoriesTable.getColumnModel().getColumn(1).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(2).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(3).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(3).setPreferredWidth(5);
+            categoriesTable.getColumnModel().getColumn(4).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(5).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(5).setPreferredWidth(5);
+        }
+
+        categories.add(jScrollPane11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 820, 350));
+
+        categoryItemTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Name", "Quantity"
+            }
+        ));
+        jScrollPane6.setViewportView(categoryItemTable);
+        if (categoryItemTable.getColumnModel().getColumnCount() > 0) {
+            categoryItemTable.getColumnModel().getColumn(0).setResizable(false);
+            categoryItemTable.getColumnModel().getColumn(1).setResizable(false);
+            categoryItemTable.getColumnModel().getColumn(1).setPreferredWidth(5);
+        }
+
+        categories.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 70, 390, 350));
+
+        additems_form1.setBackground(new java.awt.Color(15, 74, 74));
+        additems_form1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        categoryNameField.setBackground(new java.awt.Color(15, 74, 74));
+        categoryNameField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        categoryNameField.setForeground(new java.awt.Color(255, 255, 255));
+        categoryNameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        categoryNameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        categoryNameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        categoryNameField.setOpaque(false);
+        additems_form1.add(categoryNameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 59, 260, 40));
+
+        jLabel10.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel10.setText("CATEGORY");
+        additems_form1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 260, 28));
+
+        addEditBtn.setBackground(new java.awt.Color(0, 204, 51));
+        addEditBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        addEditBtn.setForeground(new java.awt.Color(255, 255, 255));
+        addEditBtn.setText("ADD / EDIT");
+        addEditBtn.setBorder(null);
+        addEditBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addEditBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(addEditBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 60, 127, 42));
+
+        categoryDropdown.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        additems_form1.add(categoryDropdown, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 260, 41));
+        additems_form1.add(itemQuantitySpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 170, 42, 41));
+
+        addCategoryItemBtn.setBackground(new java.awt.Color(0, 204, 51));
+        addCategoryItemBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        addCategoryItemBtn.setForeground(new java.awt.Color(255, 255, 255));
+        addCategoryItemBtn.setText("ADD");
+        addCategoryItemBtn.setBorder(null);
+        addCategoryItemBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addCategoryItemBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(addCategoryItemBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 170, 127, 42));
+
+        itemDropdown.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        additems_form1.add(itemDropdown, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 170, 260, 41));
+
+        jLabel12.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("ITEM");
+        additems_form1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 130, 260, 28));
+
+        removeCategoryItemBtn.setBackground(new java.awt.Color(236, 82, 82));
+        removeCategoryItemBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        removeCategoryItemBtn.setForeground(new java.awt.Color(255, 255, 255));
+        removeCategoryItemBtn.setText("REMOVE");
+        removeCategoryItemBtn.setBorder(null);
+        removeCategoryItemBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeCategoryItemBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(removeCategoryItemBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 170, 127, 42));
+
+        updatedCategoryNameField.setBackground(new java.awt.Color(15, 74, 74));
+        updatedCategoryNameField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        updatedCategoryNameField.setForeground(new java.awt.Color(255, 255, 255));
+        updatedCategoryNameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        updatedCategoryNameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        updatedCategoryNameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        updatedCategoryNameField.setOpaque(false);
+        additems_form1.add(updatedCategoryNameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 60, 260, 40));
+
+        jLabel9.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("UPDATED NAME");
+        additems_form1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 20, 260, 28));
+
+        jLabel8.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("CATEGORY NAME");
+        additems_form1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 260, 28));
+
+        categories.add(additems_form1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 1220, 250));
+
+        jLabel7.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel7.setText("CATEGORY ITEM DETAILS");
+        categories.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 260, 28));
+
+        jLabel14.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel14.setText("CATEGORY DETAILS");
+        categories.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 260, 28));
+
+        right_sidebar.add(categories);
+        categories.setBounds(0, 0, 1260, 720);
+
         dashboard.setBackground(new java.awt.Color(5, 32, 33));
+        dashboard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         dashboard_label.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
         dashboard_label.setForeground(new java.awt.Color(255, 255, 255));
         dashboard_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        dashboard_label.setText("THIS IS DASHBOARD");
+        dashboard_label.setText("USERS");
+        dashboard.add(dashboard_label, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 290, 220, 60));
 
-        javax.swing.GroupLayout dashboardLayout = new javax.swing.GroupLayout(dashboard);
-        dashboard.setLayout(dashboardLayout);
-        dashboardLayout.setHorizontalGroup(
-            dashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dashboardLayout.createSequentialGroup()
-                .addGap(0, 290, Short.MAX_VALUE)
-                .addComponent(dashboard_label, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 290, Short.MAX_VALUE))
-        );
-        dashboardLayout.setVerticalGroup(
-            dashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dashboardLayout.createSequentialGroup()
-                .addContainerGap(350, Short.MAX_VALUE)
-                .addComponent(dashboard_label, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(300, 300, 300))
-        );
+        dashboard_label1.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        dashboard_label1.setForeground(new java.awt.Color(255, 255, 255));
+        dashboard_label1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        dashboard_label1.setText("WEEKLY REPORT");
+        dashboard.add(dashboard_label1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 220, 60));
+
+        dashboard_label4.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        dashboard_label4.setForeground(new java.awt.Color(255, 255, 255));
+        dashboard_label4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        dashboard_label4.setText("JOBS");
+        dashboard.add(dashboard_label4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 150, 220, 60));
+
+        dashboard_label5.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        dashboard_label5.setForeground(new java.awt.Color(255, 255, 255));
+        dashboard_label5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        dashboard_label5.setText("ITEMS");
+        dashboard.add(dashboard_label5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, 220, 60));
+
+        dashboard_label6.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        dashboard_label6.setForeground(new java.awt.Color(255, 255, 255));
+        dashboard_label6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        dashboard_label6.setText("CATEGORIES");
+        dashboard.add(dashboard_label6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 220, 220, 60));
 
         right_sidebar.add(dashboard);
-        dashboard.setBounds(0, 0, 800, 710);
+        dashboard.setBounds(0, 0, 1260, 720);
 
         items.setBackground(new java.awt.Color(5, 32, 33));
+        items.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         itemsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -190,141 +681,7 @@ public class Home extends javax.swing.JFrame {
         ));
         jScrollPane3.setViewportView(itemsTable);
 
-        additems.setBackground(new java.awt.Color(5, 32, 33));
-
-        additems_form.setBackground(new java.awt.Color(15, 74, 74));
-
-        jLabel3.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("ITEM NAME");
-
-        itemname.setBackground(new java.awt.Color(15, 74, 74));
-        itemname.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        itemname.setForeground(new java.awt.Color(255, 255, 255));
-        itemname.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        itemname.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        itemname.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        itemname.setOpaque(false);
-
-        jLabel5.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("ITEM METRIC");
-
-        itemmetric.setBackground(new java.awt.Color(15, 74, 74));
-        itemmetric.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        itemmetric.setForeground(new java.awt.Color(255, 255, 255));
-        itemmetric.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        itemmetric.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        itemmetric.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        itemmetric.setOpaque(false);
-
-        itemtype.setBackground(new java.awt.Color(15, 74, 74));
-        itemtype.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        itemtype.setForeground(new java.awt.Color(255, 255, 255));
-        itemtype.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        itemtype.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        itemtype.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        itemtype.setOpaque(false);
-
-        jLabel6.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("ITEM TYPE");
-
-        itemqty.setBackground(new java.awt.Color(15, 74, 74));
-        itemqty.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        itemqty.setForeground(new java.awt.Color(255, 255, 255));
-        itemqty.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        itemqty.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        itemqty.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        itemqty.setOpaque(false);
-
-        jLabel4.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("ITEM QUANTITY");
-
-        addItem_save.setBackground(new java.awt.Color(0, 204, 51));
-        addItem_save.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
-        addItem_save.setForeground(new java.awt.Color(255, 255, 255));
-        addItem_save.setText("SAVE");
-        addItem_save.setBorder(null);
-        addItem_save.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addItem_saveActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout additems_formLayout = new javax.swing.GroupLayout(additems_form);
-        additems_form.setLayout(additems_formLayout);
-        additems_formLayout.setHorizontalGroup(
-            additems_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(additems_formLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(additems_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(addItem_save, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(additems_formLayout.createSequentialGroup()
-                        .addGroup(additems_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(itemname, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(itemmetric, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(27, 27, 27)
-                        .addGroup(additems_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(itemtype, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(itemqty, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(22, Short.MAX_VALUE))
-        );
-        additems_formLayout.setVerticalGroup(
-            additems_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(additems_formLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(additems_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(additems_formLayout.createSequentialGroup()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(itemname, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(additems_formLayout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(itemqty, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(additems_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(additems_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(itemmetric, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(itemtype, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(addItem_save, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout additemsLayout = new javax.swing.GroupLayout(additems);
-        additems.setLayout(additemsLayout);
-        additemsLayout.setHorizontalGroup(
-            additemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, additemsLayout.createSequentialGroup()
-                .addContainerGap(120, Short.MAX_VALUE)
-                .addComponent(additems_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(102, 102, 102))
-        );
-        additemsLayout.setVerticalGroup(
-            additemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(additemsLayout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addComponent(additems_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(341, Short.MAX_VALUE))
-        );
-
-        itemsTab.addTab("ADD ITEMS", additems);
-
-        updateitems.setBackground(new java.awt.Color(5, 32, 33));
+        items.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 20, 890, 680));
 
         additems_form2.setBackground(new java.awt.Color(15, 74, 74));
 
@@ -399,90 +756,46 @@ public class Home extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addGroup(additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(addItem_save2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(additems_form2Layout.createSequentialGroup()
+                    .addGroup(additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel27, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(itemmetric3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(itemname3, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(itemmetric3, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(27, 27, 27)
-                        .addGroup(additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(itemtype3, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel29, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(itemqty3, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
         additems_form2Layout.setVerticalGroup(
             additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(additems_form2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(additems_form2Layout.createSequentialGroup()
-                        .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(itemname3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(additems_form2Layout.createSequentialGroup()
-                        .addComponent(jLabel29, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(itemqty3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(itemname3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel29, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(itemqty3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(itemmetric3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(itemtype3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(itemmetric3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(itemtype3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(addItem_save2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout updateitemsLayout = new javax.swing.GroupLayout(updateitems);
-        updateitems.setLayout(updateitemsLayout);
-        updateitemsLayout.setHorizontalGroup(
-            updateitemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, updateitemsLayout.createSequentialGroup()
-                .addContainerGap(119, Short.MAX_VALUE)
-                .addComponent(additems_form2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(103, 103, 103))
-        );
-        updateitemsLayout.setVerticalGroup(
-            updateitemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(updateitemsLayout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(additems_form2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(340, Short.MAX_VALUE))
-        );
-
-        itemsTab.addTab("UPDATE ITEMS", updateitems);
-
-        jScrollPane1.setViewportView(itemsTab);
-
-        javax.swing.GroupLayout itemsLayout = new javax.swing.GroupLayout(items);
-        items.setLayout(itemsLayout);
-        itemsLayout.setHorizontalGroup(
-            itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(itemsLayout.createSequentialGroup()
-                .addGroup(itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 834, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(itemsLayout.createSequentialGroup()
-                        .addGap(29, 29, 29)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 736, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        itemsLayout.setVerticalGroup(
-            itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, itemsLayout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+        items.add(additems_form2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 310, 480));
 
         right_sidebar.add(items);
-        items.setBounds(0, 0, 800, 710);
+        items.setBounds(0, 0, 1260, 710);
 
         jobs.setBackground(new java.awt.Color(5, 32, 33));
 
@@ -495,6 +808,14 @@ public class Home extends javax.swing.JFrame {
             }
         ));
         jScrollPane5.setViewportView(jobsTable);
+        if (jobsTable.getColumnModel().getColumnCount() > 0) {
+            jobsTable.getColumnModel().getColumn(0).setResizable(false);
+            jobsTable.getColumnModel().getColumn(0).setPreferredWidth(5);
+            jobsTable.getColumnModel().getColumn(1).setResizable(false);
+            jobsTable.getColumnModel().getColumn(2).setResizable(false);
+            jobsTable.getColumnModel().getColumn(3).setResizable(false);
+            jobsTable.getColumnModel().getColumn(3).setPreferredWidth(5);
+        }
 
         additems2.setBackground(new java.awt.Color(5, 32, 33));
 
@@ -753,7 +1074,7 @@ public class Home extends javax.swing.JFrame {
         jobs.setBounds(0, 0, 800, 710);
 
         whole.add(right_sidebar);
-        right_sidebar.setBounds(250, 80, 800, 710);
+        right_sidebar.setBounds(250, 80, 1260, 720);
 
         upper_dashboard_panel.setBackground(new java.awt.Color(15, 74, 74));
         upper_dashboard_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102)));
@@ -767,7 +1088,7 @@ public class Home extends javax.swing.JFrame {
         dashboard_up_label.setBounds(30, 10, 220, 60);
 
         whole.add(upper_dashboard_panel);
-        upper_dashboard_panel.setBounds(0, 0, 1050, 80);
+        upper_dashboard_panel.setBounds(0, 0, 1510, 80);
 
         upper_items_panel.setBackground(new java.awt.Color(15, 74, 74));
         upper_items_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102)));
@@ -781,7 +1102,7 @@ public class Home extends javax.swing.JFrame {
         items_up_label.setBounds(30, 10, 220, 60);
 
         whole.add(upper_items_panel);
-        upper_items_panel.setBounds(0, 0, 1050, 80);
+        upper_items_panel.setBounds(0, 0, 1510, 80);
 
         upper_jobs_panel.setBackground(new java.awt.Color(15, 74, 74));
         upper_jobs_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102)));
@@ -795,12 +1116,49 @@ public class Home extends javax.swing.JFrame {
         jobs_up_label.setBounds(30, 10, 220, 60);
 
         whole.add(upper_jobs_panel);
-        upper_jobs_panel.setBounds(0, 0, 1050, 80);
+        upper_jobs_panel.setBounds(0, 0, 1510, 80);
+
+        upper_categories_panel.setBackground(new java.awt.Color(15, 74, 74));
+        upper_categories_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102)));
+        upper_categories_panel.setLayout(null);
+
+        categories_up_label.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        categories_up_label.setForeground(new java.awt.Color(255, 255, 255));
+        categories_up_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        categories_up_label.setText("OPTIMAL  /  CATEGORIES");
+        upper_categories_panel.add(categories_up_label);
+        categories_up_label.setBounds(30, 10, 220, 60);
+
+        whole.add(upper_categories_panel);
+        upper_categories_panel.setBounds(0, 0, 1510, 80);
+
+        upper_users_panel.setBackground(new java.awt.Color(15, 74, 74));
+        upper_users_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102)));
+        upper_users_panel.setLayout(null);
+
+        users_up_label.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        users_up_label.setForeground(new java.awt.Color(255, 255, 255));
+        users_up_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        users_up_label.setText("OPTIMAL  /  USERS");
+        upper_users_panel.add(users_up_label);
+        users_up_label.setBounds(30, 10, 220, 60);
+
+        whole.add(upper_users_panel);
+        upper_users_panel.setBounds(0, 0, 1510, 80);
 
         left_sidebar.setBackground(new java.awt.Color(8, 40, 41));
         left_sidebar.setLayout(null);
+
+        userimg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/user.png"))); // NOI18N
         left_sidebar.add(userimg);
         userimg.setBounds(73, 56, 100, 110);
+
+        adminName.setFont(new java.awt.Font("Yu Gothic UI", 1, 24)); // NOI18N
+        adminName.setForeground(new java.awt.Color(255, 255, 255));
+        adminName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        adminName.setText("ADMIN");
+        left_sidebar.add(adminName);
+        adminName.setBounds(10, 160, 230, 40);
 
         dashboard_side.setBackground(new java.awt.Color(15, 74, 74));
         dashboard_side.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -891,32 +1249,89 @@ public class Home extends javax.swing.JFrame {
             jobs_sideLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jobs_sideLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jobs_side_label, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+                .addComponent(jobs_side_label, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         left_sidebar.add(jobs_side);
         jobs_side.setBounds(0, 400, 250, 60);
 
-        dashboard_side_label2.setFont(new java.awt.Font("Yu Gothic UI", 1, 24)); // NOI18N
-        dashboard_side_label2.setForeground(new java.awt.Color(255, 255, 255));
-        dashboard_side_label2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        dashboard_side_label2.setText("ADMIN");
-        left_sidebar.add(dashboard_side_label2);
-        dashboard_side_label2.setBounds(10, 160, 230, 40);
+        categories_side.setBackground(new java.awt.Color(8, 40, 41));
+        categories_side.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                categories_sideMouseClicked(evt);
+            }
+        });
+
+        categories_side_label.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        categories_side_label.setForeground(new java.awt.Color(255, 255, 255));
+        categories_side_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        categories_side_label.setText("CATEGORIES");
+
+        javax.swing.GroupLayout categories_sideLayout = new javax.swing.GroupLayout(categories_side);
+        categories_side.setLayout(categories_sideLayout);
+        categories_sideLayout.setHorizontalGroup(
+            categories_sideLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(categories_sideLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(categories_side_label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        categories_sideLayout.setVerticalGroup(
+            categories_sideLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(categories_sideLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(categories_side_label, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        left_sidebar.add(categories_side);
+        categories_side.setBounds(0, 460, 250, 60);
+
+        users_side.setBackground(new java.awt.Color(8, 40, 41));
+        users_side.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                users_sideMouseClicked(evt);
+            }
+        });
+
+        users_side_label.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        users_side_label.setForeground(new java.awt.Color(255, 255, 255));
+        users_side_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        users_side_label.setText("USERS");
+
+        javax.swing.GroupLayout users_sideLayout = new javax.swing.GroupLayout(users_side);
+        users_side.setLayout(users_sideLayout);
+        users_sideLayout.setHorizontalGroup(
+            users_sideLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(users_sideLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(users_side_label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        users_sideLayout.setVerticalGroup(
+            users_sideLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(users_sideLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(users_side_label, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        left_sidebar.add(users_side);
+        users_side.setBounds(0, 520, 250, 60);
 
         whole.add(left_sidebar);
-        left_sidebar.setBounds(0, 80, 250, 710);
+        left_sidebar.setBounds(0, 80, 250, 720);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(whole, javax.swing.GroupLayout.DEFAULT_SIZE, 1051, Short.MAX_VALUE)
+            .addComponent(whole, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1506, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(whole, javax.swing.GroupLayout.DEFAULT_SIZE, 791, Short.MAX_VALUE)
+            .addComponent(whole, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
         );
 
         pack();
@@ -935,10 +1350,6 @@ public class Home extends javax.swing.JFrame {
         jobs_sideBar_onclick();
     }//GEN-LAST:event_jobs_sideMouseClicked
 
-    private void addItem_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addItem_saveActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_addItem_saveActionPerformed
-
     private void addItem_save2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addItem_save2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_addItem_save2ActionPerformed
@@ -951,6 +1362,36 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_updateJob_saveActionPerformed
 
+    private void saveEditUserInfoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveEditUserInfoBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_saveEditUserInfoBtnActionPerformed
+
+    private void addEditBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addEditBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_addEditBtnActionPerformed
+
+    private void addCategoryItemBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCategoryItemBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_addCategoryItemBtnActionPerformed
+
+    private void removeCategoryItemBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeCategoryItemBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_removeCategoryItemBtnActionPerformed
+
+    private void categories_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_categories_sideMouseClicked
+        Show_CategoriesTable();
+        categories_sideBar_onclick();
+    }//GEN-LAST:event_categories_sideMouseClicked
+
+    private void users_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_users_sideMouseClicked
+        Show_UsersTable();
+        users_sideBar_onclick();
+    }//GEN-LAST:event_users_sideMouseClicked
+
+    private void updateUserPasswordBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateUserPasswordBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_updateUserPasswordBtnActionPerformed
+
     public static void main(String args[]) {
         
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -961,57 +1402,83 @@ public class Home extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addItem_save;
+    private javax.swing.JButton addCategoryItemBtn;
+    private javax.swing.JButton addEditBtn;
     private javax.swing.JButton addItem_save2;
     private javax.swing.JButton addJob_save;
     private javax.swing.JTextField addedby;
     private javax.swing.JTextField addeddate;
-    private javax.swing.JPanel additems;
     private javax.swing.JPanel additems2;
-    private javax.swing.JPanel additems_form;
+    private javax.swing.JPanel additems_form1;
+    private javax.swing.JPanel additems_form10;
     private javax.swing.JPanel additems_form2;
     private javax.swing.JPanel additems_form4;
     private javax.swing.JPanel additems_form5;
+    private javax.swing.JPanel additems_form8;
+    private javax.swing.JPanel additems_form9;
+    private javax.swing.JLabel adminName;
+    private javax.swing.JPanel categories;
+    private javax.swing.JTable categoriesTable;
+    private javax.swing.JPanel categories_side;
+    private javax.swing.JLabel categories_side_label;
+    private javax.swing.JLabel categories_up_label;
+    private javax.swing.JComboBox<String> categoryDropdown;
+    private javax.swing.JTable categoryItemTable;
+    private javax.swing.JTextField categoryNameField;
     private javax.swing.JPanel dashboard;
     private javax.swing.JLabel dashboard_label;
+    private javax.swing.JLabel dashboard_label1;
+    private javax.swing.JLabel dashboard_label4;
+    private javax.swing.JLabel dashboard_label5;
+    private javax.swing.JLabel dashboard_label6;
     private javax.swing.JPanel dashboard_side;
     private javax.swing.JLabel dashboard_side_label;
-    private javax.swing.JLabel dashboard_side_label2;
     private javax.swing.JLabel dashboard_up_label;
-    private javax.swing.JTextField itemmetric;
+    private javax.swing.JTextField fullnameField;
+    private javax.swing.JComboBox<String> itemDropdown;
+    private javax.swing.JSpinner itemQuantitySpinner;
     private javax.swing.JTextField itemmetric3;
-    private javax.swing.JTextField itemname;
     private javax.swing.JTextField itemname3;
-    private javax.swing.JTextField itemqty;
     private javax.swing.JTextField itemqty3;
     private javax.swing.JPanel items;
-    private javax.swing.JTabbedPane itemsTab;
     private javax.swing.JTable itemsTable;
     private javax.swing.JPanel items_side;
     private javax.swing.JLabel items_side_label;
     private javax.swing.JLabel items_up_label;
-    private javax.swing.JTextField itemtype;
     private javax.swing.JTextField itemtype3;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel38;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel42;
     private javax.swing.JLabel jLabel44;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jLabel48;
+    private javax.swing.JLabel jLabel49;
+    private javax.swing.JLabel jLabel53;
+    private javax.swing.JLabel jLabel54;
+    private javax.swing.JLabel jLabel55;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTextField jobcat;
     private javax.swing.JTextField jobcat1;
+    private javax.swing.JTextField jobcat6;
     private javax.swing.JPanel jobs;
     private javax.swing.JTabbedPane jobsTab;
     private javax.swing.JTable jobsTable;
@@ -1019,16 +1486,32 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel jobs_side_label;
     private javax.swing.JLabel jobs_up_label;
     private javax.swing.JPanel left_sidebar;
+    private javax.swing.JTextField newPasswordField;
+    private javax.swing.JTextField oldPasswordField;
+    private javax.swing.JButton removeCategoryItemBtn;
     private javax.swing.JPanel right_sidebar;
+    private javax.swing.JButton saveEditUserInfoBtn;
     private javax.swing.JButton updateJob_save;
+    private javax.swing.JButton updateJob_save3;
+    private javax.swing.JButton updateUserPasswordBtn;
+    private javax.swing.JTextField updatedCategoryNameField;
     private javax.swing.JTextField updatedby;
+    private javax.swing.JTextField updatedby3;
     private javax.swing.JTextField updateddate;
-    private javax.swing.JPanel updateitems;
+    private javax.swing.JTextField updateddate3;
     private javax.swing.JPanel updateitems1;
+    private javax.swing.JPanel upper_categories_panel;
     private javax.swing.JPanel upper_dashboard_panel;
     private javax.swing.JPanel upper_items_panel;
     private javax.swing.JPanel upper_jobs_panel;
+    private javax.swing.JPanel upper_users_panel;
     private javax.swing.JLabel userimg;
+    private javax.swing.JTextField usernameField;
+    private javax.swing.JPanel users;
+    private javax.swing.JTable usersTable;
+    private javax.swing.JPanel users_side;
+    private javax.swing.JLabel users_side_label;
+    private javax.swing.JLabel users_up_label;
     private javax.swing.JPanel whole;
     // End of variables declaration//GEN-END:variables
 }
