@@ -128,7 +128,7 @@ public class Login extends javax.swing.JFrame {
                 if(CRUD.checkUserExists(con,username)){
                     ResultSet rs = CRUD.selectUserPassword(con, username);
                     rs.next();
-                    String retrievePassword = rs.getString("password");
+                    String retrievePassword = rs.getString("password");                  
                     if((HashPassword.hashPassword(password)).equals(retrievePassword)){
                         Home h = new Home();
                         h.setVisible(true);

@@ -73,6 +73,45 @@ public class CRUD {
         }
     }
     
+    public static boolean checkItemExists(Connection con, String itemName) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT item_id from item where item_name='"+itemName+"' ");
+        if(rs.next()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    public static boolean checkItemTypeExists(Connection con, int typeID) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT type_id from item_type where type_id='"+typeID+"' ");
+       if(rs.next()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public static ResultSet selectItemType(Connection con, int typeID) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * from item_type where type_id ='"+typeID+"' ");
+        return rs;
+    }
+    public static void insertItemType(Connection con, String typeName, String typeDetails) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        stmt.executeUpdate("INSERT INTO item_type(`type_name`,`type_details`,`added_by`,`updated_by`)VALUES('"+typeName+"','"+typeDetails+"')");
+        
+    }
+    public static void insertItem(Connection con, String itemName, int itemQty, int itemType, String itemMetric, int addedBy,int updatedBy) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        stmt.executeUpdate("INSERT INTO item(`item_name`,`quantity`,`metric`,`type`,`added_by`,`updated_by`) VALUES('"+itemName+"','"+itemQty+"','"+itemMetric+"','"+itemType+"','"+addedBy+"','"+updatedBy+"')");
+    }
+    
     public static ResultSet selectUserPassword(Connection con,String username) throws SQLException{
         Statement stmt;
         stmt = con.createStatement();

@@ -1,7 +1,16 @@
 package optimalinventorysystem;
 
-
+import MySQL.CRUD;
+import MySQL.Connect;
+import Entities.Item;
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 public class Home extends javax.swing.JFrame {
     
@@ -82,6 +91,13 @@ public class Home extends javax.swing.JFrame {
         itemsTable = new javax.swing.JTable();
         jScrollPane1 = new javax.swing.JScrollPane();
         itemsTab = new javax.swing.JTabbedPane();
+        additemtype = new javax.swing.JPanel();
+        additemtype_form = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        itemname1 = new javax.swing.JTextField();
+        itemqty1 = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        addItemType_save = new javax.swing.JButton();
         additems = new javax.swing.JPanel();
         additems_form = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -189,6 +205,102 @@ public class Home extends javax.swing.JFrame {
             }
         ));
         jScrollPane3.setViewportView(itemsTable);
+
+        additemtype.setBackground(new java.awt.Color(5, 32, 33));
+
+        additemtype_form.setBackground(new java.awt.Color(15, 74, 74));
+
+        jLabel7.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel7.setText("TYPE NAME");
+
+        itemname1.setBackground(new java.awt.Color(15, 74, 74));
+        itemname1.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        itemname1.setForeground(new java.awt.Color(255, 255, 255));
+        itemname1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        itemname1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        itemname1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        itemname1.setOpaque(false);
+
+        itemqty1.setBackground(new java.awt.Color(15, 74, 74));
+        itemqty1.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        itemqty1.setForeground(new java.awt.Color(255, 255, 255));
+        itemqty1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        itemqty1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        itemqty1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        itemqty1.setOpaque(false);
+
+        jLabel10.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel10.setText("TYPE DETAILS");
+
+        addItemType_save.setBackground(new java.awt.Color(0, 204, 51));
+        addItemType_save.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        addItemType_save.setForeground(new java.awt.Color(255, 255, 255));
+        addItemType_save.setText("SAVE");
+        addItemType_save.setBorder(null);
+        addItemType_save.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addItemType_saveActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout additemtype_formLayout = new javax.swing.GroupLayout(additemtype_form);
+        additemtype_form.setLayout(additemtype_formLayout);
+        additemtype_formLayout.setHorizontalGroup(
+            additemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(additemtype_formLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(additemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(addItemType_save, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(additemtype_formLayout.createSequentialGroup()
+                        .addGroup(additemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(itemname1, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(27, 27, 27)
+                        .addGroup(additemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(itemqty1, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+        additemtype_formLayout.setVerticalGroup(
+            additemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(additemtype_formLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(additemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(additemtype_formLayout.createSequentialGroup()
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(itemname1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(additemtype_formLayout.createSequentialGroup()
+                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(itemqty1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(110, 110, 110)
+                .addComponent(addItemType_save, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(25, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout additemtypeLayout = new javax.swing.GroupLayout(additemtype);
+        additemtype.setLayout(additemtypeLayout);
+        additemtypeLayout.setHorizontalGroup(
+            additemtypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, additemtypeLayout.createSequentialGroup()
+                .addContainerGap(120, Short.MAX_VALUE)
+                .addComponent(additemtype_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(102, 102, 102))
+        );
+        additemtypeLayout.setVerticalGroup(
+            additemtypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(additemtypeLayout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(additemtype_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(341, Short.MAX_VALUE))
+        );
+
+        itemsTab.addTab("ADD ITEM TYPE", additemtype);
 
         additems.setBackground(new java.awt.Color(5, 32, 33));
 
@@ -832,7 +944,7 @@ public class Home extends javax.swing.JFrame {
         );
 
         left_sidebar.add(dashboard_side);
-        dashboard_side.setBounds(0, 280, 250, 62);
+        dashboard_side.setBounds(0, 280, 250, 58);
 
         items_side.setBackground(new java.awt.Color(8, 40, 41));
         items_side.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -864,7 +976,7 @@ public class Home extends javax.swing.JFrame {
         );
 
         left_sidebar.add(items_side);
-        items_side.setBounds(0, 340, 250, 62);
+        items_side.setBounds(0, 340, 250, 58);
 
         jobs_side.setBackground(new java.awt.Color(8, 40, 41));
         jobs_side.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -936,7 +1048,44 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jobs_sideMouseClicked
 
     private void addItem_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addItem_saveActionPerformed
-        // TODO add your handling code here:
+        
+        if(!itemname.getText().isEmpty() && !itemqty.getText().isEmpty() && !itemtype.getText().isEmpty() && !itemmetric.getText().isEmpty()){
+            try {
+                String itemName = itemname.getText();
+                int itemQty = Integer.parseInt(itemqty.getText());
+                int itemType= Integer.parseInt(itemtype.getText());
+                String itemMetric = itemmetric.getText();
+                    
+                Connection con = Connect.getConnection();
+                // TODO add your handling code here:
+                
+                //itemType = rs.getInt("user_id");
+                if(CRUD.checkItemTypeExists(con, itemType)){              
+                    if(!CRUD.checkItemExists(con, itemName)){
+                        System.out.println("Good, Not Found");
+                        ResultSet rs = CRUD.selectItemType(con, itemType);
+                        itemType = rs.getInt("type_id");
+                        CRUD.insertItem(con, itemName, itemQty, itemType, itemMetric,1,0);
+
+                        JOptionPane.showMessageDialog(null, "Item has been successfully added!");
+
+                    }else{
+                      System.out.println("sad,Found");
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null, "Item Type does not exists!");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+
+           
+        }else{
+            JOptionPane.showMessageDialog(null, "All fields must not be empty");
+        }
+       
+        
     }//GEN-LAST:event_addItem_saveActionPerformed
 
     private void addItem_save2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addItem_save2ActionPerformed
@@ -951,6 +1100,10 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_updateJob_saveActionPerformed
 
+    private void addItemType_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addItemType_saveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_addItemType_saveActionPerformed
+
     public static void main(String args[]) {
         
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -961,6 +1114,7 @@ public class Home extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addItemType_save;
     private javax.swing.JButton addItem_save;
     private javax.swing.JButton addItem_save2;
     private javax.swing.JButton addJob_save;
@@ -972,6 +1126,8 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel additems_form2;
     private javax.swing.JPanel additems_form4;
     private javax.swing.JPanel additems_form5;
+    private javax.swing.JPanel additemtype;
+    private javax.swing.JPanel additemtype_form;
     private javax.swing.JPanel dashboard;
     private javax.swing.JLabel dashboard_label;
     private javax.swing.JPanel dashboard_side;
@@ -981,8 +1137,10 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JTextField itemmetric;
     private javax.swing.JTextField itemmetric3;
     private javax.swing.JTextField itemname;
+    private javax.swing.JTextField itemname1;
     private javax.swing.JTextField itemname3;
     private javax.swing.JTextField itemqty;
+    private javax.swing.JTextField itemqty1;
     private javax.swing.JTextField itemqty3;
     private javax.swing.JPanel items;
     private javax.swing.JTabbedPane itemsTab;
@@ -992,6 +1150,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel items_up_label;
     private javax.swing.JTextField itemtype;
     private javax.swing.JTextField itemtype3;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
@@ -1006,6 +1165,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel44;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane5;
