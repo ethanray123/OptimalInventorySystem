@@ -12,7 +12,7 @@ import java.sql.Statement;
  */
 public class CRUD {
 
-    public static ResultSet selectNameFromUser(
+    public static ResultSet selectUsers(
             Connection con) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -98,22 +98,22 @@ public class CRUD {
                 +"' WHERE `user`.`username`='" + username + "'");
     }
     
-    public static void updateUsername(Connection con, String username, String newusername) throws SQLException {
+    public static void updateUsername(Connection con, String username, String newusername, int admin) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
-        stmt.executeUpdate("UPDATE `user` SET `username` = '" + newusername + "' WHERE `user`.`username` = '" + username + "'");
+        stmt.executeUpdate("UPDATE `user` SET `username` = '" + newusername + "', `updated_by` = '"+ admin +"' WHERE `user`.`username` = '" + username + "'");
     }
     
-    public static void updatePassword(Connection con, String username, String oldpassword, String newpassword) throws SQLException {
+    public static void updatePassword(Connection con, String username, String oldpassword, String newpassword, int admin) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
-        stmt.executeUpdate("UPDATE `user` SET `password` = '" + newpassword + "' WHERE `user`.`username` = '" + username + "'");
+        stmt.executeUpdate("UPDATE `user` SET `password` = '" + newpassword + "', `updated_by` = '"+ admin +"' WHERE `user`.`username` = '" + username + "'");
     }
     
-    public static void updateFullname(Connection con, String username, String newfullname) throws SQLException {
+    public static void updateFullname(Connection con, String username, String newfullname, int admin) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
-        stmt.executeUpdate("UPDATE `user` SET `full_name` = '" + newfullname + "' WHERE `user`.`username` = '" + username + "'");
+        stmt.executeUpdate("UPDATE `user` SET `full_name` = '" + newfullname + "', `updated_by` = '"+ admin +"' WHERE `user`.`username` = '" + username + "'");
     }
 
     public static boolean checkUserExists(Connection con, String username) 
@@ -147,6 +147,24 @@ public class CRUD {
         stmt = con.createStatement();
         String query = "SELECT user_id, username, full_name, added_by, "+
                 "added_date, updated_by, updated_date FROM `user`";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
+    }
+    
+    public static ResultSet selectUserInfo(Connection con, int id) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT user_id, username, full_name, added_by, "+
+                "added_date, updated_by, updated_date FROM `user` WHERE user_id = '"+ id +"'";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
+    }
+    
+    public static ResultSet selectUserInfoUsingUsername(Connection con, String username) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT user_id, username, full_name, added_by, "+
+                "added_date, updated_by, updated_date FROM `user` WHERE username = '"+ username +"'";
         ResultSet rs = stmt.executeQuery(query);
         return rs;
     }
@@ -204,6 +222,33 @@ public class CRUD {
                 "added_date, updated_by, updated_date FROM `cleaning_category`";
         ResultSet rs = stmt.executeQuery(query);
         return rs;
+    }
+    
+    public static ResultSet selectCategoryInfo(Connection con, int id) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT category_name, added_by, added_date, "+
+                "updated_by, updated_date FROM `cleaning_category` WHERE category_id = '"+ id +"'";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
+    }
+    
+    public static ResultSet selectCategoryInfoUsingCategoryName(Connection con, String categoryName) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT category_id, category_name, added_by, added_date, "+
+                "updated_by, updated_date FROM `cleaning_category` WHERE category_name = '"+ categoryName +"'";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
+    }
+    
+    public static boolean checkCategoryExists(Connection con, String categoryName) 
+            throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT category_id from cleaning_category "+
+                "where category_name='" + categoryName + "'");
+        return rs.next();
     }
     
     //END OF CATEGORY RELATED

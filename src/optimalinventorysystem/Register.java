@@ -12,7 +12,6 @@ import MySQL.CRUD;
 import java.awt.HeadlessException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.Date;
 import javax.swing.JOptionPane;
 /**
  *
@@ -132,7 +131,7 @@ public class Register extends javax.swing.JFrame {
     private void submitBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_submitBtnMouseClicked
         String fullname = fullnameField.getText();
         String username = usernameField.getText();
-        String password = passwordField.getText();
+        String password = String.valueOf(passwordField.getPassword());
         
         if("".equals(fullname))
             JOptionPane.showMessageDialog(null, "Full Name is required!");
@@ -146,8 +145,6 @@ public class Register extends javax.swing.JFrame {
                 if(!CRUD.checkUserExists(con,username)){
                     if(password.length() >= 8){
                         password=HashPassword.hashPassword(password);
-                        Date now = new Date(); 
-                        java.sql.Date sqlDate = new java.sql.Date(now.getTime());
                         CRUD.insertUser(con,fullname,username,password,-1);
                         JOptionPane.showMessageDialog(null, "User has been successfully created!");
                     }else{

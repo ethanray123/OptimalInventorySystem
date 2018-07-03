@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import java.awt.Color;
+import java.util.Arrays;
 
 
 public class Login extends javax.swing.JFrame {
@@ -120,7 +121,7 @@ public class Login extends javax.swing.JFrame {
 
     private void loginMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginMouseClicked
         String username = usernameField.getText();
-        String password = passwordField.getText();
+        String password = String.valueOf(passwordField.getPassword());
 
         if("".equals(username))
         JOptionPane.showMessageDialog(null, "Username is required!");

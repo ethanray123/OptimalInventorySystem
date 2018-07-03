@@ -3,20 +3,30 @@ package optimalinventorysystem;
 
 import Entities.Category;
 import Entities.User;
+import Hash.HashPassword;
 import MySQL.CRUD;
 import MySQL.Connect;
 import java.awt.Color;
 import java.awt.HeadlessException;
 import java.awt.event.WindowEvent;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import static optimalinventorysystem.Login.userid;
 
 public class Home extends javax.swing.JFrame {
+    int userEditID = -1;
+    int categoryEditID = -1;
+    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     // 5,32,33      -- darkest
     // 15, 74, 74   -- middle
     // 8, 40, 41    -- lightest
@@ -31,6 +41,8 @@ public class Home extends javax.swing.JFrame {
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
         dashboard();
+        Show_CategoriesTable();
+        Show_UsersTable();
     }
     
     public void dashboard()
@@ -171,7 +183,7 @@ public class Home extends javax.swing.JFrame {
                         rs.getDate("updated_date"));
                 userList.add(user);
             }
-        }catch(Exception e){
+        }catch(SQLException e){
             e.printStackTrace();
         }
         return userList;
@@ -189,11 +201,24 @@ public class Home extends javax.swing.JFrame {
             row[1] = u.getUsername();
             row[2] = u.getFullname();
             row[3] = u.getAddedBy();
-            row[4] = u.getAddedOn();
+            row[4] = dateFormat.format(u.getAddedOn());
             row[5] = u.getUpdatedBy();
-            row[6] = u.getUpdatedOn();
+            row[6] = dateFormat.format(u.getUpdatedOn());
             model.addRow(row);
         }
+    }
+    
+    public void addRowToUsersTable(User u){
+        DefaultTableModel model = (DefaultTableModel)usersTable.getModel();
+        Object[] row = new Object[7];
+        row[0] = u.getID();
+        row[1] = u.getUsername();
+        row[2] = u.getFullname();
+        row[3] = u.getAddedBy();
+        row[4] = dateFormat.format(u.getAddedOn());
+        row[5] = u.getUpdatedBy();
+        row[6] = dateFormat.format(u.getUpdatedOn());
+        model.addRow(row);
     }
     
     public ArrayList<Category> getCategoryList()
@@ -213,7 +238,7 @@ public class Home extends javax.swing.JFrame {
                         rs.getDate("updated_date"));
                 categoryList.add(category);
             }
-        }catch(Exception e){
+        }catch(SQLException e){
             e.printStackTrace();
         }
         return categoryList;
@@ -226,39 +251,35 @@ public class Home extends javax.swing.JFrame {
         ArrayList<Category> list = getCategoryList();
         DefaultTableModel model = (DefaultTableModel)categoriesTable.getModel();
         Object[] row = new Object[6];
-        for(Category u : list) {
-            row[0] = u.getID();
-            row[1] = u.getName();
-            row[2] = u.getAddedBy();
-            row[3] = u.getAddedOn();
-            row[4] = u.getUpdatedBy();
-            row[5] = u.getUpdatedOn();
+        for(Category c : list) {
+            row[0] = c.getID();
+            row[1] = c.getName();
+            row[2] = c.getAddedBy();
+            row[3] = dateFormat.format(c.getAddedOn());
+            row[4] = c.getUpdatedBy();
+            row[5] = dateFormat.format(c.getUpdatedOn());
             model.addRow(row);
         }
     }
 
+    public void addRowToCategoriesTable(Category c){
+        DefaultTableModel model = (DefaultTableModel)categoriesTable.getModel();
+        Object[] row = new Object[6];
+        row[0] = c.getID();
+        row[1] = c.getName();
+        row[2] = c.getAddedBy();
+        row[3] = dateFormat.format(c.getAddedOn());
+        row[4] = c.getUpdatedBy();
+        row[5] = dateFormat.format(c.getUpdatedOn());
+        model.addRow(row);
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         whole = new javax.swing.JPanel();
         right_sidebar = new javax.swing.JPanel();
-        users = new javax.swing.JPanel();
-        jScrollPane9 = new javax.swing.JScrollPane();
-        usersTable = new javax.swing.JTable();
-        additems_form9 = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
-        oldPasswordField = new javax.swing.JTextField();
-        jLabel49 = new javax.swing.JLabel();
-        newPasswordField = new javax.swing.JTextField();
-        updateUserPasswordBtn = new javax.swing.JButton();
-        jLabel16 = new javax.swing.JLabel();
-        additems_form8 = new javax.swing.JPanel();
-        jLabel13 = new javax.swing.JLabel();
-        usernameField = new javax.swing.JTextField();
-        jLabel48 = new javax.swing.JLabel();
-        fullnameField = new javax.swing.JTextField();
-        saveEditUserInfoBtn = new javax.swing.JButton();
         categories = new javax.swing.JPanel();
         jScrollPane11 = new javax.swing.JScrollPane();
         categoriesTable = new javax.swing.JTable();
@@ -267,18 +288,33 @@ public class Home extends javax.swing.JFrame {
         additems_form1 = new javax.swing.JPanel();
         categoryNameField = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        addEditBtn = new javax.swing.JButton();
+        addEditCategoryBtn = new javax.swing.JButton();
         categoryDropdown = new javax.swing.JComboBox<>();
         itemQuantitySpinner = new javax.swing.JSpinner();
         addCategoryItemBtn = new javax.swing.JButton();
         itemDropdown = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
         removeCategoryItemBtn = new javax.swing.JButton();
-        updatedCategoryNameField = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
+        categoryEditLabel = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
+        removeCategoryItemBtn1 = new javax.swing.JButton();
+        categoryItemEditLabel = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
+        users = new javax.swing.JPanel();
+        jScrollPane9 = new javax.swing.JScrollPane();
+        usersTable = new javax.swing.JTable();
+        additems_form8 = new javax.swing.JPanel();
+        jLabel13 = new javax.swing.JLabel();
+        usernameField = new javax.swing.JTextField();
+        jLabel48 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel49 = new javax.swing.JLabel();
+        userEditLabel = new javax.swing.JLabel();
+        saveEditUserInfoBtn = new javax.swing.JButton();
+        passwordField = new javax.swing.JPasswordField();
+        newPasswordField = new javax.swing.JPasswordField();
+        fullnameField = new javax.swing.JTextField();
         dashboard = new javax.swing.JPanel();
         dashboard_label = new javax.swing.JLabel();
         dashboard_label1 = new javax.swing.JLabel();
@@ -344,6 +380,8 @@ public class Home extends javax.swing.JFrame {
         categories_side_label = new javax.swing.JLabel();
         users_side = new javax.swing.JPanel();
         users_side_label = new javax.swing.JLabel();
+        logout_side = new javax.swing.JPanel();
+        logout_side_label = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -352,137 +390,6 @@ public class Home extends javax.swing.JFrame {
 
         right_sidebar.setBackground(new java.awt.Color(5, 32, 33));
         right_sidebar.setLayout(null);
-
-        users.setBackground(new java.awt.Color(5, 32, 33));
-        users.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        usersTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "USER ID", "USERNAME", "FULL NAME", "ADDED BY", "DATE ADDED", "UPDATED BY", "DATE UPDATED"
-            }
-        ));
-        jScrollPane9.setViewportView(usersTable);
-        if (usersTable.getColumnModel().getColumnCount() > 0) {
-            usersTable.getColumnModel().getColumn(0).setResizable(false);
-            usersTable.getColumnModel().getColumn(0).setPreferredWidth(5);
-            usersTable.getColumnModel().getColumn(1).setResizable(false);
-            usersTable.getColumnModel().getColumn(2).setResizable(false);
-            usersTable.getColumnModel().getColumn(3).setResizable(false);
-            usersTable.getColumnModel().getColumn(3).setPreferredWidth(5);
-            usersTable.getColumnModel().getColumn(4).setResizable(false);
-            usersTable.getColumnModel().getColumn(5).setResizable(false);
-            usersTable.getColumnModel().getColumn(6).setResizable(false);
-        }
-
-        users.add(jScrollPane9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 1220, 380));
-
-        additems_form9.setBackground(new java.awt.Color(15, 74, 74));
-        additems_form9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel15.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel15.setText("User:");
-        additems_form9.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 150, 260, 28));
-
-        oldPasswordField.setBackground(new java.awt.Color(15, 74, 74));
-        oldPasswordField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        oldPasswordField.setForeground(new java.awt.Color(255, 255, 255));
-        oldPasswordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        oldPasswordField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        oldPasswordField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        oldPasswordField.setOpaque(false);
-        additems_form9.add(oldPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 89, 260, 40));
-
-        jLabel49.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel49.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel49.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel49.setText("NEW PASSWORD");
-        additems_form9.add(jLabel49, new org.netbeans.lib.awtextra.AbsoluteConstraints(307, 43, 260, 28));
-
-        newPasswordField.setEditable(false);
-        newPasswordField.setBackground(new java.awt.Color(15, 74, 74));
-        newPasswordField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        newPasswordField.setForeground(new java.awt.Color(255, 255, 255));
-        newPasswordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        newPasswordField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        newPasswordField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        newPasswordField.setOpaque(false);
-        additems_form9.add(newPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(307, 89, 260, 40));
-
-        updateUserPasswordBtn.setBackground(new java.awt.Color(0, 204, 51));
-        updateUserPasswordBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
-        updateUserPasswordBtn.setForeground(new java.awt.Color(255, 255, 255));
-        updateUserPasswordBtn.setText("UPDATE");
-        updateUserPasswordBtn.setBorder(null);
-        updateUserPasswordBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                updateUserPasswordBtnActionPerformed(evt);
-            }
-        });
-        additems_form9.add(updateUserPasswordBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 163, 127, 42));
-
-        jLabel16.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel16.setText("OLD PASSWORD");
-        additems_form9.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 43, 260, 28));
-
-        users.add(additems_form9, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 440, 590, 250));
-
-        additems_form8.setBackground(new java.awt.Color(15, 74, 74));
-        additems_form8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel13.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel13.setText("USERNAME");
-        additems_form8.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 43, 260, 28));
-
-        usernameField.setBackground(new java.awt.Color(15, 74, 74));
-        usernameField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        usernameField.setForeground(new java.awt.Color(255, 255, 255));
-        usernameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        usernameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        usernameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        usernameField.setOpaque(false);
-        additems_form8.add(usernameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 89, 260, 40));
-
-        jLabel48.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel48.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel48.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel48.setText("FULLNAME");
-        additems_form8.add(jLabel48, new org.netbeans.lib.awtextra.AbsoluteConstraints(307, 43, 260, 28));
-
-        fullnameField.setEditable(false);
-        fullnameField.setBackground(new java.awt.Color(15, 74, 74));
-        fullnameField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        fullnameField.setForeground(new java.awt.Color(255, 255, 255));
-        fullnameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        fullnameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        fullnameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        fullnameField.setOpaque(false);
-        additems_form8.add(fullnameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(307, 89, 260, 40));
-
-        saveEditUserInfoBtn.setBackground(new java.awt.Color(0, 204, 51));
-        saveEditUserInfoBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
-        saveEditUserInfoBtn.setForeground(new java.awt.Color(255, 255, 255));
-        saveEditUserInfoBtn.setText("SAVE / EDIT");
-        saveEditUserInfoBtn.setBorder(null);
-        saveEditUserInfoBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveEditUserInfoBtnActionPerformed(evt);
-            }
-        });
-        additems_form8.add(saveEditUserInfoBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 163, 127, 42));
-
-        users.add(additems_form8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 590, 250));
-
-        right_sidebar.add(users);
-        users.setBounds(0, 0, 1260, 710);
 
         categories.setBackground(new java.awt.Color(5, 32, 33));
         categories.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -495,15 +402,23 @@ public class Home extends javax.swing.JFrame {
                 "ID", "Name", "Added By", "Date Added", "Updated By", "Date Updated"
             }
         ));
+        categoriesTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                categoriesTableMouseClicked(evt);
+            }
+        });
         jScrollPane11.setViewportView(categoriesTable);
         if (categoriesTable.getColumnModel().getColumnCount() > 0) {
             categoriesTable.getColumnModel().getColumn(0).setResizable(false);
-            categoriesTable.getColumnModel().getColumn(0).setPreferredWidth(5);
+            categoriesTable.getColumnModel().getColumn(0).setPreferredWidth(2);
             categoriesTable.getColumnModel().getColumn(1).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(1).setPreferredWidth(2);
             categoriesTable.getColumnModel().getColumn(2).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(2).setPreferredWidth(5);
             categoriesTable.getColumnModel().getColumn(3).setResizable(false);
             categoriesTable.getColumnModel().getColumn(3).setPreferredWidth(5);
             categoriesTable.getColumnModel().getColumn(4).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(4).setPreferredWidth(5);
             categoriesTable.getColumnModel().getColumn(5).setResizable(false);
             categoriesTable.getColumnModel().getColumn(5).setPreferredWidth(5);
         }
@@ -545,17 +460,22 @@ public class Home extends javax.swing.JFrame {
         jLabel10.setText("CATEGORY");
         additems_form1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 260, 28));
 
-        addEditBtn.setBackground(new java.awt.Color(0, 204, 51));
-        addEditBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
-        addEditBtn.setForeground(new java.awt.Color(255, 255, 255));
-        addEditBtn.setText("ADD / EDIT");
-        addEditBtn.setBorder(null);
-        addEditBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addEditBtnActionPerformed(evt);
+        addEditCategoryBtn.setBackground(new java.awt.Color(0, 204, 51));
+        addEditCategoryBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        addEditCategoryBtn.setForeground(new java.awt.Color(255, 255, 255));
+        addEditCategoryBtn.setText("ADD / EDIT");
+        addEditCategoryBtn.setBorder(null);
+        addEditCategoryBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addEditCategoryBtnMouseClicked(evt);
             }
         });
-        additems_form1.add(addEditBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 60, 127, 42));
+        addEditCategoryBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addEditCategoryBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(addEditCategoryBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 60, 127, 42));
 
         categoryDropdown.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         additems_form1.add(categoryDropdown, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 260, 41));
@@ -594,26 +514,35 @@ public class Home extends javax.swing.JFrame {
         });
         additems_form1.add(removeCategoryItemBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 170, 127, 42));
 
-        updatedCategoryNameField.setBackground(new java.awt.Color(15, 74, 74));
-        updatedCategoryNameField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        updatedCategoryNameField.setForeground(new java.awt.Color(255, 255, 255));
-        updatedCategoryNameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        updatedCategoryNameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        updatedCategoryNameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        updatedCategoryNameField.setOpaque(false);
-        additems_form1.add(updatedCategoryNameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 60, 260, 40));
-
-        jLabel9.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel9.setText("UPDATED NAME");
-        additems_form1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 20, 260, 28));
+        categoryEditLabel.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        categoryEditLabel.setForeground(new java.awt.Color(255, 255, 255));
+        categoryEditLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        categoryEditLabel.setText("Category:");
+        additems_form1.add(categoryEditLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, 260, 28));
 
         jLabel8.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel8.setText("CATEGORY NAME");
         additems_form1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 260, 28));
+
+        removeCategoryItemBtn1.setBackground(new java.awt.Color(236, 82, 82));
+        removeCategoryItemBtn1.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        removeCategoryItemBtn1.setForeground(new java.awt.Color(255, 255, 255));
+        removeCategoryItemBtn1.setText("REMOVE");
+        removeCategoryItemBtn1.setBorder(null);
+        removeCategoryItemBtn1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeCategoryItemBtn1ActionPerformed(evt);
+            }
+        });
+        additems_form1.add(removeCategoryItemBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 60, 127, 42));
+
+        categoryItemEditLabel.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        categoryItemEditLabel.setForeground(new java.awt.Color(255, 255, 255));
+        categoryItemEditLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        categoryItemEditLabel.setText("Category Item:");
+        additems_form1.add(categoryItemEditLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 130, 260, 28));
 
         categories.add(additems_form1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 1220, 250));
 
@@ -631,6 +560,122 @@ public class Home extends javax.swing.JFrame {
 
         right_sidebar.add(categories);
         categories.setBounds(0, 0, 1260, 720);
+
+        users.setBackground(new java.awt.Color(5, 32, 33));
+        users.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        usersTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "USER ID", "USERNAME", "FULL NAME", "ADDED BY", "DATE ADDED", "UPDATED BY", "DATE UPDATED"
+            }
+        ));
+        usersTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                usersTableMouseClicked(evt);
+            }
+        });
+        jScrollPane9.setViewportView(usersTable);
+        if (usersTable.getColumnModel().getColumnCount() > 0) {
+            usersTable.getColumnModel().getColumn(0).setResizable(false);
+            usersTable.getColumnModel().getColumn(0).setPreferredWidth(5);
+            usersTable.getColumnModel().getColumn(1).setResizable(false);
+            usersTable.getColumnModel().getColumn(2).setResizable(false);
+            usersTable.getColumnModel().getColumn(3).setResizable(false);
+            usersTable.getColumnModel().getColumn(3).setPreferredWidth(5);
+            usersTable.getColumnModel().getColumn(4).setResizable(false);
+            usersTable.getColumnModel().getColumn(5).setResizable(false);
+            usersTable.getColumnModel().getColumn(6).setResizable(false);
+        }
+
+        users.add(jScrollPane9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 1220, 380));
+
+        additems_form8.setBackground(new java.awt.Color(15, 74, 74));
+        additems_form8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel13.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel13.setText("USERNAME");
+        additems_form8.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 260, 28));
+
+        usernameField.setBackground(new java.awt.Color(15, 74, 74));
+        usernameField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        usernameField.setForeground(new java.awt.Color(255, 255, 255));
+        usernameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        usernameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        usernameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        usernameField.setOpaque(false);
+        additems_form8.add(usernameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 260, 40));
+
+        jLabel48.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel48.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel48.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel48.setText("FULLNAME");
+        additems_form8.add(jLabel48, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 30, 260, 28));
+
+        jLabel16.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel16.setText("PASSWORD");
+        additems_form8.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, 260, 28));
+
+        jLabel49.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel49.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel49.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel49.setText("NEW PASSWORD");
+        additems_form8.add(jLabel49, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 140, 260, 28));
+
+        userEditLabel.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        userEditLabel.setForeground(new java.awt.Color(255, 255, 255));
+        userEditLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        userEditLabel.setText("User:");
+        additems_form8.add(userEditLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 30, 260, 28));
+
+        saveEditUserInfoBtn.setBackground(new java.awt.Color(0, 204, 51));
+        saveEditUserInfoBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        saveEditUserInfoBtn.setForeground(new java.awt.Color(255, 255, 255));
+        saveEditUserInfoBtn.setText("SAVE / EDIT");
+        saveEditUserInfoBtn.setBorder(null);
+        saveEditUserInfoBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                saveEditUserInfoBtnMouseClicked(evt);
+            }
+        });
+        saveEditUserInfoBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveEditUserInfoBtnActionPerformed(evt);
+            }
+        });
+        additems_form8.add(saveEditUserInfoBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 180, 127, 42));
+
+        passwordField.setBackground(new java.awt.Color(15, 74, 74));
+        passwordField.setForeground(new java.awt.Color(255, 255, 255));
+        passwordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        passwordField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        additems_form8.add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 180, 260, 40));
+
+        newPasswordField.setBackground(new java.awt.Color(15, 74, 74));
+        newPasswordField.setForeground(new java.awt.Color(255, 255, 255));
+        newPasswordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        newPasswordField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        additems_form8.add(newPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 180, 260, 40));
+
+        fullnameField.setBackground(new java.awt.Color(15, 74, 74));
+        fullnameField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        fullnameField.setForeground(new java.awt.Color(255, 255, 255));
+        fullnameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        fullnameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        fullnameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        fullnameField.setOpaque(false);
+        additems_form8.add(fullnameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 260, 40));
+
+        users.add(additems_form8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 900, 260));
+
+        right_sidebar.add(users);
+        users.setBounds(0, 0, 1260, 710);
 
         dashboard.setBackground(new java.awt.Color(5, 32, 33));
         dashboard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -1320,6 +1365,38 @@ public class Home extends javax.swing.JFrame {
         left_sidebar.add(users_side);
         users_side.setBounds(0, 520, 250, 60);
 
+        logout_side.setBackground(new java.awt.Color(8, 40, 41));
+        logout_side.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                logout_sideMouseClicked(evt);
+            }
+        });
+
+        logout_side_label.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        logout_side_label.setForeground(new java.awt.Color(255, 255, 255));
+        logout_side_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        logout_side_label.setText("LOGOUT");
+
+        javax.swing.GroupLayout logout_sideLayout = new javax.swing.GroupLayout(logout_side);
+        logout_side.setLayout(logout_sideLayout);
+        logout_sideLayout.setHorizontalGroup(
+            logout_sideLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(logout_sideLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(logout_side_label, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        logout_sideLayout.setVerticalGroup(
+            logout_sideLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(logout_sideLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(logout_side_label, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        left_sidebar.add(logout_side);
+        logout_side.setBounds(0, 580, 250, 60);
+
         whole.add(left_sidebar);
         left_sidebar.setBounds(0, 80, 250, 720);
 
@@ -1366,9 +1443,9 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_saveEditUserInfoBtnActionPerformed
 
-    private void addEditBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addEditBtnActionPerformed
+    private void addEditCategoryBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addEditCategoryBtnActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_addEditBtnActionPerformed
+    }//GEN-LAST:event_addEditCategoryBtnActionPerformed
 
     private void addCategoryItemBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCategoryItemBtnActionPerformed
         // TODO add your handling code here:
@@ -1379,18 +1456,223 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_removeCategoryItemBtnActionPerformed
 
     private void categories_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_categories_sideMouseClicked
-        Show_CategoriesTable();
         categories_sideBar_onclick();
     }//GEN-LAST:event_categories_sideMouseClicked
 
     private void users_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_users_sideMouseClicked
-        Show_UsersTable();
         users_sideBar_onclick();
     }//GEN-LAST:event_users_sideMouseClicked
 
-    private void updateUserPasswordBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateUserPasswordBtnActionPerformed
+    private void saveEditUserInfoBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveEditUserInfoBtnMouseClicked
+        if(userEditID != -1){
+            //update user
+            String fullname = fullnameField.getText();
+            String username = usernameField.getText();
+            String password = String.valueOf(passwordField.getPassword());
+            String newpassword = String.valueOf(newPasswordField.getPassword());
+            
+            try {
+                Connection con = Connect.getConnection();
+                ResultSet rs = CRUD.selectUserInfo(con,userEditID);
+                rs.next();
+                ResultSet rsuipw = CRUD.selectUserIDPassword(con, rs.getString("username"));
+                rsuipw.next();
+                userEditLabel.setText(rs.getString("username"));
+                if(fullname.equals(rs.getString("full_name")) &&
+                        username.equals(rs.getString("username")) &&
+                        password.equals(rsuipw.getString("password")))
+                    JOptionPane.showMessageDialog(null, "No Changes Detected");
+                else{
+                    if(!password.equals(rsuipw.getString("password"))){
+                        JOptionPane.showMessageDialog(null, "Invalid Password");
+                    }
+                    boolean edited = false;
+                    if(!fullname.equals(rs.getString("full_name"))){
+                        CRUD.updateFullname(con, username, fullname, userid);
+                        edited = true;
+                    }
+                    if(!username.equals(rs.getString("username"))){
+                        if(!CRUD.checkUserExists(con,username)){
+                            CRUD.updateUsername(con, rs.getString("username"), username, userid);
+                            edited = true;
+                        }else{
+                            JOptionPane.showMessageDialog(null, "Username already taken...");
+                        }
+                    }
+                    if(password.equals(rsuipw.getString("password"))){
+                        if(!newpassword.equals("")) {
+                            if(newpassword.length() >= 8){
+                                newpassword=HashPassword.hashPassword(newpassword);
+                                CRUD.updatePassword(con, rs.getString("username"), password, newpassword, userid);
+                                edited = true;
+                            }else{
+                                JOptionPane.showMessageDialog(null, "Password must contain at least 8 characters...");
+                            }
+                        }
+                    }
+                    if(edited == true){
+                        fullnameField.setText("");
+                        usernameField.setText("");
+                        passwordField.setText("");
+                        newPasswordField.setText("");
+                        userEditLabel.setText("User: ");
+                        DefaultTableModel model = (DefaultTableModel)usersTable.getModel(); 
+                        int row = usersTable.getSelectedRow();
+                        model.setValueAt(fullname, row, 2);
+                        model.setValueAt(username, row, 1);
+                        model.setValueAt(userid, row, 5);
+                        model.setValueAt(new Date(), row, 6);
+                        userEditID = - 1;
+                        JOptionPane.showMessageDialog(null, "User has been successfully updated");
+                    }
+                }
+            } catch (NoSuchAlgorithmException | SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            //add user
+            String fullname = fullnameField.getText();
+            String username = usernameField.getText();
+            String password = String.valueOf(passwordField.getPassword());
+
+            if("".equals(username))
+                JOptionPane.showMessageDialog(null, "Username is required!");
+            else if("".equals(fullname))
+                JOptionPane.showMessageDialog(null, "Full Name is required!");
+            else if("".equals(password))
+                JOptionPane.showMessageDialog(null, "Password is required!");
+            else{
+                try{
+                    Connection con = Connect.getConnection();
+                    if(!CRUD.checkUserExists(con,username)){
+                        if(password.length() >= 8){
+                            password=HashPassword.hashPassword(password);
+                            CRUD.insertUser(con,fullname,username,password,userid);
+                            JOptionPane.showMessageDialog(null, "User has been successfully created!");
+                            ResultSet rs = CRUD.selectUserInfoUsingUsername(con, username);
+                            rs.next();
+                            User u = new User(
+                                rs.getInt("user_id"),
+                                rs.getString("username"),
+                                rs.getString("full_name"),
+                                rs.getInt("added_by"),
+                                rs.getDate("added_date"),
+                                rs.getInt("updated_by"),
+                                rs.getDate("updated_date")
+                            );
+                            addRowToUsersTable(u);
+                        }else{
+                            JOptionPane.showMessageDialog(null, "Password must contain at least 8 characters...");
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Username already taken...");
+                    }
+                }catch(HeadlessException | NoSuchAlgorithmException | SQLException e){
+                    System.out.println(e);
+                }
+            }
+        }
+    }//GEN-LAST:event_saveEditUserInfoBtnMouseClicked
+
+    private void logout_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logout_sideMouseClicked
+        Login log = new Login();
+        log.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_logout_sideMouseClicked
+
+    private void usersTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usersTableMouseClicked
+        int i = usersTable.getSelectedRow();
+        DefaultTableModel model = (DefaultTableModel)usersTable.getModel();
+        usernameField.setText(model.getValueAt(i,1).toString());
+        fullnameField.setText(model.getValueAt(i,2).toString());
+        userEditLabel.setText("User: "+model.getValueAt(i,1).toString());
+        userEditID = (int) model.getValueAt(i, 0);
+    }//GEN-LAST:event_usersTableMouseClicked
+
+    private void addEditCategoryBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addEditCategoryBtnMouseClicked
+        if(categoryEditID != -1){
+            //update category
+//            String categoryName = categoryNameField.getText();
+//            
+//            try {
+//                Connection con = Connect.getConnection();
+//                ResultSet rs = CRUD.selectCategoryInfo(con,categoryEditID);
+//                rs.next();
+//                ResultSet rsci = CRUD.selectCategoryID(con, rs.getString("category_name"));
+//                rsci.next();
+//                userEditLabel.setText(rs.getString("username"));
+//                if(categoryName.equals(categoryNameField.getText()))
+//                    JOptionPane.showMessageDialog(null, "No Changes Detected");
+//                else{
+//                    if("".equals(updatedCategoryName)){
+//                        JOptionPane.showMessageDialog(null, "Updated Category Name is required!");
+//                        categoryEditID = - 1;
+//                    }else{
+//                        categoryNameField.setText("");
+//                        updatedCategoryNameField.setText("");
+//                        DefaultTableModel model = (DefaultTableModel)usersTable.getModel(); 
+//                        int row = categoriesTable.getSelectedRow();
+//                        System.out.println("row "+row+" has been updated with a name of "+updatedCategoryName);
+//                        model.setValueAt(updatedCategoryName, row, 1);
+//                        model.setValueAt(userid, row, 4);
+//                        model.setValueAt(dateFormat.format(new Date()), row, 5);
+//                        
+//                        categoryEditID = - 1;
+//                        JOptionPane.showMessageDialog(null, "Category Name has been successfully updated");
+//                    }
+//                }
+//            } catch (SQLException ex) {
+//                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+        }else{
+            //add user
+//            String categoryName = categoryNameField.getText();
+//
+//            if("".equals(categoryName))
+//                JOptionPane.showMessageDialog(null, "Category name is required!");
+//            else{
+//                try{
+//                if(!"".equals(updatedCategoryNameField.getText()))
+//                    JOptionPane.showMessageDialog(null, "Click on the category to edit. TEMP");
+//                else{
+//                    Connection con = Connect.getConnection();
+//                    if(!CRUD.checkCategoryExists(con,categoryName)){
+//                        CRUD.insertCleaningCategory(con,categoryName,userid);
+//                        JOptionPane.showMessageDialog(null, "Category has been successfully created!");
+//                        ResultSet rs = CRUD.selectCategoryInfoUsingCategoryName(con, categoryName);
+//                        rs.next();
+//                        Category c = new Category(
+//                            rs.getInt("category_id"),
+//                            rs.getString("category_name"),
+//                            rs.getInt("added_by"),
+//                            rs.getDate("added_date"),
+//                            rs.getInt("updated_by"),
+//                            rs.getDate("updated_date")
+//                        );
+//                        addRowToCategoriesTable(c);
+//                    }else{
+//                        JOptionPane.showMessageDialog(null, "Category updated name field should be modified...");
+//                    }
+//                }
+//                }catch(HeadlessException | SQLException e){
+//                    System.out.println(e);
+//                }
+//            }
+        }
+    }//GEN-LAST:event_addEditCategoryBtnMouseClicked
+
+    private void categoriesTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_categoriesTableMouseClicked
+        int i = categoriesTable.getSelectedRow();
+        System.out.println("selected row is: "+i);
+        DefaultTableModel model = (DefaultTableModel)categoriesTable.getModel();
+        categoryNameField.setText(model.getValueAt(i,1).toString());
+        categoryEditID = (int) model.getValueAt(i, 0);
+        System.out.println("selected category_id is: "+categoryEditID);
+    }//GEN-LAST:event_categoriesTableMouseClicked
+
+    private void removeCategoryItemBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeCategoryItemBtn1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_updateUserPasswordBtnActionPerformed
+    }//GEN-LAST:event_removeCategoryItemBtn1ActionPerformed
 
     public static void main(String args[]) {
         
@@ -1403,19 +1685,17 @@ public class Home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addCategoryItemBtn;
-    private javax.swing.JButton addEditBtn;
+    private javax.swing.JButton addEditCategoryBtn;
     private javax.swing.JButton addItem_save2;
     private javax.swing.JButton addJob_save;
     private javax.swing.JTextField addedby;
     private javax.swing.JTextField addeddate;
     private javax.swing.JPanel additems2;
     private javax.swing.JPanel additems_form1;
-    private javax.swing.JPanel additems_form10;
     private javax.swing.JPanel additems_form2;
     private javax.swing.JPanel additems_form4;
     private javax.swing.JPanel additems_form5;
     private javax.swing.JPanel additems_form8;
-    private javax.swing.JPanel additems_form9;
     private javax.swing.JLabel adminName;
     private javax.swing.JPanel categories;
     private javax.swing.JTable categoriesTable;
@@ -1423,6 +1703,8 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel categories_side_label;
     private javax.swing.JLabel categories_up_label;
     private javax.swing.JComboBox<String> categoryDropdown;
+    private javax.swing.JLabel categoryEditLabel;
+    private javax.swing.JLabel categoryItemEditLabel;
     private javax.swing.JTable categoryItemTable;
     private javax.swing.JTextField categoryNameField;
     private javax.swing.JPanel dashboard;
@@ -1451,7 +1733,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
@@ -1464,12 +1745,8 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel44;
     private javax.swing.JLabel jLabel48;
     private javax.swing.JLabel jLabel49;
-    private javax.swing.JLabel jLabel53;
-    private javax.swing.JLabel jLabel54;
-    private javax.swing.JLabel jLabel55;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane5;
@@ -1478,7 +1755,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTextField jobcat;
     private javax.swing.JTextField jobcat1;
-    private javax.swing.JTextField jobcat6;
     private javax.swing.JPanel jobs;
     private javax.swing.JTabbedPane jobsTab;
     private javax.swing.JTable jobsTable;
@@ -1486,25 +1762,24 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel jobs_side_label;
     private javax.swing.JLabel jobs_up_label;
     private javax.swing.JPanel left_sidebar;
-    private javax.swing.JTextField newPasswordField;
-    private javax.swing.JTextField oldPasswordField;
+    private javax.swing.JPanel logout_side;
+    private javax.swing.JLabel logout_side_label;
+    private javax.swing.JPasswordField newPasswordField;
+    private javax.swing.JPasswordField passwordField;
     private javax.swing.JButton removeCategoryItemBtn;
+    private javax.swing.JButton removeCategoryItemBtn1;
     private javax.swing.JPanel right_sidebar;
     private javax.swing.JButton saveEditUserInfoBtn;
     private javax.swing.JButton updateJob_save;
-    private javax.swing.JButton updateJob_save3;
-    private javax.swing.JButton updateUserPasswordBtn;
-    private javax.swing.JTextField updatedCategoryNameField;
     private javax.swing.JTextField updatedby;
-    private javax.swing.JTextField updatedby3;
     private javax.swing.JTextField updateddate;
-    private javax.swing.JTextField updateddate3;
     private javax.swing.JPanel updateitems1;
     private javax.swing.JPanel upper_categories_panel;
     private javax.swing.JPanel upper_dashboard_panel;
     private javax.swing.JPanel upper_items_panel;
     private javax.swing.JPanel upper_jobs_panel;
     private javax.swing.JPanel upper_users_panel;
+    private javax.swing.JLabel userEditLabel;
     private javax.swing.JLabel userimg;
     private javax.swing.JTextField usernameField;
     private javax.swing.JPanel users;
