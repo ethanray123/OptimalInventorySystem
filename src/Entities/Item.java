@@ -17,14 +17,14 @@ public class Item {
     private int quantity;
     private String metric;
     private int type;
-    private String addedBy;
+    private int addedBy;
     private Date addedOn;
-    private String updatedBy;
+    private int updatedBy;
     private Date updatedOn;
     private boolean removed;
     
     public Item(int ID, String Itemname, int Quantity, String Metric, int Type,
-            String Adder, Date AddDate, String Updater, Date UpdateDate, boolean Removed){
+            int Adder, Date AddDate, int Updater, Date UpdateDate, boolean Removed){
         this.id = ID;
         this.name = Itemname;
         this.quantity = Quantity;
@@ -37,8 +37,17 @@ public class Item {
         this.removed = Removed;
     }
 
-    public Item(int aInt, String string, int aInt0, String string0, int aInt1, String string1, java.sql.Date date, String string2, java.sql.Date date0, boolean aBoolean) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Item(int ID, String Itemname, int Quantity, String Metric, int Type,
+            int Adder, Date AddDate, int Updater, Date UpdateDate) {
+        this.id = ID;
+        this.name = Itemname;
+        this.quantity = Quantity;
+        this.metric = Metric;
+        this.type = Type;
+        this.addedBy = Adder;
+        this.addedOn = AddDate;
+        this.updatedBy = Updater;
+        this.updatedOn = UpdateDate;
     }
     
     //GETTERS
@@ -62,7 +71,7 @@ public class Item {
         return type;
     }
     
-    public String getAddedBy(){
+    public int getAddedBy(){
         return addedBy;
     }
     
@@ -70,7 +79,7 @@ public class Item {
         return addedOn;
     }
     
-    public String getUpdatedBy(){
+    public int getUpdatedBy(){
         return updatedBy;
     }
     
@@ -99,7 +108,7 @@ public class Item {
         this.type = itemType;
     }
     
-    public void setAddedBy(String itemAdder){
+    public void setAddedBy(int itemAdder){
         this.addedBy = itemAdder;
     }
     
@@ -107,7 +116,7 @@ public class Item {
         this.addedOn = dateAdded;
     }
     
-    public void setUpdatedBy(String itemUpdater){
+    public void setUpdatedBy(int itemUpdater){
         this.updatedBy = itemUpdater;
     }
     

@@ -89,13 +89,23 @@ public class CRUD {
                     + username + "','" + password + "',NULL,NULL)");
         }
     }
-
-    public static void archiveUser(Connection con, String username) 
+    
+    public static boolean checkUserArchived(Connection con, int userID) 
             throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
-        stmt.executeUpdate("UPDATE `user` SET `removed` = '"+1
-                +"' WHERE `user`.`username`='" + username + "'");
+        ResultSet rs = stmt.executeQuery("SELECT username from user "+
+                "where user_id='" + userID + "' AND removed = 1");
+        return rs.next();
+    }
+    
+    public static boolean archiveUser(Connection con, int userID) 
+            throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        stmt.executeUpdate("UPDATE `user` SET `removed` = 1"
+                +" WHERE `user`.`user_id`='" + userID + "'");
+        return checkUserArchived(con,userID);
     }
     
     public static void updateUsername(Connection con, String username, String newusername, int admin) throws SQLException {
@@ -146,7 +156,8 @@ public class CRUD {
         Statement stmt;
         stmt = con.createStatement();
         String query = "SELECT user_id, username, full_name, added_by, "+
-                "added_date, updated_by, updated_date FROM `user`";
+                "added_date, updated_by, updated_date FROM `user` "+
+                "WHERE removed = 0";
         ResultSet rs = stmt.executeQuery(query);
         return rs;
     }
@@ -188,7 +199,7 @@ public class CRUD {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("INSERT INTO category_items"+
-                "(`category_id`, `item_id`, `item_quantity`) "+
+                "(`category_id`, `item_id`, `item_quantity`, `added_by`, `updated_by`) "+
                 "VALUES('" 
                 + categoryID + "','" 
                 + itemID + "','" 
@@ -206,20 +217,52 @@ public class CRUD {
                 "' AND item_id = '"+itemID+"'");
     }
     
-    public static void removeCategoryItem(
-            Connection con, int categoryID, int itemID)
-            throws SQLException{
-        Statement stmt;
-        stmt = con.createStatement();
-        stmt.executeUpdate("DELETE FROM `category_items` "+
-                "WHERE category_id='"+categoryID+"' AND item_id='"+itemID+"'");
-    }
-    
     public static ResultSet selectCategoriesInfo(Connection con) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         String query = "SELECT category_id, category_name, added_by, "+
-                "added_date, updated_by, updated_date FROM `cleaning_category`";
+                "added_date, updated_by, updated_date FROM `cleaning_category` "+
+                "WHERE removed = 0";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
+    }
+    
+    public static ResultSet selectCategoryItemsInfo(Connection con) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT category_id, item_id, item_quantity, added_by, "+
+                "added_date, updated_by, updated_date FROM `category_items` "+
+                "WHERE removed = 0";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
+    }
+    
+    public static ResultSet selectCategoryItemsInfoUsingCategoryName(Connection con, String categoryName) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT category_id, item_id, item_quantity, added_by, "+
+                "added_date, updated_by, updated_date FROM `category_items` "+
+                "WHERE category_name = '"+categoryName+"' AND removed = 0";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
+    }
+    
+    public static ResultSet selectCategoryItemInfoUsingCategoryIDItemID(Connection con, int categoryID, int itemID) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT category_id, item_id, item_quantity, added_by, "+
+                "added_date, updated_by, updated_date FROM `category_items` "+
+                "WHERE category_id = '"+ categoryID +"' AND item_id = '"+ itemID +"' AND removed = 0";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
+    }
+    
+    public static ResultSet selectCategoryItemsInfoUsingCategoryID(Connection con, int categoryID) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT category_id, item_id, item_quantity, added_by, "+
+                "added_date, updated_by, updated_date FROM `category_items` "+
+                "WHERE category_id = '"+ categoryID +"' AND removed = 0";
         ResultSet rs = stmt.executeQuery(query);
         return rs;
     }
@@ -242,6 +285,18 @@ public class CRUD {
         return rs;
     }
     
+    public static int selectCategoryID(Connection con, String categoryName)
+            throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT `category_id` from cleaning_category WHERE category_name='" + categoryName + "'");
+        if(rs.next())
+            return rs.getInt("category_id");
+        else{
+            return -1;
+        }
+    }
+    
     public static boolean checkCategoryExists(Connection con, String categoryName) 
             throws SQLException {
         Statement stmt;
@@ -251,10 +306,100 @@ public class CRUD {
         return rs.next();
     }
     
+    public static boolean checkCategoryArchived(Connection con, int categoryID) 
+            throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT category_name from cleaning_category "+
+                "where category_id='" + categoryID + "' AND removed = 1");
+        return rs.next();
+    }
+    
+    public static boolean archiveCategory(Connection con, int categoryID) 
+            throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        stmt.executeUpdate("UPDATE `cleaning_category` SET `removed` = '"+1
+                +"' WHERE category_id = '" + categoryID + "'");
+        return checkCategoryArchived(con,categoryID);
+    }
+    
+    public static void archiveCategoryItem(
+            Connection con, int categoryID, int itemID) 
+            throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        stmt.executeUpdate("UPDATE `cleaning_category` SET `removed` = '"+1
+                +"WHERE category_id='"+categoryID+"' AND item_id='"+itemID+"'");
+    }
+    
+    public static boolean deleteCategory(
+            Connection con, int categoryID, String categoryName)
+            throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        stmt.executeUpdate("DELETE FROM `category_items` "+
+                "WHERE category_id='"+categoryID+"'");
+        return !checkCategoryExists(con, categoryName);
+    }
+    
+    public static void deleteCategoryItem(
+            Connection con, int categoryID, int itemID)
+            throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        stmt.executeUpdate("DELETE FROM `category_items` "+
+                "WHERE category_id='"+categoryID+"' AND item_id='"+itemID+"'");
+    }
+    
     //END OF CATEGORY RELATED
     
     
+    //ITEM RELATED
     
+    public static int selectItemID(Connection con, String itemName)
+            throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT `item_id` from item "+
+                "WHERE item_name = '" + itemName + "'");
+        if(rs.next())
+            return rs.getInt("category_id");
+        else{
+            return -1;
+        }
+    }
+    
+    public static String selectItemName(Connection con, int itemID)
+            throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT `item_name` from item WHERE item_id='" + itemID + "'");
+        if(rs.next())
+            return rs.getString("item_name");
+        else
+            return "404 Not Found";
+    }
+    
+    public static ResultSet selectItemsInfo(Connection con) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT item_id, item_name, quantity, metric, type, "+
+                "added_by, added_date, updated_by, updated_date FROM `item` "+
+                "WHERE removed = 0";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
+    }
+    
+//    public static ResultSet selectItemInfo(Connection con, int itemID)
+//            throws SQLException {
+//        Statement stmt;
+//        stmt = con.createStatement();
+//        ResultSet rs = stmt.executeQuery("SELECT `item_id, item` from item WHERE item_id='" + itemID + "'");
+//        return rs;
+//    }
+    
+    //END OF ITEM RELATED
     public static void insertInventory(Connection con, String product, String price, String quantity) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();

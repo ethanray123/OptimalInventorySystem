@@ -2,6 +2,8 @@ package optimalinventorysystem;
 
 
 import Entities.Category;
+import Entities.CategoryItem;
+import Entities.Item;
 import Entities.User;
 import Hash.HashPassword;
 import MySQL.CRUD;
@@ -21,11 +23,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import static optimalinventorysystem.Login.userid;
 
 public class Home extends javax.swing.JFrame {
     int userEditID = -1;
     int categoryEditID = -1;
+    int categoryItemEditID = -1;
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     // 5,32,33      -- darkest
     // 15, 74, 74   -- middle
@@ -166,6 +170,7 @@ public class Home extends javax.swing.JFrame {
         upper_categories_panel.setVisible(false);
         
     }
+    //USER TABLE METHODS
     
     public ArrayList<User> getUserList()
     {
@@ -189,8 +194,6 @@ public class Home extends javax.swing.JFrame {
         return userList;
     }
     
-    //show data in table
-    
     public void Show_UsersTable()
     {
         ArrayList<User> list = getUserList();
@@ -201,7 +204,7 @@ public class Home extends javax.swing.JFrame {
             row[1] = u.getUsername();
             row[2] = u.getFullname();
             row[3] = u.getAddedBy();
-            row[4] = dateFormat.format(u.getAddedOn());
+            row[4] = u.getAddedOn(); //dateFormat.format(u.getAddedOn());
             row[5] = u.getUpdatedBy();
             row[6] = dateFormat.format(u.getUpdatedOn());
             model.addRow(row);
@@ -220,6 +223,9 @@ public class Home extends javax.swing.JFrame {
         row[6] = dateFormat.format(u.getUpdatedOn());
         model.addRow(row);
     }
+    
+    //END OF USER TABLE METHODS
+    //CATEGORY TABLE METHODS
     
     public ArrayList<Category> getCategoryList()
     {
@@ -244,8 +250,6 @@ public class Home extends javax.swing.JFrame {
         return categoryList;
     }
     
-    //show data in table
-    
     public void Show_CategoriesTable()
     {
         ArrayList<Category> list = getCategoryList();
@@ -259,9 +263,10 @@ public class Home extends javax.swing.JFrame {
             row[4] = c.getUpdatedBy();
             row[5] = dateFormat.format(c.getUpdatedOn());
             model.addRow(row);
+            categoryDropdown.addItem(c.getName());
         }
     }
-
+    
     public void addRowToCategoriesTable(Category c){
         DefaultTableModel model = (DefaultTableModel)categoriesTable.getModel();
         Object[] row = new Object[6];
@@ -272,7 +277,110 @@ public class Home extends javax.swing.JFrame {
         row[4] = c.getUpdatedBy();
         row[5] = dateFormat.format(c.getUpdatedOn());
         model.addRow(row);
+        categoryDropdown.addItem(c.getName());
     }
+    
+    //END OF CATEGORY TABLE METHODS
+    //CATEGORY ITEMS TABLE METHODS
+    
+    public ArrayList<CategoryItem> getCategoryItemsList(int catID){
+        ArrayList<CategoryItem> categoryItemList = new ArrayList<>();
+        Connection con = Connect.getConnection();
+        
+        try{
+            ResultSet rs = CRUD.selectCategoryItemsInfoUsingCategoryID(con,catID);
+            CategoryItem catItem;
+            while(rs.next())
+            {
+                catItem = new CategoryItem(
+                    rs.getInt("category_id"),
+                    rs.getInt("item_id"),
+                    rs.getInt("item_quantity"),
+                    rs.getInt("added_by"),
+                    rs.getDate("added_date"),
+                    rs.getInt("updated_by"),
+                    rs.getDate("updated_date"));
+                categoryItemList.add(catItem);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return categoryItemList;
+    }
+    
+    public void Show_CategoryItemsTable()
+    {
+        try {
+            String catName = (String) categoryDropdown.getSelectedItem();
+            Connection con = Connect.getConnection();
+            int catID = CRUD.selectCategoryID(con,catName);
+            ArrayList<CategoryItem> list = getCategoryItemsList(catID);
+            DefaultTableModel model = (DefaultTableModel)categoryItemTable.getModel();
+            Object[] row = new Object[2];
+            for(CategoryItem c : list) {
+                try {
+                    row[0] = CRUD.selectItemName(con,c.getItemID());
+                    row[1] = c.getItemQuantity();
+                    model.addRow(row);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void addRowToCategoryItemsTable(CategoryItem c){
+        DefaultTableModel model = (DefaultTableModel)categoryItemTable.getModel();
+        Object[] row = new Object[2];
+        Connection con = Connect.getConnection();
+        try {
+            row[0] = CRUD.selectItemName(con,c.getItemID());
+            row[1] = c.getItemQuantity();
+            model.addRow(row);
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public ArrayList<Item> getItemList(){
+        ArrayList<Item> itemList = new ArrayList<>();
+        Connection con = Connect.getConnection();
+        
+        try{
+            ResultSet rs = CRUD.selectItemsInfo(con);
+            Item item;
+            while(rs.next())
+            {
+                item = new Item(
+                    rs.getInt("item_id"),
+                    rs.getString("item_name"),
+                    rs.getInt("quantity"),
+                    rs.getString("metric"),
+                    rs.getInt("type"),
+                    rs.getInt("added_by"),
+                    rs.getDate("added_date"),
+                    rs.getInt("updated_by"),
+                    rs.getDate("updated_date"));
+                itemList.add(item);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return itemList;
+    }
+    
+    public void initItemDropdown(){
+        ArrayList<Item> list = getItemList();
+        System.out.println(list);
+        for(Item c : list) {
+            System.out.println("asdasdas "+c.getName());
+            itemDropdown.addItem(c.getName());
+        }
+    }
+    
+    //END OF CATEGORY ITEMS TABLE METHODS
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -291,14 +399,15 @@ public class Home extends javax.swing.JFrame {
         addEditCategoryBtn = new javax.swing.JButton();
         categoryDropdown = new javax.swing.JComboBox<>();
         itemQuantitySpinner = new javax.swing.JSpinner();
-        addCategoryItemBtn = new javax.swing.JButton();
+        addEditCategoryItemBtn = new javax.swing.JButton();
         itemDropdown = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
         removeCategoryItemBtn = new javax.swing.JButton();
         categoryEditLabel = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        removeCategoryItemBtn1 = new javax.swing.JButton();
+        removeCategoryBtn = new javax.swing.JButton();
         categoryItemEditLabel = new javax.swing.JLabel();
+        clearCategoryFieldsBtn = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         users = new javax.swing.JPanel();
@@ -315,6 +424,8 @@ public class Home extends javax.swing.JFrame {
         passwordField = new javax.swing.JPasswordField();
         newPasswordField = new javax.swing.JPasswordField();
         fullnameField = new javax.swing.JTextField();
+        clearUserFieldBtn = new javax.swing.JButton();
+        removeUserBtn = new javax.swing.JButton();
         dashboard = new javax.swing.JPanel();
         dashboard_label = new javax.swing.JLabel();
         dashboard_label1 = new javax.swing.JLabel();
@@ -477,23 +588,27 @@ public class Home extends javax.swing.JFrame {
         });
         additems_form1.add(addEditCategoryBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 60, 127, 42));
 
-        categoryDropdown.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        categoryDropdown.setModel(new javax.swing.DefaultComboBoxModel<>());
         additems_form1.add(categoryDropdown, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 260, 41));
         additems_form1.add(itemQuantitySpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 170, 42, 41));
 
-        addCategoryItemBtn.setBackground(new java.awt.Color(0, 204, 51));
-        addCategoryItemBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
-        addCategoryItemBtn.setForeground(new java.awt.Color(255, 255, 255));
-        addCategoryItemBtn.setText("ADD");
-        addCategoryItemBtn.setBorder(null);
-        addCategoryItemBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addCategoryItemBtnActionPerformed(evt);
+        addEditCategoryItemBtn.setBackground(new java.awt.Color(0, 204, 51));
+        addEditCategoryItemBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        addEditCategoryItemBtn.setForeground(new java.awt.Color(255, 255, 255));
+        addEditCategoryItemBtn.setText("ADD / EDIT");
+        addEditCategoryItemBtn.setBorder(null);
+        addEditCategoryItemBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addEditCategoryItemBtnMouseClicked(evt);
             }
         });
-        additems_form1.add(addCategoryItemBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 170, 127, 42));
+        addEditCategoryItemBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addEditCategoryItemBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(addEditCategoryItemBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 170, 127, 42));
 
-        itemDropdown.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         additems_form1.add(itemDropdown, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 170, 260, 41));
 
         jLabel12.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
@@ -517,8 +632,7 @@ public class Home extends javax.swing.JFrame {
         categoryEditLabel.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
         categoryEditLabel.setForeground(new java.awt.Color(255, 255, 255));
         categoryEditLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        categoryEditLabel.setText("Category:");
-        additems_form1.add(categoryEditLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, 260, 28));
+        additems_form1.add(categoryEditLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 20, 410, 28));
 
         jLabel8.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
@@ -526,23 +640,44 @@ public class Home extends javax.swing.JFrame {
         jLabel8.setText("CATEGORY NAME");
         additems_form1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 260, 28));
 
-        removeCategoryItemBtn1.setBackground(new java.awt.Color(236, 82, 82));
-        removeCategoryItemBtn1.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
-        removeCategoryItemBtn1.setForeground(new java.awt.Color(255, 255, 255));
-        removeCategoryItemBtn1.setText("REMOVE");
-        removeCategoryItemBtn1.setBorder(null);
-        removeCategoryItemBtn1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeCategoryItemBtn1ActionPerformed(evt);
+        removeCategoryBtn.setBackground(new java.awt.Color(236, 82, 82));
+        removeCategoryBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        removeCategoryBtn.setForeground(new java.awt.Color(255, 255, 255));
+        removeCategoryBtn.setText("REMOVE");
+        removeCategoryBtn.setBorder(null);
+        removeCategoryBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                removeCategoryBtnMouseClicked(evt);
             }
         });
-        additems_form1.add(removeCategoryItemBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 60, 127, 42));
+        removeCategoryBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeCategoryBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(removeCategoryBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 60, 127, 42));
 
         categoryItemEditLabel.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
         categoryItemEditLabel.setForeground(new java.awt.Color(255, 255, 255));
         categoryItemEditLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        categoryItemEditLabel.setText("Category Item:");
         additems_form1.add(categoryItemEditLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 130, 260, 28));
+
+        clearCategoryFieldsBtn.setBackground(new java.awt.Color(175, 174, 174));
+        clearCategoryFieldsBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        clearCategoryFieldsBtn.setForeground(new java.awt.Color(255, 255, 255));
+        clearCategoryFieldsBtn.setText("CLEAR");
+        clearCategoryFieldsBtn.setBorder(null);
+        clearCategoryFieldsBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                clearCategoryFieldsBtnMouseClicked(evt);
+            }
+        });
+        clearCategoryFieldsBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearCategoryFieldsBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(clearCategoryFieldsBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 60, 127, 42));
 
         categories.add(additems_form1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 1220, 250));
 
@@ -631,8 +766,7 @@ public class Home extends javax.swing.JFrame {
         userEditLabel.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
         userEditLabel.setForeground(new java.awt.Color(255, 255, 255));
         userEditLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        userEditLabel.setText("User:");
-        additems_form8.add(userEditLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 30, 260, 28));
+        additems_form8.add(userEditLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 30, 300, 28));
 
         saveEditUserInfoBtn.setBackground(new java.awt.Color(0, 204, 51));
         saveEditUserInfoBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
@@ -649,7 +783,7 @@ public class Home extends javax.swing.JFrame {
                 saveEditUserInfoBtnActionPerformed(evt);
             }
         });
-        additems_form8.add(saveEditUserInfoBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 180, 127, 42));
+        additems_form8.add(saveEditUserInfoBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 70, 127, 42));
 
         passwordField.setBackground(new java.awt.Color(15, 74, 74));
         passwordField.setForeground(new java.awt.Color(255, 255, 255));
@@ -671,6 +805,40 @@ public class Home extends javax.swing.JFrame {
         fullnameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         fullnameField.setOpaque(false);
         additems_form8.add(fullnameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 260, 40));
+
+        clearUserFieldBtn.setBackground(new java.awt.Color(175, 174, 174));
+        clearUserFieldBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        clearUserFieldBtn.setForeground(new java.awt.Color(255, 255, 255));
+        clearUserFieldBtn.setText("CLEAR");
+        clearUserFieldBtn.setBorder(null);
+        clearUserFieldBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                clearUserFieldBtnMouseClicked(evt);
+            }
+        });
+        clearUserFieldBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearUserFieldBtnActionPerformed(evt);
+            }
+        });
+        additems_form8.add(clearUserFieldBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 170, 127, 42));
+
+        removeUserBtn.setBackground(new java.awt.Color(236, 82, 82));
+        removeUserBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        removeUserBtn.setForeground(new java.awt.Color(255, 255, 255));
+        removeUserBtn.setText("REMOVE");
+        removeUserBtn.setBorder(null);
+        removeUserBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                removeUserBtnMouseClicked(evt);
+            }
+        });
+        removeUserBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeUserBtnActionPerformed(evt);
+            }
+        });
+        additems_form8.add(removeUserBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 120, 127, 42));
 
         users.add(additems_form8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 900, 260));
 
@@ -1447,9 +1615,9 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_addEditCategoryBtnActionPerformed
 
-    private void addCategoryItemBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCategoryItemBtnActionPerformed
+    private void addEditCategoryItemBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addEditCategoryItemBtnActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_addCategoryItemBtnActionPerformed
+    }//GEN-LAST:event_addEditCategoryItemBtnActionPerformed
 
     private void removeCategoryItemBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeCategoryItemBtnActionPerformed
         // TODO add your handling code here:
@@ -1457,6 +1625,7 @@ public class Home extends javax.swing.JFrame {
 
     private void categories_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_categories_sideMouseClicked
         categories_sideBar_onclick();
+        initItemDropdown();
     }//GEN-LAST:event_categories_sideMouseClicked
 
     private void users_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_users_sideMouseClicked
@@ -1477,45 +1646,52 @@ public class Home extends javax.swing.JFrame {
                 rs.next();
                 ResultSet rsuipw = CRUD.selectUserIDPassword(con, rs.getString("username"));
                 rsuipw.next();
-                userEditLabel.setText(rs.getString("username"));
                 if(fullname.equals(rs.getString("full_name")) &&
-                        username.equals(rs.getString("username")) &&
-                        password.equals(rsuipw.getString("password")))
+                        username.equals(rs.getString("username")) && 
+                        newpassword.equals(""))
                     JOptionPane.showMessageDialog(null, "No Changes Detected");
                 else{
-                    if(!password.equals(rsuipw.getString("password"))){
-                        JOptionPane.showMessageDialog(null, "Invalid Password");
-                    }
                     boolean edited = false;
-                    if(!fullname.equals(rs.getString("full_name"))){
-                        CRUD.updateFullname(con, username, fullname, userid);
-                        edited = true;
-                    }
-                    if(!username.equals(rs.getString("username"))){
-                        if(!CRUD.checkUserExists(con,username)){
-                            CRUD.updateUsername(con, rs.getString("username"), username, userid);
+                    if("".equals(fullname))
+                        JOptionPane.showMessageDialog(null, "Full Name cannot be blank!");
+                    else if("".equals(username))
+                        JOptionPane.showMessageDialog(null, "Username cannot be blank!");
+                    else if(!"".equals(password) && 
+                            !HashPassword.hashPassword(password).equals(
+                                    rsuipw.getString("password"))){
+                        JOptionPane.showMessageDialog(null, "Invalid Password! "+password);
+                    }else{
+                        if(!fullname.equals(rs.getString("full_name"))){
+                            CRUD.updateFullname(con, username, fullname, userid);
                             edited = true;
-                        }else{
-                            JOptionPane.showMessageDialog(null, "Username already taken...");
                         }
-                    }
-                    if(password.equals(rsuipw.getString("password"))){
-                        if(!newpassword.equals("")) {
-                            if(newpassword.length() >= 8){
-                                newpassword=HashPassword.hashPassword(newpassword);
-                                CRUD.updatePassword(con, rs.getString("username"), password, newpassword, userid);
+                        if(!username.equals(rs.getString("username"))){
+                            if(!CRUD.checkUserExists(con,username)){
+                                CRUD.updateUsername(con, rs.getString("username"), username, userid);
                                 edited = true;
                             }else{
-                                JOptionPane.showMessageDialog(null, "Password must contain at least 8 characters...");
+                                JOptionPane.showMessageDialog(null, "Username already taken...");
+                            }
+                        }
+                        if(HashPassword.hashPassword(password).equals(rsuipw.getString("password"))){
+                            if(!newpassword.equals("")) {
+                                if(newpassword.length() >= 8){
+                                    newpassword=HashPassword.hashPassword(newpassword);
+                                    CRUD.updatePassword(con, rs.getString("username"), password, newpassword, userid);
+                                    edited = true;
+                                }else{
+                                    JOptionPane.showMessageDialog(null, "Password must contain at least 8 characters...");
+                                }
                             }
                         }
                     }
+                    
                     if(edited == true){
                         fullnameField.setText("");
                         usernameField.setText("");
                         passwordField.setText("");
                         newPasswordField.setText("");
-                        userEditLabel.setText("User: ");
+                        userEditLabel.setText("");
                         DefaultTableModel model = (DefaultTableModel)usersTable.getModel(); 
                         int row = usersTable.getSelectedRow();
                         model.setValueAt(fullname, row, 2);
@@ -1592,72 +1768,62 @@ public class Home extends javax.swing.JFrame {
     private void addEditCategoryBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addEditCategoryBtnMouseClicked
         if(categoryEditID != -1){
             //update category
-//            String categoryName = categoryNameField.getText();
-//            
-//            try {
-//                Connection con = Connect.getConnection();
-//                ResultSet rs = CRUD.selectCategoryInfo(con,categoryEditID);
-//                rs.next();
-//                ResultSet rsci = CRUD.selectCategoryID(con, rs.getString("category_name"));
-//                rsci.next();
-//                userEditLabel.setText(rs.getString("username"));
-//                if(categoryName.equals(categoryNameField.getText()))
-//                    JOptionPane.showMessageDialog(null, "No Changes Detected");
-//                else{
-//                    if("".equals(updatedCategoryName)){
-//                        JOptionPane.showMessageDialog(null, "Updated Category Name is required!");
-//                        categoryEditID = - 1;
-//                    }else{
-//                        categoryNameField.setText("");
-//                        updatedCategoryNameField.setText("");
-//                        DefaultTableModel model = (DefaultTableModel)usersTable.getModel(); 
-//                        int row = categoriesTable.getSelectedRow();
-//                        System.out.println("row "+row+" has been updated with a name of "+updatedCategoryName);
-//                        model.setValueAt(updatedCategoryName, row, 1);
-//                        model.setValueAt(userid, row, 4);
-//                        model.setValueAt(dateFormat.format(new Date()), row, 5);
-//                        
-//                        categoryEditID = - 1;
-//                        JOptionPane.showMessageDialog(null, "Category Name has been successfully updated");
-//                    }
-//                }
-//            } catch (SQLException ex) {
-//                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
-//            }
+            String categoryName = categoryNameField.getText();
+            
+            try {
+                Connection con = Connect.getConnection();
+                ResultSet rs = CRUD.selectCategoryInfo(con,categoryEditID);
+                rs.next();
+                if(categoryName.equals(""))
+                    JOptionPane.showMessageDialog(null, "No Changes Detected");
+                else{
+                    if("".equals(categoryName)){
+                        JOptionPane.showMessageDialog(null, "Category Name cannot be blank!");
+                    }else{
+                        categoryNameField.setText("");
+                        DefaultTableModel model = (DefaultTableModel)usersTable.getModel(); 
+                        int row = categoriesTable.getSelectedRow();
+                        model.setValueAt(categoryName, row, 1);
+                        model.setValueAt(userid, row, 4);
+                        model.setValueAt(dateFormat.format(new Date()), row, 5);
+                        
+                        categoryEditID = - 1;
+                        JOptionPane.showMessageDialog(null, "Category Name has been successfully updated");
+                    }
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }else{
-            //add user
-//            String categoryName = categoryNameField.getText();
-//
-//            if("".equals(categoryName))
-//                JOptionPane.showMessageDialog(null, "Category name is required!");
-//            else{
-//                try{
-//                if(!"".equals(updatedCategoryNameField.getText()))
-//                    JOptionPane.showMessageDialog(null, "Click on the category to edit. TEMP");
-//                else{
-//                    Connection con = Connect.getConnection();
-//                    if(!CRUD.checkCategoryExists(con,categoryName)){
-//                        CRUD.insertCleaningCategory(con,categoryName,userid);
-//                        JOptionPane.showMessageDialog(null, "Category has been successfully created!");
-//                        ResultSet rs = CRUD.selectCategoryInfoUsingCategoryName(con, categoryName);
-//                        rs.next();
-//                        Category c = new Category(
-//                            rs.getInt("category_id"),
-//                            rs.getString("category_name"),
-//                            rs.getInt("added_by"),
-//                            rs.getDate("added_date"),
-//                            rs.getInt("updated_by"),
-//                            rs.getDate("updated_date")
-//                        );
-//                        addRowToCategoriesTable(c);
-//                    }else{
-//                        JOptionPane.showMessageDialog(null, "Category updated name field should be modified...");
-//                    }
-//                }
-//                }catch(HeadlessException | SQLException e){
-//                    System.out.println(e);
-//                }
-//            }
+            //add category
+            String categoryName = categoryNameField.getText();
+
+            if("".equals(categoryName))
+                JOptionPane.showMessageDialog(null, "Category name is required!");
+            else{
+                try{
+                    Connection con = Connect.getConnection();
+                    if(!CRUD.checkCategoryExists(con,categoryName)){
+                        CRUD.insertCleaningCategory(con,categoryName,userid);
+                        JOptionPane.showMessageDialog(null, "Category has been successfully created!");
+                        ResultSet rs = CRUD.selectCategoryInfoUsingCategoryName(con, categoryName);
+                        rs.next();
+                        Category c = new Category(
+                            rs.getInt("category_id"),
+                            rs.getString("category_name"),
+                            rs.getInt("added_by"),
+                            rs.getDate("added_date"),
+                            rs.getInt("updated_by"),
+                            rs.getDate("updated_date")
+                        );
+                        addRowToCategoriesTable(c);
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Category updated name field should be modified...");
+                    }
+                }catch(HeadlessException | SQLException e){
+                    System.out.println(e);
+                }
+            }
         }
     }//GEN-LAST:event_addEditCategoryBtnMouseClicked
 
@@ -1667,12 +1833,223 @@ public class Home extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel)categoriesTable.getModel();
         categoryNameField.setText(model.getValueAt(i,1).toString());
         categoryEditID = (int) model.getValueAt(i, 0);
+        categoryEditLabel.setText("Category: "+model.getValueAt(i,1).toString());
         System.out.println("selected category_id is: "+categoryEditID);
+        Show_CategoryItemsTable();
+        categoryDropdown.setSelectedIndex(categoryEditID-1);
     }//GEN-LAST:event_categoriesTableMouseClicked
 
-    private void removeCategoryItemBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeCategoryItemBtn1ActionPerformed
+    private void removeCategoryBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeCategoryBtnActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_removeCategoryItemBtn1ActionPerformed
+    }//GEN-LAST:event_removeCategoryBtnActionPerformed
+
+    private void removeCategoryBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeCategoryBtnMouseClicked
+        String categoryName = categoryNameField.getText();
+        Connection con = Connect.getConnection();
+        try {
+            ResultSet rs = CRUD.selectCategoryInfoUsingCategoryName(con, categoryName);
+            if(rs.next()){
+                boolean removed = CRUD.archiveCategory(con, rs.getInt("category_id"));
+                if(removed){
+                    JOptionPane.showMessageDialog(null, "Category successfully archived");
+                    TableModel tm = categoriesTable.getModel();
+                    for (int i = 0; i < tm.getRowCount(); i++) {
+                        Object o = tm.getValueAt(i, 1);
+                        if (o.equals(categoryNameField.getText())) {
+                            ((DefaultTableModel)categoriesTable.getModel()).removeRow(i);
+                            categoryNameField.setText("");
+                            categoryEditLabel.setText("");
+                            categoriesTable.getSelectionModel().clearSelection();
+                            categoryEditID = - 1;
+                        }else{
+                            System.out.println((String)o);
+                            System.out.println(categoryNameField);
+                        }
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null, "Category remove unsuccessful");
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_removeCategoryBtnMouseClicked
+
+    private void clearCategoryFieldsBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clearCategoryFieldsBtnMouseClicked
+        categoryNameField.setText("");
+        categoryEditLabel.setText("");
+        categoryItemEditLabel.setText("");
+        categoryDropdown.setSelectedIndex(0);
+        itemDropdown.setSelectedIndex(0);
+        categoriesTable.getSelectionModel().clearSelection();
+        categoryEditID = - 1;
+    }//GEN-LAST:event_clearCategoryFieldsBtnMouseClicked
+
+    private void clearCategoryFieldsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearCategoryFieldsBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_clearCategoryFieldsBtnActionPerformed
+
+    private void clearUserFieldBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clearUserFieldBtnMouseClicked
+        usernameField.setText("");
+        fullnameField.setText("");
+        fullnameField.setText("");
+        passwordField.setText("");
+        newPasswordField.setText("");
+        userEditLabel.setText("");
+        usersTable.getSelectionModel().clearSelection();
+        userEditID = - 1;
+    }//GEN-LAST:event_clearUserFieldBtnMouseClicked
+
+    private void clearUserFieldBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearUserFieldBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_clearUserFieldBtnActionPerformed
+
+    private void removeUserBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeUserBtnMouseClicked
+        String username = usernameField.getText();
+        Connection con = Connect.getConnection();
+        try {
+            ResultSet rs = CRUD.selectUserIDPassword(con, username);
+            if(rs.next()){
+                boolean removed = CRUD.archiveUser(con, rs.getInt("user_id"));
+                if(removed){
+                    JOptionPane.showMessageDialog(null, "User successfully archived");
+                    TableModel tm = usersTable.getModel();
+                    for (int i = 0; i < tm.getRowCount(); i++) {
+                        Object o = tm.getValueAt(i, 1);
+                        if (o.equals(usernameField.getText())) {
+                            ((DefaultTableModel)usersTable.getModel()).removeRow(i);
+                            usernameField.setText("");
+                            fullnameField.setText("");
+                            passwordField.setText("");
+                            newPasswordField.setText("");
+                            usersTable.getSelectionModel().clearSelection();
+                            userEditID = - 1;
+                        }else{
+                            System.out.println((String)o);
+                            System.out.println(usernameField);
+                        }
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null, "User remove unsuccessful");
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_removeUserBtnMouseClicked
+
+    private void removeUserBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeUserBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_removeUserBtnActionPerformed
+
+    private void addEditCategoryItemBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addEditCategoryItemBtnMouseClicked
+        if(categoryEditID != -1 && categoryItemEditID != -1){
+            //update user
+            String fullname = fullnameField.getText();
+            String username = usernameField.getText();
+            String password = String.valueOf(passwordField.getPassword());
+            String newpassword = String.valueOf(newPasswordField.getPassword());
+            
+            try {
+                Connection con = Connect.getConnection();
+                ResultSet rs = CRUD.selectUserInfo(con,userEditID);
+                rs.next();
+                ResultSet rsuipw = CRUD.selectUserIDPassword(con, rs.getString("username"));
+                rsuipw.next();
+                if(fullname.equals(rs.getString("full_name")) &&
+                        username.equals(rs.getString("username")) && 
+                        newpassword.equals(""))
+                    JOptionPane.showMessageDialog(null, "No Changes Detected");
+                else{
+                    boolean edited = false;
+                    if("".equals(fullname))
+                        JOptionPane.showMessageDialog(null, "Full Name cannot be blank!");
+                    else if("".equals(username))
+                        JOptionPane.showMessageDialog(null, "Username cannot be blank!");
+                    else if(!"".equals(password) && 
+                            !HashPassword.hashPassword(password).equals(
+                                    rsuipw.getString("password"))){
+                        JOptionPane.showMessageDialog(null, "Invalid Password! "+password);
+                    }else{
+                        if(!fullname.equals(rs.getString("full_name"))){
+                            CRUD.updateFullname(con, username, fullname, userid);
+                            edited = true;
+                        }
+                        if(!username.equals(rs.getString("username"))){
+                            if(!CRUD.checkUserExists(con,username)){
+                                CRUD.updateUsername(con, rs.getString("username"), username, userid);
+                                edited = true;
+                            }else{
+                                JOptionPane.showMessageDialog(null, "Username already taken...");
+                            }
+                        }
+                        if(HashPassword.hashPassword(password).equals(rsuipw.getString("password"))){
+                            if(!newpassword.equals("")) {
+                                if(newpassword.length() >= 8){
+                                    newpassword=HashPassword.hashPassword(newpassword);
+                                    CRUD.updatePassword(con, rs.getString("username"), password, newpassword, userid);
+                                    edited = true;
+                                }else{
+                                    JOptionPane.showMessageDialog(null, "Password must contain at least 8 characters...");
+                                }
+                            }
+                        }
+                    }
+                    
+                    if(edited == true){
+                        fullnameField.setText("");
+                        usernameField.setText("");
+                        passwordField.setText("");
+                        newPasswordField.setText("");
+                        userEditLabel.setText("");
+                        DefaultTableModel model = (DefaultTableModel)usersTable.getModel(); 
+                        int row = usersTable.getSelectedRow();
+                        model.setValueAt(fullname, row, 2);
+                        model.setValueAt(username, row, 1);
+                        model.setValueAt(userid, row, 5);
+                        model.setValueAt(new Date(), row, 6);
+                        userEditID = - 1;
+                        JOptionPane.showMessageDialog(null, "User has been successfully updated");
+                    }
+                }
+            } catch (NoSuchAlgorithmException | SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            //add user
+            String category = (String) categoryDropdown.getSelectedItem();
+            String item = (String) itemDropdown.getSelectedItem();
+            int quantity = (int) itemQuantitySpinner.getValue();
+            System.out.println(category);
+            System.out.println(item);
+            System.out.println(quantity);
+            Connection con = Connect.getConnection();
+            if(quantity == 0)
+                JOptionPane.showMessageDialog(null, "Quantity cannot be equal to zero!");
+            else{
+                try{
+                    int categoryID = CRUD.selectCategoryID(con, category);
+                    int itemID = CRUD.selectItemID(con, item);
+                    CRUD.insertCategoryItem(con, categoryID, itemID, quantity);
+                    JOptionPane.showMessageDialog(null, "Category Item has been successfully added!");
+                    ResultSet rs = CRUD.selectCategoryItemInfoUsingCategoryIDItemID(con, categoryID, itemID);
+                        rs.next();
+                        CategoryItem ci = new CategoryItem(
+                                rs.getInt("category_id"),
+                                rs.getInt("item_id"),
+                                rs.getInt("item_quantity"),
+                                rs.getInt("added_by"),
+                                rs.getDate("added_date"),
+                                rs.getInt("updated_by"),
+                                rs.getDate("updated_date")
+                        );
+                        addRowToCategoryItemsTable(ci);
+                }catch(HeadlessException | SQLException e){
+                    System.out.println(e);
+                }
+            }
+        }
+    }//GEN-LAST:event_addEditCategoryItemBtnMouseClicked
 
     public static void main(String args[]) {
         
@@ -1684,8 +2061,8 @@ public class Home extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addCategoryItemBtn;
     private javax.swing.JButton addEditCategoryBtn;
+    private javax.swing.JButton addEditCategoryItemBtn;
     private javax.swing.JButton addItem_save2;
     private javax.swing.JButton addJob_save;
     private javax.swing.JTextField addedby;
@@ -1707,6 +2084,8 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel categoryItemEditLabel;
     private javax.swing.JTable categoryItemTable;
     private javax.swing.JTextField categoryNameField;
+    private javax.swing.JButton clearCategoryFieldsBtn;
+    private javax.swing.JButton clearUserFieldBtn;
     private javax.swing.JPanel dashboard;
     private javax.swing.JLabel dashboard_label;
     private javax.swing.JLabel dashboard_label1;
@@ -1766,8 +2145,9 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel logout_side_label;
     private javax.swing.JPasswordField newPasswordField;
     private javax.swing.JPasswordField passwordField;
+    private javax.swing.JButton removeCategoryBtn;
     private javax.swing.JButton removeCategoryItemBtn;
-    private javax.swing.JButton removeCategoryItemBtn1;
+    private javax.swing.JButton removeUserBtn;
     private javax.swing.JPanel right_sidebar;
     private javax.swing.JButton saveEditUserInfoBtn;
     private javax.swing.JButton updateJob_save;
