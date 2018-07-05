@@ -13,7 +13,7 @@ import java.awt.Color;
 
 
 public class Login extends javax.swing.JFrame {
-
+    public static int userid = -1;
     public Login() {
         initComponents();
         usernameField.setBackground(new Color(0, 0, 0, 64));
@@ -128,7 +128,9 @@ public class Login extends javax.swing.JFrame {
                 if(CRUD.checkUserExists(con,username)){
                     ResultSet rs = CRUD.selectUserPassword(con, username);
                     rs.next();
-                    String retrievePassword = rs.getString("password");                  
+                    String retrievePassword = rs.getString("password");  
+                    
+                    userid = rs.getInt("user_id");
                     if((HashPassword.hashPassword(password)).equals(retrievePassword)){
                         Home h = new Home();
                         h.setVisible(true);
@@ -141,6 +143,7 @@ public class Login extends javax.swing.JFrame {
                 }
             }catch(HeadlessException | NoSuchAlgorithmException | SQLException e){
                 JOptionPane.showMessageDialog(null, "Username and Password did not match any account");
+                System.out.println(e.getMessage());
             }
         }
     }//GEN-LAST:event_loginMouseClicked
