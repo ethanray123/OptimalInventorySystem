@@ -12,7 +12,6 @@ import MySQL.CRUD;
 import java.awt.Color;
 import java.awt.HeadlessException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import javax.swing.JOptionPane;
@@ -111,18 +110,13 @@ public class Register extends javax.swing.JFrame {
                 submitBtnMouseClicked(evt);
             }
         });
-        submitBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                submitBtnActionPerformed(evt);
-            }
-        });
         jPanel1.add(submitBtn);
         submitBtn.setBounds(90, 440, 260, 50);
 
         jLabel6.setFont(new java.awt.Font("Raleway", 1, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("Register");
+        jLabel6.setText("REGISTER");
         jLabel6.setVerifyInputWhenFocusTarget(false);
         jPanel1.add(jLabel6);
         jLabel6.setBounds(70, 40, 309, 58);
@@ -147,37 +141,6 @@ public class Register extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void submitBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_submitBtnMouseClicked
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-
-        if("".equals(username))
-        JOptionPane.showMessageDialog(null, "Username is required!");
-        else if("".equals(password))
-        JOptionPane.showMessageDialog(null, "Password is required!");
-        else{
-            try{
-                Connection con = Connect.getConnection();
-                if(CRUD.checkUserExists(con,username)){
-                    ResultSet rs = CRUD.selectUserPassword(con, username);
-                    rs.next();
-                    String retrievePassword = rs.getString("password");
-                    if((HashPassword.hashPassword(password)).equals(retrievePassword)){
-                        Home h = new Home();
-                        h.setVisible(true);
-                        dispose();
-                    }else{
-                        JOptionPane.showMessageDialog(null, "Username and Password did not match any account");
-                    }
-                }else{
-                    JOptionPane.showMessageDialog(null, "Username and Password did not match any account");
-                }
-            }catch(HeadlessException | NoSuchAlgorithmException | SQLException e){
-                JOptionPane.showMessageDialog(null, "Username and Password did not match any account");
-            }
-        }
-    }//GEN-LAST:event_submitBtnMouseClicked
-
-    private void submitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitBtnActionPerformed
         String fullname = fullnameField.getText();
         String username = usernameField.getText();
         String password = passwordField.getText();
@@ -198,6 +161,8 @@ public class Register extends javax.swing.JFrame {
                         java.sql.Date sqlDate = new java.sql.Date(now.getTime());
                         CRUD.insertUser(con,fullname,username,password,-1);
                         JOptionPane.showMessageDialog(null, "User has been successfully created!");
+                        new Login().setVisible(true);
+                        this.dispose();
                     }else{
                         JOptionPane.showMessageDialog(null, "Password must contain at least 8 characters...");
                     }
@@ -208,7 +173,7 @@ public class Register extends javax.swing.JFrame {
                 System.out.println(e);
             }
         }
-    }//GEN-LAST:event_submitBtnActionPerformed
+    }//GEN-LAST:event_submitBtnMouseClicked
 
     /**
      * @param args the command line arguments

@@ -76,7 +76,7 @@ public class CRUD {
     public static ResultSet selectUserPassword(Connection con,String username) throws SQLException{
         Statement stmt;
         stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT password from user where username='" + username + "'");
+        ResultSet rs = stmt.executeQuery("SELECT `user_id`, `password` FROM `user` WHERE `username`='" + username + "'");
         return rs;
     }
     
@@ -188,5 +188,64 @@ public class CRUD {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("DELETE FROM `"+name+"`");
+    }
+    
+    public static void insertJob(Connection con, int cat_id, int admin) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        if(admin != -1){
+            stmt.executeUpdate("INSERT INTO `job`(`category_id`, `added_by`, "
+                + "`updated_by`) VALUES('"+cat_id+"','"+admin+"','"+admin+"')");
+        }else{
+            stmt.executeUpdate("INSERT INTO `job`(`category_id`, `added_by`, "
+                + "`updated_by`) VALUES('"+cat_id+"',NULL,NULL)");
+        }
+    }
+    
+    public static int getUserID(Connection con,String username) throws SQLException{
+        Statement stmt;
+        int id = -1;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT `user_id` FROM `user` WHERE "
+            + "`username`='" + username + "'");
+        if(rs.next()){
+            id =  rs.getInt("user_id");
+        }
+        return id;
+    }
+    
+    public static String getNameOfUser(Connection con,String uname) throws SQLException{
+        Statement stmt;
+        String name = "";
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT `user_id` FROM `users` WHERE "
+            + "`username`='" + uname + "'");
+        if(rs.next()){
+           name = rs.getString("username");
+        }
+        return name;
+    }
+    
+    public static int getCleaningCatID(Connection con, String cleaning) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        int catID = 0;
+        ResultSet rs = stmt.executeQuery("SELECT `category_id` FROM "
+            + "`cleaning_category` WHERE `category_name`='" + cleaning + "'");
+        
+        if(rs.next()){
+           catID = rs.getInt("category_id");
+        }
+        return catID;
+    }
+    
+    public static ResultSet selectJobsInfo(Connection con) throws SQLException
+    {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT `job_id`, `category_id`, `added_by`, `added_date`,"
+            + "`updated_by`, `updated_date` FROM `job` WHERE `removed` = 0";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
     }
 }
