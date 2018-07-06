@@ -1,74 +1,126 @@
 package MySQL;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- *
- * @author Ethan
+ * Class that contains the methods used for querying the database
+ * @author TeamBangan
  */
 public class CRUD {
 
-    public static ResultSet selectUsers(
-            Connection con) throws SQLException {
-        Statement stmt;
-        stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("select * from user");
-        return rs;
-    }
-
-    public static ResultSet selectJobs(
-            Connection con) throws SQLException {
-        Statement stmt;
-        stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("select * from job");
-        return rs;
-    }
-    
-    public static ResultSet selectJobItems(
-            Connection con) throws SQLException {
-        Statement stmt;
-        stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("select * from required_items");
-        return rs;
-    }
-    
-    public static ResultSet selectItems(
-            Connection con) throws SQLException {
-        Statement stmt;
-        stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("select * from item");
-        return rs;
-    }
-
-    public static ResultSet selectItemType(
-            Connection con) throws SQLException {
-        Statement stmt;
-        stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("select * from item_type");
-        return rs;
-    }
-
-    public static ResultSet selectCategories(
-            Connection con) throws SQLException {
-        Statement stmt;
-        stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("select * from cleaning_category");
-        return rs;
-    }
-    
-    public static ResultSet selectCategoryItems(
-            Connection con) throws SQLException {
-        Statement stmt;
-        stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("select * from category_items");
-        return rs;
-    }
+//    /**
+//     *
+//     * @param con Connection connecting the system to the database
+//     * @return a ResultSet of columns from the user table
+//     * @throws SQLException
+//     */
+//    public static ResultSet selectUsers(
+//            Connection con) throws SQLException {
+//        Statement stmt;
+//        stmt = con.createStatement();
+//        ResultSet rs = stmt.executeQuery("select * from user");
+//        return rs;
+//    }
+//
+//    /**
+//     *
+//     * @param con Connection connecting the system to the database
+//     * @returna ResultSet of columns from the job table
+//     * @throws SQLException
+//     */
+//    public static ResultSet selectJobs(
+//            Connection con) throws SQLException {
+//        Statement stmt;
+//        stmt = con.createStatement();
+//        ResultSet rs = stmt.executeQuery("select * from job");
+//        return rs;
+//    }
+//    
+//    /**
+//     *
+//     * @param con
+//     * @return
+//     * @throws SQLException
+//     */
+//    public static ResultSet selectJobItems(
+//            Connection con) throws SQLException {
+//        Statement stmt;
+//        stmt = con.createStatement();
+//        ResultSet rs = stmt.executeQuery("select * from job_items");
+//        return rs;
+//    }
+//    
+//    /**
+//     *
+//     * @param con
+//     * @return
+//     * @throws SQLException
+//     */
+//    public static ResultSet selectItems(
+//            Connection con) throws SQLException {
+//        Statement stmt;
+//        stmt = con.createStatement();
+//        ResultSet rs = stmt.executeQuery("select * from item");
+//        return rs;
+//    }
+//
+//    /**
+//     *
+//     * @param con
+//     * @return
+//     * @throws SQLException
+//     */
+//    public static ResultSet selectItemType(
+//            Connection con) throws SQLException {
+//        Statement stmt;
+//        stmt = con.createStatement();
+//        ResultSet rs = stmt.executeQuery("select * from item_type");
+//        return rs;
+//    }
+//
+//    /**
+//     *
+//     * @param con
+//     * @return
+//     * @throws SQLException
+//     */
+//    public static ResultSet selectCategories(
+//            Connection con) throws SQLException {
+//        Statement stmt;
+//        stmt = con.createStatement();
+//        ResultSet rs = stmt.executeQuery("select * from cleaning_category");
+//        return rs;
+//    }
+//    
+//    /**
+//     *
+//     * @param con
+//     * @return
+//     * @throws SQLException
+//     */
+//    public static ResultSet selectCategoryItems(
+//            Connection con) throws SQLException {
+//        Statement stmt;
+//        stmt = con.createStatement();
+//        ResultSet rs = stmt.executeQuery("select * from category_items");
+//        return rs;
+//    }
     
     //USER RELATED
+
+    /**
+     *
+     * The method inserts a user to the database
+     * @param con Connection connecting the system to the database
+     * @param fullname String containing the full name of the user to be created
+     * @param username String containing the username of the user to be created
+     * @param password String containing the encrypted password of the user to be created
+     * @param admin Integer representing the ID of the administrator who created the user
+     * @throws SQLException
+     */
     
     public static void insertUser(Connection con, String fullname,
             String username, String password, int admin) throws SQLException {
@@ -90,6 +142,14 @@ public class CRUD {
         }
     }
     
+    /**
+     *
+     * Method checks if the user with the user id is archived
+     * @param con Connection connecting the system to the database
+     * @param userID Integer representing the ID of the user to be checked
+     * @return boolean indicating whether the user is indeed archived
+     * @throws SQLException
+     */
     public static boolean checkUserArchived(Connection con, int userID) 
             throws SQLException {
         Statement stmt;
@@ -99,6 +159,14 @@ public class CRUD {
         return rs.next();
     }
     
+    /**
+     *
+     * Method archives a user given the user id
+     * @param con Connection connecting the system to the database
+     * @param userID Integer representing the ID of the user to be archived
+     * @return boolean from checkUserArchived() method
+     * @throws SQLException
+     */
     public static boolean archiveUser(Connection con, int userID) 
             throws SQLException {
         Statement stmt;
@@ -108,24 +176,59 @@ public class CRUD {
         return checkUserArchived(con,userID);
     }
     
+    /**
+     *
+     * Method updates the username of the user with the given username
+     * @param con Connection connecting the system to the database
+     * @param username String containing the username of the user to be updated
+     * @param newusername String containing the new username of the user to be updated
+     * @param admin Integer representing the ID of the administrator who updated the user
+     * @throws SQLException
+     */
     public static void updateUsername(Connection con, String username, String newusername, int admin) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("UPDATE `user` SET `username` = '" + newusername + "', `updated_by` = '"+ admin +"' WHERE `user`.`username` = '" + username + "'");
     }
     
+    /**
+     *
+     * Method updates the password of the user with the given username
+     * @param con Connection connecting the system to the database
+     * @param username String containing the username of the user to be updated
+     * @param oldpassword String containing the password of the user to be updated
+     * @param newpassword String containing the new password of the user to be updated
+     * @param admin Integer representing the ID of the administrator who updated the user
+     * @throws SQLException
+     */
     public static void updatePassword(Connection con, String username, String oldpassword, String newpassword, int admin) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("UPDATE `user` SET `password` = '" + newpassword + "', `updated_by` = '"+ admin +"' WHERE `user`.`username` = '" + username + "'");
     }
     
+    /**
+     * Method updates the full name of the user with the given username
+     * @param con Connection connecting the system to the database
+     * @param username String containing the username of the user to be updated
+     * @param newfullname String containing the new full name of the user to be updated
+     * @param admin Integer representing the ID of the administrator who updated the user
+     * @throws SQLException
+     */
     public static void updateFullname(Connection con, String username, String newfullname, int admin) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("UPDATE `user` SET `full_name` = '" + newfullname + "', `updated_by` = '"+ admin +"' WHERE `user`.`username` = '" + username + "'");
     }
 
+    /**
+     *
+     * Method that checks if the user with the username given is present in the database
+     * @param con Connection connecting the system to the database
+     * @param username String containing the username of the user to be updated
+     * @return boolean that indicates whether the user exists or not
+     * @throws SQLException
+     */
     public static boolean checkUserExists(Connection con, String username) 
             throws SQLException {
         Statement stmt;
@@ -135,6 +238,13 @@ public class CRUD {
         return rs.next();
     }
     
+    /**
+     * Method returns the user ID and Password of the user with the given username
+     * @param con Connection connecting the system to the database
+     * @param username String containing the username of the user queried
+     * @return ResultSet with the user ID and Password of the user
+     * @throws SQLException
+     */
     public static ResultSet selectUserIDPassword(Connection con, String username)
             throws SQLException {
         Statement stmt;
@@ -143,6 +253,14 @@ public class CRUD {
         return rs;
     }
     
+    /**
+     *
+     * Method returns the username of the user with the given ID
+     * @param con Connection connecting the system to the database
+     * @param userid integer containing the user ID of the user queried
+     * @return String of the username 
+     * @throws SQLException
+     */
     public static String selectUsername(Connection con, int userid) 
             throws SQLException {
         Statement stmt;
@@ -152,6 +270,13 @@ public class CRUD {
         return rs.getString("username");
     }
     
+    /**
+     *
+     * Method selects all user information of users that are not archived from the database
+     * @param con Connection connecting the system to the database
+     * @return ResultSet with user information
+     * @throws SQLException
+     */
     public static ResultSet selectUsersInfo(Connection con) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -162,6 +287,14 @@ public class CRUD {
         return rs;
     }
     
+    /**
+     *
+     * Selects 
+     * @param con Connection connecting the system to the database
+     * @param id Integer 
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectUserInfo(Connection con, int id) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -171,6 +304,13 @@ public class CRUD {
         return rs;
     }
     
+    /**
+     *
+     * @param con
+     * @param username
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectUserInfoUsingUsername(Connection con, String username) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -183,6 +323,14 @@ public class CRUD {
     //END OF USER RELATED 
     
     //CATEGORY RELATED
+
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param name
+     * @param admin
+     * @throws SQLException
+     */
     
     public static void insertCleaningCategory(
             Connection con, String name, int admin) throws SQLException {
@@ -193,6 +341,14 @@ public class CRUD {
                 " VALUES('" + name + "','" + admin + "','" + admin + "')");
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryID
+     * @param itemID
+     * @param itemQuantity
+     * @throws SQLException
+     */
     public static void insertCategoryItem(
             Connection con, int categoryID, int itemID, int itemQuantity) 
             throws SQLException{
@@ -206,6 +362,14 @@ public class CRUD {
                 + itemQuantity + "')");
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryID
+     * @param itemID
+     * @param newItemQuantity
+     * @throws SQLException
+     */
     public static void updateItemQuantity(
             Connection con, int categoryID, int itemID, int newItemQuantity) 
             throws SQLException {
@@ -217,6 +381,12 @@ public class CRUD {
                 "' AND item_id = '"+itemID+"'");
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectCategoriesInfo(Connection con) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -227,6 +397,12 @@ public class CRUD {
         return rs;
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectCategoryItemsInfo(Connection con) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -237,6 +413,13 @@ public class CRUD {
         return rs;
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryName
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectCategoryItemsInfoUsingCategoryName(Connection con, String categoryName) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -247,6 +430,14 @@ public class CRUD {
         return rs;
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryID
+     * @param itemID
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectCategoryItemInfoUsingCategoryIDItemID(Connection con, int categoryID, int itemID) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -257,6 +448,13 @@ public class CRUD {
         return rs;
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryID
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectCategoryItemsInfoUsingCategoryID(Connection con, int categoryID) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -267,6 +465,13 @@ public class CRUD {
         return rs;
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param id
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectCategoryInfo(Connection con, int id) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -276,6 +481,13 @@ public class CRUD {
         return rs;
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryName
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectCategoryInfoUsingCategoryName(Connection con, String categoryName) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -285,6 +497,13 @@ public class CRUD {
         return rs;
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryName
+     * @return
+     * @throws SQLException
+     */
     public static int selectCategoryID(Connection con, String categoryName)
             throws SQLException {
         Statement stmt;
@@ -297,6 +516,13 @@ public class CRUD {
         }
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryName
+     * @return
+     * @throws SQLException
+     */
     public static boolean checkCategoryExists(Connection con, String categoryName) 
             throws SQLException {
         Statement stmt;
@@ -306,6 +532,13 @@ public class CRUD {
         return rs.next();
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryID
+     * @return
+     * @throws SQLException
+     */
     public static boolean checkCategoryArchived(Connection con, int categoryID) 
             throws SQLException {
         Statement stmt;
@@ -315,6 +548,13 @@ public class CRUD {
         return rs.next();
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryID
+     * @return
+     * @throws SQLException
+     */
     public static boolean archiveCategory(Connection con, int categoryID) 
             throws SQLException {
         Statement stmt;
@@ -324,6 +564,13 @@ public class CRUD {
         return checkCategoryArchived(con,categoryID);
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryID
+     * @param itemID
+     * @throws SQLException
+     */
     public static void archiveCategoryItem(
             Connection con, int categoryID, int itemID) 
             throws SQLException {
@@ -333,6 +580,14 @@ public class CRUD {
                 +"WHERE category_id='"+categoryID+"' AND item_id='"+itemID+"'");
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryID
+     * @param categoryName
+     * @return
+     * @throws SQLException
+     */
     public static boolean deleteCategory(
             Connection con, int categoryID, String categoryName)
             throws SQLException{
@@ -343,6 +598,13 @@ public class CRUD {
         return !checkCategoryExists(con, categoryName);
     }
     
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryID
+     * @param itemID
+     * @throws SQLException
+     */
     public static void deleteCategoryItem(
             Connection con, int categoryID, int itemID)
             throws SQLException{
@@ -356,6 +618,14 @@ public class CRUD {
     
     
     //ITEM RELATED
+
+    /**
+     *
+     * @param con
+     * @param itemName
+     * @return
+     * @throws SQLException
+     */
     
     public static int selectItemID(Connection con, String itemName)
             throws SQLException {
@@ -370,6 +640,13 @@ public class CRUD {
         }
     }
     
+    /**
+     *
+     * @param con
+     * @param itemID
+     * @return
+     * @throws SQLException
+     */
     public static String selectItemName(Connection con, int itemID)
             throws SQLException {
         Statement stmt;
@@ -381,6 +658,12 @@ public class CRUD {
             return "404 Not Found";
     }
     
+    /**
+     *
+     * @param con
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectItemsInfo(Connection con) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -400,24 +683,55 @@ public class CRUD {
 //    }
     
     //END OF ITEM RELATED
+
+    /**
+     *
+     * @param con
+     * @param product
+     * @param price
+     * @param quantity
+     * @throws SQLException
+     */
     public static void insertInventory(Connection con, String product, String price, String quantity) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("INSERT INTO item(`Product`, `Price`, `Quantity`) VALUES('" + product + "','" + price + "','" + quantity + "')");
     }
 
+    /**
+     *
+     * @param con
+     * @param product
+     * @param price
+     * @param quantity
+     * @throws SQLException
+     */
     public static void deleteInventory(Connection con, String product, String price, String quantity) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("DELETE FROM `inventory` WHERE `inventory`.`Product`='" + product + "' AND Price='" + price + "' AND Quantity='" + quantity + "'");
     }
 
+    /**
+     *
+     * @param con
+     * @param stock
+     * @param product
+     * @throws SQLException
+     */
     public static void updateInventoryQ(Connection con, int stock, String product) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("UPDATE `inventory` SET `Quantity` = '" + stock + "' WHERE `inventory`.`Product` = '" + product + "'");
     }
 
+    /**
+     *
+     * @param con
+     * @param product
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectInventoryQ(Connection con, String product) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -425,6 +739,15 @@ public class CRUD {
         return rs;
     }
 
+    /**
+     *
+     * @param con
+     * @param product
+     * @param price
+     * @param quantity
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectInventoryP(Connection con, String product, String price, String quantity) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -432,6 +755,13 @@ public class CRUD {
         return rs;
     }
 
+    /**
+     *
+     * @param con
+     * @param product
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectInventoryPrc(Connection con, String product) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -439,24 +769,56 @@ public class CRUD {
         return rs;
     }
 
+    /**
+     *
+     * @param con
+     * @param name
+     * @param product
+     * @param price
+     * @param quantity
+     * @throws SQLException
+     */
     public static void insert(Connection con, String name, String product, String price, int quantity) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("INSERT INTO " + name + "(`Product`, `Price`, `Quantity`) VALUES('" + product + "','" + price + "','" + quantity + "')");
     }
 
+    /**
+     *
+     * @param con
+     * @param name
+     * @param stock
+     * @param product
+     * @throws SQLException
+     */
     public static void updateQ(Connection con, String name, int stock, String product) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("UPDATE `" + name + "` SET `Quantity` = '" + stock + "' WHERE `" + name + "`.`Product` = '" + product + "'");
     }
 
+    /**
+     *
+     * @param con
+     * @param name
+     * @param product
+     * @throws SQLException
+     */
     public static void delete(Connection con, String name, String product) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("DELETE FROM `" + name + "` WHERE `" + name + "`.`Product`='" + product + "'");
     }
 
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param name
+     * @param product
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectQ(Connection con, String name, String product) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -464,6 +826,14 @@ public class CRUD {
         return rs;
     }
 
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param name
+     * @param product
+     * @return
+     * @throws SQLException
+     */
     public static ResultSet selectPrc(Connection con, String name, String product) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -471,6 +841,14 @@ public class CRUD {
         return rs;
     }
 
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param name
+     * @param deduction
+     * @param product
+     * @throws SQLException
+     */
     public static void deductQ(Connection con, String name, int deduction, String product) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -483,6 +861,14 @@ public class CRUD {
         }
     }
 
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param name
+     * @param additional
+     * @param product
+     * @throws SQLException
+     */
     public static void addQ(Connection con, String name, int additional, String product) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -493,6 +879,13 @@ public class CRUD {
         stmt.executeUpdate("UPDATE `" + name + "` SET `Quantity` = '" + stock + "' WHERE `" + name + "`.`Product` = '" + product + "'");
     }
 
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param name
+     * @return
+     * @throws SQLException
+     */
     public static double getTotal(Connection con, String name) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -504,6 +897,12 @@ public class CRUD {
         return total;
     }
 
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param name
+     * @throws SQLException
+     */
     public static void deleteContents(Connection con, String name) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();

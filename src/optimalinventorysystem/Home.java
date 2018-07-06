@@ -26,6 +26,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import static optimalinventorysystem.Login.userid;
 
+/**
+ *
+ * @author Ethan
+ */
 public class Home extends javax.swing.JFrame {
     int userEditID = -1;
     int categoryEditID = -1;
@@ -34,6 +38,10 @@ public class Home extends javax.swing.JFrame {
     // 5,32,33      -- darkest
     // 15, 74, 74   -- middle
     // 8, 40, 41    -- lightest
+
+    /**
+     *
+     */
     public Home() {
         initComponents();
         try{
@@ -49,6 +57,9 @@ public class Home extends javax.swing.JFrame {
         Show_UsersTable();
     }
     
+    /**
+     *
+     */
     public void dashboard()
     {
         //set bg color when sidebar tab clicked
@@ -73,6 +84,9 @@ public class Home extends javax.swing.JFrame {
         upper_users_panel.setVisible(false);
     }
     
+    /**
+     *
+     */
     public void items_sideBar_onclick()
     {
         //set bg color when sidebar tab clicked
@@ -97,6 +111,9 @@ public class Home extends javax.swing.JFrame {
         upper_users_panel.setVisible(false);
     }
     
+    /**
+     *
+     */
     public void jobs_sideBar_onclick()
     {
         //set bg color when sidebar tab clicked
@@ -121,6 +138,9 @@ public class Home extends javax.swing.JFrame {
         upper_users_panel.setVisible(false);
     }
     
+    /**
+     *
+     */
     public void categories_sideBar_onclick()
     {
         //set bg color when sidebar tab clicked
@@ -146,6 +166,9 @@ public class Home extends javax.swing.JFrame {
         
     }
     
+    /**
+     *
+     */
     public void users_sideBar_onclick()
     {
         //set bg color when sidebar tab clicked
@@ -172,6 +195,10 @@ public class Home extends javax.swing.JFrame {
     }
     //USER TABLE METHODS
     
+    /**
+     *
+     * @return
+     */
     public ArrayList<User> getUserList()
     {
         ArrayList<User> userList = new ArrayList<>();
@@ -194,6 +221,9 @@ public class Home extends javax.swing.JFrame {
         return userList;
     }
     
+    /**
+     *
+     */
     public void Show_UsersTable()
     {
         ArrayList<User> list = getUserList();
@@ -204,13 +234,17 @@ public class Home extends javax.swing.JFrame {
             row[1] = u.getUsername();
             row[2] = u.getFullname();
             row[3] = u.getAddedBy();
-            row[4] = u.getAddedOn(); //dateFormat.format(u.getAddedOn());
+            row[4] = dateFormat.format(u.getAddedOn());
             row[5] = u.getUpdatedBy();
             row[6] = dateFormat.format(u.getUpdatedOn());
             model.addRow(row);
         }
     }
     
+    /**
+     *
+     * @param u
+     */
     public void addRowToUsersTable(User u){
         DefaultTableModel model = (DefaultTableModel)usersTable.getModel();
         Object[] row = new Object[7];
@@ -226,6 +260,11 @@ public class Home extends javax.swing.JFrame {
     
     //END OF USER TABLE METHODS
     //CATEGORY TABLE METHODS
+
+    /**
+     *
+     * @return
+     */
     
     public ArrayList<Category> getCategoryList()
     {
@@ -250,6 +289,9 @@ public class Home extends javax.swing.JFrame {
         return categoryList;
     }
     
+    /**
+     *
+     */
     public void Show_CategoriesTable()
     {
         ArrayList<Category> list = getCategoryList();
@@ -267,6 +309,10 @@ public class Home extends javax.swing.JFrame {
         }
     }
     
+    /**
+     *
+     * @param c
+     */
     public void addRowToCategoriesTable(Category c){
         DefaultTableModel model = (DefaultTableModel)categoriesTable.getModel();
         Object[] row = new Object[6];
@@ -282,6 +328,12 @@ public class Home extends javax.swing.JFrame {
     
     //END OF CATEGORY TABLE METHODS
     //CATEGORY ITEMS TABLE METHODS
+
+    /**
+     *
+     * @param catID
+     * @return
+     */
     
     public ArrayList<CategoryItem> getCategoryItemsList(int catID){
         ArrayList<CategoryItem> categoryItemList = new ArrayList<>();
@@ -308,6 +360,9 @@ public class Home extends javax.swing.JFrame {
         return categoryItemList;
     }
     
+    /**
+     *
+     */
     public void Show_CategoryItemsTable()
     {
         try {
@@ -331,6 +386,10 @@ public class Home extends javax.swing.JFrame {
         }
     }
 
+    /**
+     *
+     * @param c
+     */
     public void addRowToCategoryItemsTable(CategoryItem c){
         DefaultTableModel model = (DefaultTableModel)categoryItemTable.getModel();
         Object[] row = new Object[2];
@@ -344,6 +403,10 @@ public class Home extends javax.swing.JFrame {
         }
     }
     
+    /**
+     *
+     * @return
+     */
     public ArrayList<Item> getItemList(){
         ArrayList<Item> itemList = new ArrayList<>();
         Connection con = Connect.getConnection();
@@ -371,6 +434,9 @@ public class Home extends javax.swing.JFrame {
         return itemList;
     }
     
+    /**
+     *
+     */
     public void initItemDropdown(){
         ArrayList<Item> list = getItemList();
         System.out.println(list);
@@ -534,7 +600,7 @@ public class Home extends javax.swing.JFrame {
             categoriesTable.getColumnModel().getColumn(5).setPreferredWidth(5);
         }
 
-        categories.add(jScrollPane11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 820, 350));
+        categories.add(jScrollPane11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 820, 350));
 
         categoryItemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -679,7 +745,7 @@ public class Home extends javax.swing.JFrame {
         });
         additems_form1.add(clearCategoryFieldsBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 60, 127, 42));
 
-        categories.add(additems_form1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 1220, 250));
+        categories.add(additems_form1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 450, 1230, 250));
 
         jLabel7.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
@@ -1572,7 +1638,7 @@ public class Home extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(whole, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1506, Short.MAX_VALUE)
+            .addComponent(whole, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1500, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1697,7 +1763,7 @@ public class Home extends javax.swing.JFrame {
                         model.setValueAt(fullname, row, 2);
                         model.setValueAt(username, row, 1);
                         model.setValueAt(userid, row, 5);
-                        model.setValueAt(new Date(), row, 6);
+                        model.setValueAt(dateFormat.format(new Date()), row, 6);
                         userEditID = - 1;
                         JOptionPane.showMessageDialog(null, "User has been successfully updated");
                     }
@@ -2051,6 +2117,10 @@ public class Home extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_addEditCategoryItemBtnMouseClicked
 
+    /**
+     *
+     * @param args
+     */
     public static void main(String args[]) {
         
         java.awt.EventQueue.invokeLater(new Runnable() {

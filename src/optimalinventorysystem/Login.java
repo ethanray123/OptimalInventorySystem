@@ -12,9 +12,20 @@ import javax.swing.JOptionPane;
 import java.awt.Color;
 import java.util.Arrays;
 
-
+/**
+ *
+ * @author Ethan
+ */
 public class Login extends javax.swing.JFrame {
+
+    /**
+     *
+     */
     public static int userid = -1;
+
+    /**
+     *
+     */
     public Login() {
         initComponents();
         usernameField.setBackground(new Color(0, 0, 0, 64));
@@ -151,6 +162,10 @@ public class Login extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_loginMouseClicked
 
+    /**
+     *
+     * @param args
+     */
     public static void main(String args[]) {
         
         java.awt.EventQueue.invokeLater(new Runnable() {
