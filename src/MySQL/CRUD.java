@@ -135,7 +135,7 @@ public class CRUD {
         Statement stmt;
         stmt = con.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT user_id from user "+
-                "where username='" + username + "'");
+                "where username='" + username + "' AND removed=0");
         return rs.next();
     }
     
@@ -190,10 +190,10 @@ public class CRUD {
     
     /**
      *
-     * Selects 
+     * Method selects all user information from the user with the given
      * @param con Connection connecting the system to the database
      * @param id Integer 
-     * @return
+     * @return ResultSet of user information
      * @throws SQLException
      */
     public static ResultSet selectUserInfo(Connection con, int id) throws SQLException {
@@ -273,7 +273,7 @@ public class CRUD {
      * @param newItemQuantity
      * @throws SQLException
      */
-    public static void updateItemQuantity(
+    public static void updateCategoryItemQuantity(
             Connection con, int categoryID, int itemID, int newItemQuantity) 
             throws SQLException {
         Statement stmt;
@@ -341,7 +341,7 @@ public class CRUD {
      * @return
      * @throws SQLException
      */
-    public static ResultSet selectCategoryItemInfoUsingCategoryIDItemID(Connection con, int categoryID, int itemID) throws SQLException {
+    public static ResultSet selectCategoryItemInfoCategoryIDItemID(Connection con, int categoryID, int itemID) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         String query = "SELECT category_id, item_id, item_quantity, added_by, "+
@@ -470,18 +470,37 @@ public class CRUD {
     /**
      *
      * @param con Connection connecting the system to the database
+     * @param categoryID integer representing the category ID
+     * @param itemID integer representing the item ID
+     * @return boolean indicating whether the category item is archived or not
+     * @throws SQLException
+     */
+    public static boolean checkCategoryItemArchived(Connection con, int categoryID, int itemID) 
+            throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT category_id from category_items "+
+                "where category_id='" + categoryID + "' AND item_id='"+ itemID +"' AND removed = 1");
+        return rs.next();
+    }
+    
+    /**
+     *
+     * @param con Connection connecting the system to the database
      * @param categoryID
      * @param itemID
      * @throws SQLException
      */
-    public static void archiveCategoryItem(
+    public static boolean archiveCategoryItem(
             Connection con, int categoryID, int itemID) 
             throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
-        stmt.executeUpdate("UPDATE `cleaning_category` SET `removed` = '"+1
-                +"WHERE category_id='"+categoryID+"' AND item_id='"+itemID+"'");
+        stmt.executeUpdate("UPDATE `category_items` SET `removed` = '"+1
+                +"' WHERE category_id='"+categoryID+"' AND item_id='"+itemID+"'");
+        return checkCategoryItemArchived(con, categoryID, itemID);
     }
+    
     
     /**
      *

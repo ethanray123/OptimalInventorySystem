@@ -64,6 +64,7 @@ public class Login extends javax.swing.JFrame {
         usernameField.setForeground(new java.awt.Color(255, 255, 255));
         usernameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         usernameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(67, 101, 102), 2, true));
+        usernameField.setCaretColor(new java.awt.Color(0, 153, 153));
         usernameField.setOpaque(false);
         usernameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -79,6 +80,7 @@ public class Login extends javax.swing.JFrame {
         passwordField.setForeground(new java.awt.Color(255, 255, 255));
         passwordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         passwordField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(67, 101, 102), 2, true));
+        passwordField.setCaretColor(new java.awt.Color(0, 153, 153));
         passwordField.setOpaque(false);
         jPanel1.add(passwordField);
         passwordField.setBounds(70, 300, 360, 50);
@@ -145,6 +147,8 @@ public class Login extends javax.swing.JFrame {
                     ResultSet rs = CRUD.selectUserIDPassword(con, username);
                     rs.next();
                     String retrievePassword = rs.getString("password");
+                    System.out.println(HashPassword.hashPassword(password));
+                    System.out.println(retrievePassword);
                     userid = rs.getInt("user_id");
                     if((HashPassword.hashPassword(password)).equals(retrievePassword)){
                         Home h = new Home();
@@ -157,7 +161,7 @@ public class Login extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Username and Password did not match any account");
                 }
             }catch(HeadlessException | NoSuchAlgorithmException | SQLException e){
-                JOptionPane.showMessageDialog(null, "Username and Password did not match any account");
+                System.out.println(e);
             }
         }
     }//GEN-LAST:event_loginMouseClicked

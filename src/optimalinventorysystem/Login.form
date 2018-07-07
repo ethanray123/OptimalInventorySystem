@@ -90,6 +90,9 @@
                 </LineBorder>
               </Border>
             </Property>
+            <Property name="caretColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="99" green="99" red="0" type="rgb"/>
+            </Property>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
           <Events>
@@ -123,6 +126,9 @@
                   <Color PropertyName="color" blue="66" green="65" red="43" type="rgb"/>
                 </LineBorder>
               </Border>
+            </Property>
+            <Property name="caretColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="99" green="99" red="0" type="rgb"/>
             </Property>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
