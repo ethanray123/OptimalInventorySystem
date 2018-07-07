@@ -10,105 +10,6 @@ import java.sql.Statement;
  * @author TeamBangan
  */
 public class CRUD {
-
-//    /**
-//     *
-//     * @param con Connection connecting the system to the database
-//     * @return a ResultSet of columns from the user table
-//     * @throws SQLException
-//     */
-//    public static ResultSet selectUsers(
-//            Connection con) throws SQLException {
-//        Statement stmt;
-//        stmt = con.createStatement();
-//        ResultSet rs = stmt.executeQuery("select * from user");
-//        return rs;
-//    }
-//
-//    /**
-//     *
-//     * @param con Connection connecting the system to the database
-//     * @returna ResultSet of columns from the job table
-//     * @throws SQLException
-//     */
-//    public static ResultSet selectJobs(
-//            Connection con) throws SQLException {
-//        Statement stmt;
-//        stmt = con.createStatement();
-//        ResultSet rs = stmt.executeQuery("select * from job");
-//        return rs;
-//    }
-//    
-//    /**
-//     *
-//     * @param con
-//     * @return
-//     * @throws SQLException
-//     */
-//    public static ResultSet selectJobItems(
-//            Connection con) throws SQLException {
-//        Statement stmt;
-//        stmt = con.createStatement();
-//        ResultSet rs = stmt.executeQuery("select * from job_items");
-//        return rs;
-//    }
-//    
-//    /**
-//     *
-//     * @param con
-//     * @return
-//     * @throws SQLException
-//     */
-//    public static ResultSet selectItems(
-//            Connection con) throws SQLException {
-//        Statement stmt;
-//        stmt = con.createStatement();
-//        ResultSet rs = stmt.executeQuery("select * from item");
-//        return rs;
-//    }
-//
-//    /**
-//     *
-//     * @param con
-//     * @return
-//     * @throws SQLException
-//     */
-//    public static ResultSet selectItemType(
-//            Connection con) throws SQLException {
-//        Statement stmt;
-//        stmt = con.createStatement();
-//        ResultSet rs = stmt.executeQuery("select * from item_type");
-//        return rs;
-//    }
-//
-//    /**
-//     *
-//     * @param con
-//     * @return
-//     * @throws SQLException
-//     */
-//    public static ResultSet selectCategories(
-//            Connection con) throws SQLException {
-//        Statement stmt;
-//        stmt = con.createStatement();
-//        ResultSet rs = stmt.executeQuery("select * from cleaning_category");
-//        return rs;
-//    }
-//    
-//    /**
-//     *
-//     * @param con
-//     * @return
-//     * @throws SQLException
-//     */
-//    public static ResultSet selectCategoryItems(
-//            Connection con) throws SQLException {
-//        Statement stmt;
-//        stmt = con.createStatement();
-//        ResultSet rs = stmt.executeQuery("select * from category_items");
-//        return rs;
-//    }
-    
     //USER RELATED
 
     /**
@@ -350,7 +251,7 @@ public class CRUD {
      * @throws SQLException
      */
     public static void insertCategoryItem(
-            Connection con, int categoryID, int itemID, int itemQuantity) 
+            Connection con, int categoryID, int itemID, int itemQuantity, int admin) 
             throws SQLException{
         Statement stmt;
         stmt = con.createStatement();
@@ -359,7 +260,9 @@ public class CRUD {
                 "VALUES('" 
                 + categoryID + "','" 
                 + itemID + "','" 
-                + itemQuantity + "')");
+                + itemQuantity + "','"
+                + admin + "','"
+                + admin + "')");
     }
     
     /**
@@ -634,7 +537,7 @@ public class CRUD {
         ResultSet rs = stmt.executeQuery("SELECT `item_id` from item "+
                 "WHERE item_name = '" + itemName + "'");
         if(rs.next())
-            return rs.getInt("category_id");
+            return rs.getInt("item_id");
         else{
             return -1;
         }
@@ -656,6 +559,23 @@ public class CRUD {
             return rs.getString("item_name");
         else
             return "404 Not Found";
+    }
+    
+    /**
+     *
+     * @param con
+     * @param id
+     * @return
+     * @throws SQLException
+     */
+    public static ResultSet selectItemInfo(Connection con, int id) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT item_name, quantity, metric, type, added_by, "+
+                "added_date, updated_by, updated_date FROM `item` "+
+                "WHERE item_id = '"+ id +"'";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
     }
     
     /**
