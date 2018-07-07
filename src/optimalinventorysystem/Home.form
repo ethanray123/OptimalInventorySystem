@@ -156,27 +156,12 @@
                     <Component class="javax.swing.JTable" name="itemsTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                          <Table columnCount="5" rowCount="2">
-                            <Column editable="true" title="ITEM ID" type="java.lang.Object">
-                              <Data value="1"/>
-                              <Data value="2"/>
-                            </Column>
-                            <Column editable="true" title="ITEM NAME" type="java.lang.Object">
-                              <Data value="Rainbow Hydro Machine"/>
-                              <Data value="Mop"/>
-                            </Column>
-                            <Column editable="true" title="ITEM QUANTITY" type="java.lang.Object">
-                              <Data value="5"/>
-                              <Data value="5"/>
-                            </Column>
-                            <Column editable="true" title="ITEM METRIC" type="java.lang.Object">
-                              <Data value="units"/>
-                              <Data value="pcs"/>
-                            </Column>
-                            <Column editable="true" title="ITEM TYPE" type="java.lang.Object">
-                              <Data value="1"/>
-                              <Data value="1"/>
-                            </Column>
+                          <Table columnCount="5" rowCount="0">
+                            <Column editable="true" title="ITEM ID" type="java.lang.Object"/>
+                            <Column editable="true" title="ITEM NAME" type="java.lang.Object"/>
+                            <Column editable="true" title="ITEM QUANTITY" type="java.lang.Object"/>
+                            <Column editable="true" title="ITEM METRIC" type="java.lang.Object"/>
+                            <Column editable="true" title="ITEM TYPE" type="java.lang.Object"/>
                           </Table>
                         </Property>
                         <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -641,9 +626,9 @@
                                   <Properties>
                                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                                       <StringArray count="3">
-                                        <StringItem index="0" value="Units"/>
-                                        <StringItem index="1" value="Pcs"/>
-                                        <StringItem index="2" value="Sets"/>
+                                        <StringItem index="0" value="units"/>
+                                        <StringItem index="1" value="pcs"/>
+                                        <StringItem index="2" value="sets"/>
                                       </StringArray>
                                     </Property>
                                   </Properties>

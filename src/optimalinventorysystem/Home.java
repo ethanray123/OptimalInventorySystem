@@ -3,6 +3,7 @@ package optimalinventorysystem;
 import MySQL.CRUD;
 import MySQL.Connect;
 import Entities.Item;
+import java.text.DateFormat;
 import java.awt.Color;
 import java.awt.HeadlessException;
 import java.awt.event.WindowEvent;
@@ -10,18 +11,22 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import static optimalinventorysystem.Login.userid;
 
 public class Home extends javax.swing.JFrame {
-    
+    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     // 5,32,33      -- darkest
     // 15, 74, 74   -- middle
     // 8, 40, 41    -- lightest
     public Home() {
-        initComponents();      
+        initComponents();     
+        
         try{
             Connection con = Connect.getConnection();
             String username = CRUD.selectUsername(con,userid);
@@ -29,9 +34,10 @@ public class Home extends javax.swing.JFrame {
         }catch(HeadlessException  | SQLException e){
             System.out.println(e);
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-        }
-        initializeItemTypeNameList();
+        }     
         dashboard();
+        initializeItemTypeNameList();
+        ShowItemsTable();
     }
     
     public void dashboard()
@@ -221,8 +227,7 @@ public class Home extends javax.swing.JFrame {
 
         itemsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"1", "Rainbow Hydro Machine", "5", "units", "1"},
-                {"2", "Mop", "5", "pcs", "1"}
+
             },
             new String [] {
                 "ITEM ID", "ITEM NAME", "ITEM QUANTITY", "ITEM METRIC", "ITEM TYPE"
@@ -382,7 +387,7 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
-        ItemMetricList.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Units", "Pcs", "Sets" }));
+        ItemMetricList.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "units", "pcs", "sets" }));
         ItemMetricList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ItemMetricListActionPerformed(evt);
@@ -1269,9 +1274,9 @@ public class Home extends javax.swing.JFrame {
                            rs.getInt("added_by"),
                            rs.getDate("added_date"),
                            rs.getInt("updated_by"),
-                           rs.getDate("updated_date"),
-                           rs.getInt("removed")
+                           rs.getDate("updated_date")                       
                    );
+                   addRowstoItemsTable(it);
                    JOptionPane.showMessageDialog(null, "Item has been successfully added!");
                }else{
                  System.out.println("sad,Found");
@@ -1387,6 +1392,28 @@ public class Home extends javax.swing.JFrame {
 
     private void itemsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemsTableMouseClicked
         // TODO add your handling code here:
+        int index=0;
+        int i = itemsTable.getSelectedRow();
+        DefaultTableModel model = (DefaultTableModel)itemsTable.getModel();
+        itemname.setText(model.getValueAt(i,1).toString());       
+        itemqty.setText(model.getValueAt(i, 2).toString());
+        String metric = model.getValueAt(i, 3).toString();
+        if(metric.equals("units")){
+            index = 0;
+        }else if(metric.equals("pcs")){
+            index = 1;
+        }else{
+            index = 2;
+        }
+        ItemMetricList.setSelectedIndex(index);
+        
+        String type =  model.getValueAt(i,4).toString();
+        if(type.equals("1")){
+            index = 0;
+        }else if(type.equals("2")){
+            index = 1;
+        }
+       ItemTypeNameList.setSelectedIndex(index);
     }//GEN-LAST:event_itemsTableMouseClicked
 
     public static void main(String args[]) {
@@ -1408,6 +1435,61 @@ public class Home extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    public ArrayList<Item> getItemList(){
+        ArrayList<Item> itemList = new ArrayList<>();
+        Connection con = Connect.getConnection();
+        try{
+            ResultSet rs = CRUD.selectItemInfo(con);
+            Item it;
+            while(rs.next()){
+                it = new Item(
+                           rs.getInt("item_id"),
+                           rs.getString("item_name"),
+                           rs.getInt("quantity"),
+                           rs.getString("metric"),
+                           rs.getInt("type"),
+                           rs.getInt("added_by"),
+                           rs.getDate("added_date"),
+                           rs.getInt("updated_by"),
+                           rs.getDate("updated_date")                       
+                   );
+                itemList.add(it);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return itemList;
+    }
+    public void ShowItemsTable(){
+        ArrayList<Item> itemList = getItemList();
+        DefaultTableModel model = (DefaultTableModel)itemsTable.getModel();
+        Object[] row = new Object[8];
+        for(Item it : itemList){
+            row[0] = it.getID();
+            row[1] = it.getName();
+            row[2] = it.getQuantity();
+            row[3] = it.getMetric();
+            row[4] = it.getAddedBy();
+            row[5] = dateFormat.format(it.getAddedOn());
+            row[6] = it.getUpdatedBy();
+            row[7] = dateFormat.format(it.getUpdatedOn());
+            model.addRow(row);
+        }
+    }
+    public void addRowstoItemsTable(Item it){
+        DefaultTableModel model = (DefaultTableModel)itemsTable.getModel();
+        Object[] row = new Object[8];
+        row[0] = it.getID();
+        row[1] = it.getName();
+        row[2] = it.getQuantity();
+        row[3] = it.getMetric();
+        row[4] = it.getAddedBy();
+        row[5] = dateFormat.format(it.getAddedOn());
+        row[6] = it.getUpdatedBy();
+        row[7] = dateFormat.format(it.getUpdatedOn());
+       
+        model.addRow(row);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Archive;

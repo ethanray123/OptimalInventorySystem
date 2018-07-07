@@ -79,6 +79,12 @@ public class CRUD {
             return false;
         }
     }
+     public static ResultSet selectItemInfo(Connection con)throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * from item");
+        return rs;
+    }
     public static ResultSet selectItemInfoUsingItemName(Connection con,String itemName)throws SQLException{
         Statement stmt;
         stmt = con.createStatement();

@@ -24,7 +24,7 @@ public class Item {
     private boolean removed;
     
     public Item(int ID, String Itemname, int Quantity, String Metric, int Type,
-            int Adder, Date AddDate, int Updater, Date UpdateDate, boolean Removed){
+            int Adder, Date AddDate, int Updater, Date UpdateDate){
         this.id = ID;
         this.name = Itemname;
         this.quantity = Quantity;
@@ -33,8 +33,7 @@ public class Item {
         this.addedBy = Adder;
         this.addedOn = AddDate;
         this.updatedBy = Updater;
-        this.updatedOn = UpdateDate;
-        this.removed = Removed;
+        this.updatedOn = UpdateDate;   
     }
 
     public Item(int aInt, String string, int aInt0, String string0, int aInt1, int aInt2, java.sql.Date date, int aInt3, java.sql.Date date0, int aInt4) {
