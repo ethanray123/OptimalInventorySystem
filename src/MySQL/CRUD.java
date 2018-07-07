@@ -68,7 +68,7 @@ public class CRUD {
         ResultSet rs = stmt.executeQuery("SELECT user_id from user where username='" + username + "'");
         return rs.next();
     }
-    
+    //ITEM RELATED
     public static boolean checkItemExists(Connection con, String itemName) throws SQLException{
         Statement stmt;
         stmt = con.createStatement();
@@ -79,14 +79,38 @@ public class CRUD {
             return false;
         }
     }
+    public static ResultSet selectItemInfoUsingItemName(Connection con,String itemName)throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * from item where item_name = '"+itemName+"'");
+        return rs;
+    }
+    public static void insertItem(Connection con, String itemName, int itemQty, int itemType, String itemMetric, int addedBy,int updatedBy) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        stmt.executeUpdate("INSERT INTO item(`item_name`,`quantity`,`metric`,`type`,`added_by`,`updated_by`) VALUES('"+itemName+"','"+itemQty+"','"+itemMetric+"','"+itemType+"','"+addedBy+"','"+updatedBy+"')");
+    }
+    public static void updateItem(Connection con, String itemName,int itemQty, int itemType, String itemMetric,int updatedBy) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        stmt.executeUpdate("UPDATE `item` SET `item_name` = '"+itemName+"',`quantity`='"+itemQty+"',`metric` = '"+itemMetric+"', `type` ='"+itemType+"',`updated_by` = '"+updatedBy+"' WHERE `item`.`item_name` = '"+itemName+"'");
+    }
+    public static void archiveItem(Connection con, String itemName) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        stmt.executeUpdate("UPDATE `item` SET `removed` = 1 WHERE `item`.`item_name`='"+itemName+"' ");
+    }
+    //END OF ITEM RELATED
     
+    //ITEM TYPE RELATED
     public static boolean checkItemTypeExists(Connection con, String typeName) throws SQLException{
         Statement stmt;
         stmt = con.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT type_id from item_type where type_name='"+typeName+"' ");
         return rs.next();
     }
-    public static ResultSet selecTypeIDFromItemType(Connection con,String itemTypeName) throws SQLException{
+    
+    public static ResultSet selectTypeIDFromItemType(Connection con,String itemTypeName) throws SQLException{
         Statement stmt;
         stmt = con.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT type_id from item_type where type_name='"+itemTypeName+"' ");
@@ -105,16 +129,8 @@ public class CRUD {
         stmt.executeUpdate("INSERT INTO item_type(`type_name`,`type_details`,`added_by`,`updated_by`,`removed`)VALUES('"+typeName+"','"+typeDetails+"','"+addedBy+"','"+updatedBy+"','"+removed+"')");
         
     }
-    public static void insertItem(Connection con, String itemName, int itemQty, int itemType, String itemMetric, int addedBy,int updatedBy) throws SQLException{
-        Statement stmt;
-        stmt = con.createStatement();
-        stmt.executeUpdate("INSERT INTO item(`item_name`,`quantity`,`metric`,`type`,`added_by`,`updated_by`) VALUES('"+itemName+"','"+itemQty+"','"+itemMetric+"','"+itemType+"','"+addedBy+"','"+updatedBy+"')");
-    }
-    public static void updateItem(Connection con, String itemName,int itemQty, int itemType, String itemMetric,int updatedBy) throws SQLException{
-        Statement stmt;
-        stmt = con.createStatement();
-        stmt.executeUpdate("UPDATE `item` SET `item_name` = '"+itemName+"',`quantity`='"+itemQty+"',`metric` = '"+itemMetric+"', `type` ='"+itemType+"',`updated_by` = '"+updatedBy+"' WHERE `item`.`item_name` = '"+itemName+"'");
-    }
+    //END OF ITEM TYPE RELATED
+   
     public static ResultSet selectUserPassword(Connection con,String username) throws SQLException{
         Statement stmt;
         stmt = con.createStatement();

@@ -132,6 +132,11 @@ public class Home extends javax.swing.JFrame {
         Update = new javax.swing.JButton();
         ItemMetricList2 = new javax.swing.JComboBox<>();
         ItemTypeNameList2 = new javax.swing.JComboBox<>();
+        archiveitem = new javax.swing.JPanel();
+        additems_form3 = new javax.swing.JPanel();
+        jLabel30 = new javax.swing.JLabel();
+        itemName3 = new javax.swing.JTextField();
+        Archive = new javax.swing.JButton();
         jobs = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         jobsTable = new javax.swing.JTable();
@@ -170,9 +175,14 @@ public class Home extends javax.swing.JFrame {
         jobs_side = new javax.swing.JPanel();
         jobs_side_label = new javax.swing.JLabel();
         adminName = new javax.swing.JLabel();
+        category_side = new javax.swing.JPanel();
+        category_side_label = new javax.swing.JLabel();
+        category_side1 = new javax.swing.JPanel();
+        category_side_label1 = new javax.swing.JLabel();
+        category_side2 = new javax.swing.JPanel();
+        category_side_label2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1500, 800));
 
         whole.setBackground(new java.awt.Color(255, 255, 255));
         whole.setLayout(null);
@@ -211,12 +221,18 @@ public class Home extends javax.swing.JFrame {
 
         itemsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {"1", "Rainbow Hydro Machine", "5", "units", "1"},
+                {"2", "Mop", "5", "pcs", "1"}
             },
             new String [] {
                 "ITEM ID", "ITEM NAME", "ITEM QUANTITY", "ITEM METRIC", "ITEM TYPE"
             }
         ));
+        itemsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                itemsTableMouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(itemsTable);
 
         additemtype.setBackground(new java.awt.Color(5, 32, 33));
@@ -576,6 +592,78 @@ public class Home extends javax.swing.JFrame {
         );
 
         itemsTab.addTab("UPDATE ITEMS", updateitems);
+
+        archiveitem.setBackground(new java.awt.Color(5, 32, 33));
+
+        additems_form3.setBackground(new java.awt.Color(15, 74, 74));
+
+        jLabel30.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel30.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel30.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel30.setText("ITEM NAME");
+
+        itemName3.setBackground(new java.awt.Color(15, 74, 74));
+        itemName3.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        itemName3.setForeground(new java.awt.Color(255, 255, 255));
+        itemName3.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        itemName3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        itemName3.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        itemName3.setOpaque(false);
+
+        Archive.setBackground(new java.awt.Color(0, 204, 51));
+        Archive.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        Archive.setForeground(new java.awt.Color(255, 255, 255));
+        Archive.setText("ARCHIVE");
+        Archive.setBorder(null);
+        Archive.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ArchiveActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout additems_form3Layout = new javax.swing.GroupLayout(additems_form3);
+        additems_form3.setLayout(additems_form3Layout);
+        additems_form3Layout.setHorizontalGroup(
+            additems_form3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(additems_form3Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(additems_form3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(itemName3, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                    .addComponent(jLabel30, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE))
+                .addGap(160, 160, 160)
+                .addComponent(Archive, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+        additems_form3Layout.setVerticalGroup(
+            additems_form3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(additems_form3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(itemName3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
+                .addComponent(Archive, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(31, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout archiveitemLayout = new javax.swing.GroupLayout(archiveitem);
+        archiveitem.setLayout(archiveitemLayout);
+        archiveitemLayout.setHorizontalGroup(
+            archiveitemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, archiveitemLayout.createSequentialGroup()
+                .addContainerGap(119, Short.MAX_VALUE)
+                .addComponent(additems_form3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(103, 103, 103))
+        );
+        archiveitemLayout.setVerticalGroup(
+            archiveitemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(archiveitemLayout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(additems_form3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(340, Short.MAX_VALUE))
+        );
+
+        itemsTab.addTab("ARCHIVE ITEMS", archiveitem);
 
         jScrollPane1.setViewportView(itemsTab);
 
@@ -1008,10 +1096,7 @@ public class Home extends javax.swing.JFrame {
         );
         jobs_sideLayout.setVerticalGroup(
             jobs_sideLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jobs_sideLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jobs_side_label, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jobs_side_label, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
         );
 
         left_sidebar.add(jobs_side);
@@ -1024,6 +1109,109 @@ public class Home extends javax.swing.JFrame {
         left_sidebar.add(adminName);
         adminName.setBounds(10, 160, 230, 40);
 
+        category_side.setBackground(new java.awt.Color(8, 40, 41));
+        category_side.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                category_sideMouseClicked(evt);
+            }
+        });
+
+        category_side_label.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        category_side_label.setForeground(new java.awt.Color(255, 255, 255));
+        category_side_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        category_side_label.setText("CATEGORIES");
+
+        javax.swing.GroupLayout category_sideLayout = new javax.swing.GroupLayout(category_side);
+        category_side.setLayout(category_sideLayout);
+        category_sideLayout.setHorizontalGroup(
+            category_sideLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(category_sideLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(category_side_label, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        category_sideLayout.setVerticalGroup(
+            category_sideLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, category_sideLayout.createSequentialGroup()
+                .addGap(0, 20, Short.MAX_VALUE)
+                .addComponent(category_side_label, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        left_sidebar.add(category_side);
+        category_side.setBounds(0, 440, 250, 60);
+
+        category_side1.setBackground(new java.awt.Color(8, 40, 41));
+        category_side1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                category_side1MouseClicked(evt);
+            }
+        });
+
+        category_side_label1.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        category_side_label1.setForeground(new java.awt.Color(255, 255, 255));
+        category_side_label1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        category_side_label1.setText("USERS");
+
+        javax.swing.GroupLayout category_side1Layout = new javax.swing.GroupLayout(category_side1);
+        category_side1.setLayout(category_side1Layout);
+        category_side1Layout.setHorizontalGroup(
+            category_side1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 250, Short.MAX_VALUE)
+            .addGroup(category_side1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(category_side1Layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(category_side_label1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        category_side1Layout.setVerticalGroup(
+            category_side1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 60, Short.MAX_VALUE)
+            .addGroup(category_side1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(category_side1Layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(category_side_label1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+
+        left_sidebar.add(category_side1);
+        category_side1.setBounds(0, 500, 250, 60);
+
+        category_side2.setBackground(new java.awt.Color(8, 40, 41));
+        category_side2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                category_side2MouseClicked(evt);
+            }
+        });
+
+        category_side_label2.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        category_side_label2.setForeground(new java.awt.Color(255, 255, 255));
+        category_side_label2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        category_side_label2.setText("LOGOUT");
+
+        javax.swing.GroupLayout category_side2Layout = new javax.swing.GroupLayout(category_side2);
+        category_side2.setLayout(category_side2Layout);
+        category_side2Layout.setHorizontalGroup(
+            category_side2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 250, Short.MAX_VALUE)
+            .addGroup(category_side2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(category_side2Layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(category_side_label2, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        category_side2Layout.setVerticalGroup(
+            category_side2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 60, Short.MAX_VALUE)
+            .addGroup(category_side2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(category_side2Layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(category_side_label2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+
+        left_sidebar.add(category_side2);
+        category_side2.setBounds(0, 540, 250, 60);
+
         whole.add(left_sidebar);
         left_sidebar.setBounds(0, 80, 250, 710);
 
@@ -1031,11 +1219,11 @@ public class Home extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(whole, javax.swing.GroupLayout.DEFAULT_SIZE, 1051, Short.MAX_VALUE)
+            .addComponent(whole, javax.swing.GroupLayout.DEFAULT_SIZE, 1500, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(whole, javax.swing.GroupLayout.DEFAULT_SIZE, 791, Short.MAX_VALUE)
+            .addComponent(whole, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
         );
 
         pack();
@@ -1064,12 +1252,26 @@ public class Home extends javax.swing.JFrame {
                   
             try {             
                 Connection con = Connect.getConnection();
-                ResultSet rs = CRUD.selecTypeIDFromItemType(con, itemTypeName);   
+                ResultSet rs = CRUD.selectTypeIDFromItemType(con, itemTypeName);   
                 rs.next();
                 int itemTypeID = rs.getInt("type_id");
                 if(!CRUD.checkItemExists(con, itemName)){
                    System.out.println("Good, Not Found");                
                    CRUD.insertItem(con, itemName, itemQty, itemTypeID, itemMetric,userid,userid);
+                   rs = CRUD.selectItemInfoUsingItemName(con,itemName);
+                   rs.next();
+                   Item it = new Item(
+                           rs.getInt("item_id"),
+                           rs.getString("item_name"),
+                           rs.getInt("quantity"),
+                           rs.getString("metric"),
+                           rs.getInt("type"),
+                           rs.getInt("added_by"),
+                           rs.getDate("added_date"),
+                           rs.getInt("updated_by"),
+                           rs.getDate("updated_date"),
+                           rs.getInt("removed")
+                   );
                    JOptionPane.showMessageDialog(null, "Item has been successfully added!");
                }else{
                  System.out.println("sad,Found");
@@ -1091,7 +1293,7 @@ public class Home extends javax.swing.JFrame {
             String itemMetric = ItemMetricList2.getSelectedItem().toString();
             try {
                 Connection con = Connect.getConnection();
-                ResultSet rs = CRUD.selecTypeIDFromItemType(con, itemTypeName);
+                ResultSet rs = CRUD.selectTypeIDFromItemType(con, itemTypeName);
                 rs.next();
                 int itemTypeID = rs.getInt("type_id");
                 CRUD.updateItem(con, itemName, itemQty, itemTypeID, itemMetric, userid);
@@ -1125,6 +1327,7 @@ public class Home extends javax.swing.JFrame {
                 }else{
                     CRUD.insertItemType(con, typeName, typeDetails,userid,userid,0);
                     JOptionPane.showMessageDialog(null, "Successfully Added!");
+                    
                 }
               
             }catch (SQLException ex) {
@@ -1153,6 +1356,39 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_ItemTypeNameList2ActionPerformed
 
+    private void ArchiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArchiveActionPerformed
+        // TODO add your handling code here:
+        if(!itemName3.getText().isEmpty()){
+            String itemName = itemName3.getText();
+     
+            try {
+                Connection con = Connect.getConnection();
+                CRUD.archiveItem(con, itemName);             
+                JOptionPane.showMessageDialog(null, "Successfully Archived!");
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "Field must not be empty");
+        }
+    }//GEN-LAST:event_ArchiveActionPerformed
+
+    private void category_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_category_sideMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_category_sideMouseClicked
+
+    private void category_side1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_category_side1MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_category_side1MouseClicked
+
+    private void category_side2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_category_side2MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_category_side2MouseClicked
+
+    private void itemsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemsTableMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_itemsTableMouseClicked
+
     public static void main(String args[]) {
         
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -1174,6 +1410,7 @@ public class Home extends javax.swing.JFrame {
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Archive;
     private javax.swing.JComboBox<String> ItemMetricList;
     private javax.swing.JComboBox<String> ItemMetricList2;
     private javax.swing.JComboBox<String> ItemTypeNameList;
@@ -1188,17 +1425,26 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel additems2;
     private javax.swing.JPanel additems_form;
     private javax.swing.JPanel additems_form2;
+    private javax.swing.JPanel additems_form3;
     private javax.swing.JPanel additems_form4;
     private javax.swing.JPanel additems_form5;
     private javax.swing.JPanel additemtype;
     private javax.swing.JPanel additemtype_form;
     private javax.swing.JLabel adminName;
+    private javax.swing.JPanel archiveitem;
+    private javax.swing.JPanel category_side;
+    private javax.swing.JPanel category_side1;
+    private javax.swing.JPanel category_side2;
+    private javax.swing.JLabel category_side_label;
+    private javax.swing.JLabel category_side_label1;
+    private javax.swing.JLabel category_side_label2;
     private javax.swing.JPanel dashboard;
     private javax.swing.JLabel dashboard_label;
     private javax.swing.JPanel dashboard_side;
     private javax.swing.JLabel dashboard_side_label;
     private javax.swing.JLabel dashboard_up_label;
     private javax.swing.JTextField itemName2;
+    private javax.swing.JTextField itemName3;
     private javax.swing.JTextField itemname;
     private javax.swing.JTextField itemqty;
     private javax.swing.JTextField itemqty1;
@@ -1216,6 +1462,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel38;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel40;
