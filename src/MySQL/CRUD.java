@@ -115,7 +115,18 @@ public class CRUD {
         ResultSet rs = stmt.executeQuery("SELECT type_id from item_type where type_name='"+typeName+"' ");
         return rs.next();
     }
-    
+    public static ResultSet selectItemTypeInfo(Connection con) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * from item_type");
+        return rs;
+    }
+    public static ResultSet selectItemTypeInfoUsingTypeName(Connection con,String typeName) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * from item_type where type_name ='"+typeName+"' ");
+        return rs;
+    }
     public static ResultSet selectTypeIDFromItemType(Connection con,String itemTypeName) throws SQLException{
         Statement stmt;
         stmt = con.createStatement();

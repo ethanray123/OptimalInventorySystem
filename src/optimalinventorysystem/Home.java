@@ -3,6 +3,7 @@ package optimalinventorysystem;
 import MySQL.CRUD;
 import MySQL.Connect;
 import Entities.Item;
+import Entities.ItemType;
 import java.text.DateFormat;
 import java.awt.Color;
 import java.awt.HeadlessException;
@@ -38,6 +39,7 @@ public class Home extends javax.swing.JFrame {
         dashboard();
         initializeItemTypeNameList();
         ShowItemsTable();
+        showItemTypeTable();
     }
     
     public void dashboard()
@@ -1330,7 +1332,7 @@ public class Home extends javax.swing.JFrame {
                            rs.getInt("updated_by"),
                            rs.getDate("updated_date")                       
                    );
-                   addRowstoItemsTable(it);
+                   addRowtoItemsTable(it);
                    JOptionPane.showMessageDialog(null, "Item has been successfully added!");
                }else{
                  System.out.println("sad,Found");
@@ -1385,6 +1387,20 @@ public class Home extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Item Type Name already exists!");
                 }else{
                     CRUD.insertItemType(con, typeName, typeDetails,userid,userid,0);
+                    ResultSet rs = CRUD.selectItemTypeInfoUsingTypeName(con, typeName);
+                    rs.next();  
+                    ItemType itp = new ItemType(
+                        rs.getInt("type_id"),
+                        rs.getString("type_name"),
+                        rs.getString("type_details"),
+                        rs.getInt("added_by"),
+                        rs.getDate("added_date"),
+                        rs.getInt("updated_by"),
+                        rs.getDate("updated_date")  
+                    );
+                    addRowtoItemTypeTable(itp);
+                    ItemTypeNameList.addItem(typeName);
+                    ItemTypeNameList2.addItem(typeName);
                     JOptionPane.showMessageDialog(null, "Successfully Added!");
                     
                 }
@@ -1537,7 +1553,7 @@ public class Home extends javax.swing.JFrame {
             model.addRow(row);
         }
     }
-    public void addRowstoItemsTable(Item it){
+    public void addRowtoItemsTable(Item it){
         DefaultTableModel model = (DefaultTableModel)itemsTable.getModel();
         Object[] row = new Object[9];
         row[0] = it.getID();
@@ -1555,12 +1571,61 @@ public class Home extends javax.swing.JFrame {
     // END OF ITEMS TABLE 
     
     //ITEM TYPE TABLE
-//    public ArrayList<> getItemTypeTable(){
-//        
-//    }
-//    public void showItemTypeTable(){
-//        
-//    }
+    public ArrayList<ItemType> getItemTypeList(){
+        ArrayList<ItemType> ItemTypeList = new ArrayList<>();
+        Connection con = Connect.getConnection();
+        try {
+           
+            ResultSet rs = CRUD.selectItemTypeInfo(con);       
+            ItemType itp;
+            while(rs.next()){
+                itp = new ItemType(
+                rs.getInt("type_id"),
+                rs.getString("type_name"),
+                rs.getString("type_details"),
+                rs.getInt("added_by"),
+                rs.getDate("added_date"),
+                rs.getInt("updated_by"),
+                rs.getDate("updated_date")    
+                );
+                ItemTypeList.add(itp);
+            }
+            
+          
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ItemTypeList;
+    }
+    
+    public void showItemTypeTable(){
+        ArrayList<ItemType> ItemTypeList = getItemTypeList();
+        DefaultTableModel model = (DefaultTableModel)itemTypeTable.getModel();
+        Object[] row = new Object[7];
+        for(ItemType itp : ItemTypeList){
+            row[0] = itp.getID();
+            row[1] = itp.getName();
+            row[2] = itp.getDetails();
+            row[3] = itp.getAddedBy();
+            row[4] = dateFormat.format(itp.getAddedOn());
+            row[5] = itp.getUpdatedBy();
+            row[6] = dateFormat.format(itp.getUpdatedOn());
+            model.addRow(row);
+        }
+    }
+    
+    public void addRowtoItemTypeTable(ItemType itp){
+        DefaultTableModel model = (DefaultTableModel)itemTypeTable.getModel();
+        Object[] row = new Object[7];
+        row[0] = itp.getID();
+        row[1] = itp.getName();
+        row[2] = itp.getDetails();
+        row[3] = itp.getAddedBy();
+        row[4] = dateFormat.format(itp.getAddedOn());
+        row[5] = itp.getUpdatedBy();
+        row[6] = dateFormat.format(itp.getUpdatedOn());
+        model.addRow(row);
+    }
     
     //END OF ITEM TYPE TABLE
     
