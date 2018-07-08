@@ -17,14 +17,14 @@ public class Item {
     private int quantity;
     private String metric;
     private int type;
-    private int addedBy;
+    private String addedBy;
     private Date addedOn;
-    private int updatedBy;
+    private String updatedBy;
     private Date updatedOn;
     private boolean removed;
     
     public Item(int ID, String Itemname, int Quantity, String Metric, int Type,
-            int Adder, Date AddDate, int Updater, Date UpdateDate){
+            String Adder, Date AddDate, String Updater, Date UpdateDate){
         this.id = ID;
         this.name = Itemname;
         this.quantity = Quantity;
@@ -61,7 +61,7 @@ public class Item {
         return type;
     }
     
-    public int getAddedBy(){
+    public String getAddedBy(){
         return addedBy;
     }
     
@@ -69,7 +69,7 @@ public class Item {
         return addedOn;
     }
     
-    public int getUpdatedBy(){
+    public String getUpdatedBy(){
         return updatedBy;
     }
     
@@ -98,7 +98,7 @@ public class Item {
         this.type = itemType;
     }
     
-    public void setAddedBy(int itemAdder){
+    public void setAddedBy(String itemAdder){
         this.addedBy = itemAdder;
     }
     
@@ -106,7 +106,7 @@ public class Item {
         this.addedOn = dateAdded;
     }
     
-    public void setUpdatedBy(int itemUpdater){
+    public void setUpdatedBy(String itemUpdater){
         this.updatedBy = itemUpdater;
     }
     

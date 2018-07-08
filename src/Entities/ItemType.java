@@ -15,13 +15,13 @@ public class ItemType {
     private final int id;   
     private String name;
     private String details;
-    private int addedBy;
+    private String addedBy;
     private Date addedOn;
-    private int updatedBy;
+    private String updatedBy;
     private Date updatedOn;
     private boolean removed;
     
-    public ItemType(int ID,String Name, String Details, int Adder, Date AddDate, int Updater, Date UpdateDate){
+    public ItemType(int ID,String Name, String Details, String Adder, Date AddDate, String Updater, Date UpdateDate){
         this.id = ID;
         this.name = Name;
         this.details = Details;
@@ -39,7 +39,7 @@ public class ItemType {
     public String getDetails(){
         return details;
     }
-    public int getAddedBy(){
+    public String getAddedBy(){
         return addedBy;
     }
     
@@ -47,7 +47,7 @@ public class ItemType {
         return addedOn;
     }
     
-    public int getUpdatedBy(){
+    public String getUpdatedBy(){
         return updatedBy;
     }
     
