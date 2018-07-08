@@ -1,6 +1,7 @@
 
 package Entities;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -9,20 +10,35 @@ import java.util.Date;
  */
 public class Job {
     private final int job_id;
+    private String job_name;
     private final int category_id;
     private String added_by;
-    private Date added_date;
+    private Timestamp added_date;
     private String updated_by;
-    private Date updated_date;
+    private Timestamp updated_date;
+    private int removedVal;
     
-    public Job(int ID, int catID, String Adder, Date AddDate, String Updater, 
-        Date UpdateDate){
+    public Job(int ID, String name, int catID, String Adder, Timestamp AddDate, String Updater, 
+        Timestamp UpdateDate){
         this.job_id = ID;
+        this.job_name = name;
         this.category_id = catID;
         this.added_by = Adder;
         this.added_date = AddDate;
         this.updated_by = Updater;
         this.updated_date = UpdateDate;
+    }
+    
+    public Job(int ID, String name, int catID, String Adder, Timestamp AddDate, String Updater, 
+        Timestamp UpdateDate, int removed){
+        this.job_id = ID;
+        this.job_name = name;
+        this.category_id = catID;
+        this.added_by = Adder;
+        this.added_date = AddDate;
+        this.updated_by = Updater;
+        this.updated_date = UpdateDate;
+        this.removedVal = removed;
     }
 
     public Job(int aInt) {
@@ -31,35 +47,48 @@ public class Job {
     
     //GETTERS
     public int getID(){
-        return job_id;
+        return this.job_id;
+    }
+    
+    public String getName(){
+        return this.job_name;
     }
     
     public int getCatID(){
-        return category_id;
+        return this.category_id;
     }
     
     public String getAddedBy(){
-        return added_by;
+        return this.added_by;
     }
     
-    public Date getAddedOn(){
-        return added_date;
+    public Timestamp getAddedOn(){
+        return this.added_date;
     }
     
     public String getUpdatedBy(){
-        return updated_by;
+        return this.updated_by;
     }
     
-    public Date getUpdatedOn(){
-        return updated_date;
+    public Timestamp getUpdatedOn(){
+        return this.updated_date;
+    }
+    
+    public int getRemoved(){
+        return this.removedVal;
     }
     
     //SETTERS
+    public void getName(String name){
+        this.job_name = name;
+    }
+    
     public void setAddedBy(String jobAdder){
         this.added_by = jobAdder;
     }
     
-    public void setAddedOn(Date dateAdded){
+    
+    public void setAddedOn(Timestamp dateAdded){
         this.added_date = dateAdded;
     }
     
@@ -67,7 +96,11 @@ public class Job {
         this.updated_by = jobUpdater;
     }
     
-    public void setUpdatedOn(Date dateUpdated){
+    public void setUpdatedOn(Timestamp dateUpdated){
         this.updated_date = dateUpdated;
+    }
+    
+    public void setRemoved(int removed){
+        this.removedVal = removed;
     }
 }

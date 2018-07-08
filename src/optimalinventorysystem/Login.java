@@ -14,6 +14,7 @@ import java.awt.Color;
 
 public class Login extends javax.swing.JFrame {
     public static String admin;
+    public static int userid = -1;
 
     public Login() {
         initComponents();
@@ -153,6 +154,8 @@ public class Login extends javax.swing.JFrame {
                     ResultSet rs = CRUD.selectUserPassword(con, username);
                     rs.next();
                     String retrievePassword = rs.getString("password");
+                    
+                    userid = rs.getInt("user_id");
                     if((HashPassword.hashPassword(password)).equals(retrievePassword)){
                         Home h = new Home();
                         h.setVisible(true);
