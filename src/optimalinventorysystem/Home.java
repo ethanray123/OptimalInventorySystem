@@ -105,8 +105,14 @@ public class Home extends javax.swing.JFrame {
         dashboard = new javax.swing.JPanel();
         dashboard_label = new javax.swing.JLabel();
         items = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        Tables = new javax.swing.JTabbedPane();
+        itemsTablePanel = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         itemsTable = new javax.swing.JTable();
+        iTtable = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        itemTypeTable = new javax.swing.JTable();
         jScrollPane1 = new javax.swing.JScrollPane();
         itemsTab = new javax.swing.JTabbedPane();
         additemtype = new javax.swing.JPanel();
@@ -194,9 +200,11 @@ public class Home extends javax.swing.JFrame {
         whole.setLayout(null);
 
         right_sidebar.setBackground(new java.awt.Color(5, 32, 33));
+        right_sidebar.setPreferredSize(new java.awt.Dimension(1500, 800));
         right_sidebar.setLayout(null);
 
         dashboard.setBackground(new java.awt.Color(5, 32, 33));
+        dashboard.setPreferredSize(new java.awt.Dimension(1500, 800));
 
         dashboard_label.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
         dashboard_label.setForeground(new java.awt.Color(255, 255, 255));
@@ -224,13 +232,16 @@ public class Home extends javax.swing.JFrame {
         dashboard.setBounds(0, 0, 800, 710);
 
         items.setBackground(new java.awt.Color(5, 32, 33));
+        items.setPreferredSize(new java.awt.Dimension(1500, 800));
+
+        jScrollPane4.setPreferredSize(new java.awt.Dimension(818, 968));
 
         itemsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ITEM ID", "ITEM NAME", "ITEM QUANTITY", "ITEM METRIC", "ITEM TYPE"
+                "ITEM ID", "ITEM NAME", "ITEM QUANTITY", "ITEM METRIC", "ITEM TYPE", "ADDED BY", "ADDED DATE", "UPDATED BY", "UPDATED DATEl"
             }
         ));
         itemsTable.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -239,6 +250,57 @@ public class Home extends javax.swing.JFrame {
             }
         });
         jScrollPane3.setViewportView(itemsTable);
+
+        javax.swing.GroupLayout itemsTablePanelLayout = new javax.swing.GroupLayout(itemsTablePanel);
+        itemsTablePanel.setLayout(itemsTablePanelLayout);
+        itemsTablePanelLayout.setHorizontalGroup(
+            itemsTablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(itemsTablePanelLayout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 1300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 666, Short.MAX_VALUE))
+        );
+        itemsTablePanelLayout.setVerticalGroup(
+            itemsTablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(itemsTablePanelLayout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 511, Short.MAX_VALUE))
+        );
+
+        Tables.addTab("Items Table", itemsTablePanel);
+
+        itemTypeTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "TYPE ID", "TYPE NAME", "TYPE DETAILS", "ADDED BY", "ADDED DATE", "UPDATED BY", "UPDATED DATE"
+            }
+        ));
+        itemTypeTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                itemTypeTableMouseClicked(evt);
+            }
+        });
+        jScrollPane6.setViewportView(itemTypeTable);
+
+        javax.swing.GroupLayout iTtableLayout = new javax.swing.GroupLayout(iTtable);
+        iTtable.setLayout(iTtableLayout);
+        iTtableLayout.setHorizontalGroup(
+            iTtableLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(iTtableLayout.createSequentialGroup()
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 1300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 666, Short.MAX_VALUE))
+        );
+        iTtableLayout.setVerticalGroup(
+            iTtableLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(iTtableLayout.createSequentialGroup()
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 511, Short.MAX_VALUE))
+        );
+
+        Tables.addTab("Item Type Table", iTtable);
+
+        jScrollPane4.setViewportView(Tables);
 
         additemtype.setBackground(new java.awt.Color(5, 32, 33));
 
@@ -321,17 +383,15 @@ public class Home extends javax.swing.JFrame {
         additemtype.setLayout(additemtypeLayout);
         additemtypeLayout.setHorizontalGroup(
             additemtypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, additemtypeLayout.createSequentialGroup()
-                .addContainerGap(120, Short.MAX_VALUE)
+            .addGroup(additemtypeLayout.createSequentialGroup()
                 .addComponent(additemtype_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(102, 102, 102))
+                .addGap(0, 887, Short.MAX_VALUE))
         );
         additemtypeLayout.setVerticalGroup(
             additemtypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(additemtypeLayout.createSequentialGroup()
-                .addGap(26, 26, 26)
                 .addComponent(additemtype_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(341, Short.MAX_VALUE))
+                .addGap(0, 664, Short.MAX_VALUE))
         );
 
         itemsTab.addTab("ADD ITEM TYPE", additemtype);
@@ -452,17 +512,15 @@ public class Home extends javax.swing.JFrame {
         additems.setLayout(additemsLayout);
         additemsLayout.setHorizontalGroup(
             additemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, additemsLayout.createSequentialGroup()
-                .addContainerGap(120, Short.MAX_VALUE)
+            .addGroup(additemsLayout.createSequentialGroup()
                 .addComponent(additems_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(102, 102, 102))
+                .addGap(0, 887, Short.MAX_VALUE))
         );
         additemsLayout.setVerticalGroup(
             additemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(additemsLayout.createSequentialGroup()
-                .addGap(26, 26, 26)
                 .addComponent(additems_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(341, Short.MAX_VALUE))
+                .addGap(0, 664, Short.MAX_VALUE))
         );
 
         itemsTab.addTab("ADD ITEMS", additems);
@@ -576,24 +634,22 @@ public class Home extends javax.swing.JFrame {
                     .addComponent(ItemTypeNameList2))
                 .addGap(18, 18, Short.MAX_VALUE)
                 .addComponent(Update, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout updateitemsLayout = new javax.swing.GroupLayout(updateitems);
         updateitems.setLayout(updateitemsLayout);
         updateitemsLayout.setHorizontalGroup(
             updateitemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, updateitemsLayout.createSequentialGroup()
-                .addContainerGap(119, Short.MAX_VALUE)
+            .addGroup(updateitemsLayout.createSequentialGroup()
                 .addComponent(additems_form2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(103, 103, 103))
+                .addGap(0, 887, Short.MAX_VALUE))
         );
         updateitemsLayout.setVerticalGroup(
             updateitemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(updateitemsLayout.createSequentialGroup()
-                .addGap(27, 27, 27)
                 .addComponent(additems_form2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(340, Short.MAX_VALUE))
+                .addGap(0, 674, Short.MAX_VALUE))
         );
 
         itemsTab.addTab("UPDATE ITEMS", updateitems);
@@ -655,17 +711,15 @@ public class Home extends javax.swing.JFrame {
         archiveitem.setLayout(archiveitemLayout);
         archiveitemLayout.setHorizontalGroup(
             archiveitemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, archiveitemLayout.createSequentialGroup()
-                .addContainerGap(119, Short.MAX_VALUE)
+            .addGroup(archiveitemLayout.createSequentialGroup()
                 .addComponent(additems_form3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(103, 103, 103))
+                .addGap(0, 887, Short.MAX_VALUE))
         );
         archiveitemLayout.setVerticalGroup(
             archiveitemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(archiveitemLayout.createSequentialGroup()
-                .addGap(27, 27, 27)
                 .addComponent(additems_form3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(340, Short.MAX_VALUE))
+                .addGap(0, 664, Short.MAX_VALUE))
         );
 
         itemsTab.addTab("ARCHIVE ITEMS", archiveitem);
@@ -678,23 +732,22 @@ public class Home extends javax.swing.JFrame {
             itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(itemsLayout.createSequentialGroup()
                 .addGroup(itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 834, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(itemsLayout.createSequentialGroup()
-                        .addGap(29, 29, 29)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 736, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1500, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 1500, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         itemsLayout.setVerticalGroup(
             itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, itemsLayout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
+        jScrollPane4.getAccessibleContext().setAccessibleName("");
+
         right_sidebar.add(items);
-        items.setBounds(0, 0, 800, 710);
+        items.setBounds(0, 0, 1500, 700);
 
         jobs.setBackground(new java.awt.Color(5, 32, 33));
 
@@ -965,10 +1018,11 @@ public class Home extends javax.swing.JFrame {
         jobs.setBounds(0, 0, 800, 710);
 
         whole.add(right_sidebar);
-        right_sidebar.setBounds(250, 80, 800, 710);
+        right_sidebar.setBounds(250, 80, 1500, 800);
 
         upper_dashboard_panel.setBackground(new java.awt.Color(15, 74, 74));
         upper_dashboard_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102)));
+        upper_dashboard_panel.setPreferredSize(new java.awt.Dimension(1500, 800));
         upper_dashboard_panel.setLayout(null);
 
         dashboard_up_label.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
@@ -976,10 +1030,10 @@ public class Home extends javax.swing.JFrame {
         dashboard_up_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         dashboard_up_label.setText("OPTIMAL  /  DASHBOARD");
         upper_dashboard_panel.add(dashboard_up_label);
-        dashboard_up_label.setBounds(30, 10, 220, 60);
+        dashboard_up_label.setBounds(30, 10, 1050, 60);
 
         whole.add(upper_dashboard_panel);
-        upper_dashboard_panel.setBounds(0, 0, 1050, 80);
+        upper_dashboard_panel.setBounds(0, 0, 1500, 80);
 
         upper_items_panel.setBackground(new java.awt.Color(15, 74, 74));
         upper_items_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102)));
@@ -990,10 +1044,10 @@ public class Home extends javax.swing.JFrame {
         items_up_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         items_up_label.setText("OPTIMAL  /  ITEMS");
         upper_items_panel.add(items_up_label);
-        items_up_label.setBounds(30, 10, 220, 60);
+        items_up_label.setBounds(30, 10, 1500, 60);
 
         whole.add(upper_items_panel);
-        upper_items_panel.setBounds(0, 0, 1050, 80);
+        upper_items_panel.setBounds(0, 0, 1500, 80);
 
         upper_jobs_panel.setBackground(new java.awt.Color(15, 74, 74));
         upper_jobs_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102)));
@@ -1416,6 +1470,10 @@ public class Home extends javax.swing.JFrame {
        ItemTypeNameList.setSelectedIndex(index);
     }//GEN-LAST:event_itemsTableMouseClicked
 
+    private void itemTypeTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemTypeTableMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_itemTypeTableMouseClicked
+
     public static void main(String args[]) {
         
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -1436,6 +1494,7 @@ public class Home extends javax.swing.JFrame {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    //ITEMS TABLE
     public ArrayList<Item> getItemList(){
         ArrayList<Item> itemList = new ArrayList<>();
         Connection con = Connect.getConnection();
@@ -1464,39 +1523,54 @@ public class Home extends javax.swing.JFrame {
     public void ShowItemsTable(){
         ArrayList<Item> itemList = getItemList();
         DefaultTableModel model = (DefaultTableModel)itemsTable.getModel();
-        Object[] row = new Object[8];
+        Object[] row = new Object[9];
         for(Item it : itemList){
             row[0] = it.getID();
             row[1] = it.getName();
             row[2] = it.getQuantity();
             row[3] = it.getMetric();
-            row[4] = it.getAddedBy();
-            row[5] = dateFormat.format(it.getAddedOn());
-            row[6] = it.getUpdatedBy();
-            row[7] = dateFormat.format(it.getUpdatedOn());
+            row[4] = it.getType();
+            row[5] = it.getAddedBy();
+            row[6] = dateFormat.format(it.getAddedOn());
+            row[7] = it.getUpdatedBy();
+            row[8] = dateFormat.format(it.getUpdatedOn());
             model.addRow(row);
         }
     }
     public void addRowstoItemsTable(Item it){
         DefaultTableModel model = (DefaultTableModel)itemsTable.getModel();
-        Object[] row = new Object[8];
+        Object[] row = new Object[9];
         row[0] = it.getID();
         row[1] = it.getName();
         row[2] = it.getQuantity();
         row[3] = it.getMetric();
-        row[4] = it.getAddedBy();
-        row[5] = dateFormat.format(it.getAddedOn());
-        row[6] = it.getUpdatedBy();
-        row[7] = dateFormat.format(it.getUpdatedOn());
+        row[4] = it.getType();
+        row[5] = it.getAddedBy();
+        row[6] = dateFormat.format(it.getAddedOn());
+        row[7] = it.getUpdatedBy();
+        row[8] = dateFormat.format(it.getUpdatedOn());
        
         model.addRow(row);
     }
+    // END OF ITEMS TABLE 
+    
+    //ITEM TYPE TABLE
+//    public ArrayList<> getItemTypeTable(){
+//        
+//    }
+//    public void showItemTypeTable(){
+//        
+//    }
+    
+    //END OF ITEM TYPE TABLE
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Archive;
     private javax.swing.JComboBox<String> ItemMetricList;
     private javax.swing.JComboBox<String> ItemMetricList2;
     private javax.swing.JComboBox<String> ItemTypeNameList;
     private javax.swing.JComboBox<String> ItemTypeNameList2;
+    private javax.swing.JTabbedPane Tables;
     private javax.swing.JButton Update;
     private javax.swing.JButton addItemType_save;
     private javax.swing.JButton addItem_save;
@@ -1525,8 +1599,10 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel dashboard_side;
     private javax.swing.JLabel dashboard_side_label;
     private javax.swing.JLabel dashboard_up_label;
+    private javax.swing.JPanel iTtable;
     private javax.swing.JTextField itemName2;
     private javax.swing.JTextField itemName3;
+    private javax.swing.JTable itemTypeTable;
     private javax.swing.JTextField itemname;
     private javax.swing.JTextField itemqty;
     private javax.swing.JTextField itemqty1;
@@ -1534,6 +1610,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel items;
     private javax.swing.JTabbedPane itemsTab;
     private javax.swing.JTable itemsTable;
+    private javax.swing.JPanel itemsTablePanel;
     private javax.swing.JPanel items_side;
     private javax.swing.JLabel items_side_label;
     private javax.swing.JLabel items_up_label;
@@ -1556,7 +1633,9 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JTextField jobcat;
     private javax.swing.JTextField jobcat1;
