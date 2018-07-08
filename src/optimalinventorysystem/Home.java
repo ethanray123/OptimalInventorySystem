@@ -212,10 +212,12 @@ public class Home extends javax.swing.JFrame {
             User user;
             while(rs.next())
             {
+                String addedBy = CRUD.selectFullname(con, rs.getInt("added_by"));
+                String updatedBy = CRUD.selectFullname(con, rs.getInt("updated_by"));
                 user = new User(rs.getInt("user_id"),rs.getString("username"),
-                        rs.getString("full_name"),rs.getInt("added_by"),
-                        rs.getDate("added_date"),rs.getInt("updated_by"),
-                        rs.getDate("updated_date"));
+                        rs.getString("full_name"),addedBy,
+                        rs.getTimestamp("added_date"),updatedBy,
+                        rs.getTimestamp("updated_date"));
                 userList.add(user);
             }
         }catch(SQLException e){
@@ -279,11 +281,14 @@ public class Home extends javax.swing.JFrame {
             Category category;
             while(rs.next())
             {
+                String addedby = CRUD.selectFullname(con, rs.getInt("added_by"));
+                String updatedby = CRUD.selectFullname(con, rs.getInt("updated_by"));
                 category = new Category(rs.getInt("category_id"),
                         rs.getString("category_name"),
-                        rs.getInt("added_by"),
-                        rs.getDate("added_date"),rs.getInt("updated_by"),
-                        rs.getDate("updated_date"));
+                        addedby,
+                        rs.getTimestamp("added_date"),
+                        updatedby,
+                        rs.getTimestamp("updated_date"));
                 categoryList.add(category);
             }
         }catch(SQLException e){
@@ -352,9 +357,9 @@ public class Home extends javax.swing.JFrame {
                     rs.getInt("item_id"),
                     rs.getInt("item_quantity"),
                     rs.getInt("added_by"),
-                    rs.getDate("added_date"),
+                    rs.getTimestamp("added_date"),
                     rs.getInt("updated_by"),
-                    rs.getDate("updated_date"));
+                    rs.getTimestamp("updated_date"));
                 categoryItemList.add(catItem);
             }
         }catch(SQLException e){
@@ -428,9 +433,9 @@ public class Home extends javax.swing.JFrame {
                     rs.getString("metric"),
                     rs.getInt("type"),
                     rs.getInt("added_by"),
-                    rs.getDate("added_date"),
+                    rs.getTimestamp("added_date"),
                     rs.getInt("updated_by"),
-                    rs.getDate("updated_date"));
+                    rs.getTimestamp("updated_date"));
                 itemList.add(item);
             }
         }catch(SQLException e){
@@ -477,8 +482,11 @@ public class Home extends javax.swing.JFrame {
         categoryEditLabel = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         removeCategoryBtn = new javax.swing.JButton();
-        categoryItemEditLabel = new javax.swing.JLabel();
+        categoryItemUpdatedDate = new javax.swing.JLabel();
         clearCategoryFieldsBtn = new javax.swing.JButton();
+        categoryItemUpdatedBy = new javax.swing.JLabel();
+        categoryItemAddedDate = new javax.swing.JLabel();
+        categoryItemAddedBy = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         users = new javax.swing.JPanel();
@@ -605,7 +613,7 @@ public class Home extends javax.swing.JFrame {
             categoriesTable.getColumnModel().getColumn(5).setPreferredWidth(5);
         }
 
-        categories.add(jScrollPane11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 820, 350));
+        categories.add(jScrollPane11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 820, 350));
 
         categoryItemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -627,7 +635,7 @@ public class Home extends javax.swing.JFrame {
             categoryItemTable.getColumnModel().getColumn(1).setPreferredWidth(5);
         }
 
-        categories.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 70, 390, 350));
+        categories.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 60, 400, 350));
 
         additems_form1.setBackground(new java.awt.Color(15, 74, 74));
         additems_form1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -751,10 +759,10 @@ public class Home extends javax.swing.JFrame {
         });
         additems_form1.add(removeCategoryBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 60, 127, 42));
 
-        categoryItemEditLabel.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        categoryItemEditLabel.setForeground(new java.awt.Color(255, 255, 255));
-        categoryItemEditLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        additems_form1.add(categoryItemEditLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 130, 260, 28));
+        categoryItemUpdatedDate.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        categoryItemUpdatedDate.setForeground(new java.awt.Color(255, 255, 255));
+        categoryItemUpdatedDate.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        additems_form1.add(categoryItemUpdatedDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 210, 330, 30));
 
         clearCategoryFieldsBtn.setBackground(new java.awt.Color(175, 174, 174));
         clearCategoryFieldsBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
@@ -773,7 +781,22 @@ public class Home extends javax.swing.JFrame {
         });
         additems_form1.add(clearCategoryFieldsBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 60, 127, 42));
 
-        categories.add(additems_form1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 450, 1230, 250));
+        categoryItemUpdatedBy.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        categoryItemUpdatedBy.setForeground(new java.awt.Color(255, 255, 255));
+        categoryItemUpdatedBy.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        additems_form1.add(categoryItemUpdatedBy, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 240, 330, 30));
+
+        categoryItemAddedDate.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        categoryItemAddedDate.setForeground(new java.awt.Color(255, 255, 255));
+        categoryItemAddedDate.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        additems_form1.add(categoryItemAddedDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 150, 330, 30));
+
+        categoryItemAddedBy.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        categoryItemAddedBy.setForeground(new java.awt.Color(255, 255, 255));
+        categoryItemAddedBy.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        additems_form1.add(categoryItemAddedBy, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 180, 330, 30));
+
+        categories.add(additems_form1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 420, 1230, 280));
 
         jLabel7.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
@@ -1793,8 +1816,9 @@ public class Home extends javax.swing.JFrame {
                         DefaultTableModel model = (DefaultTableModel)usersTable.getModel(); 
                         int row = usersTable.getSelectedRow();
                         model.setValueAt(fullname, row, 2);
-                        model.setValueAt(username, row, 1);
-                        model.setValueAt(userid, row, 5);
+                        model.setValueAt(username, row, 1); 
+                        String updatedBy = CRUD.selectFullname(con, userid);
+                        model.setValueAt(updatedBy, row, 5);
                         model.setValueAt(dateFormat.format(new Date()), row, 6);
                         userEditID = - 1;
                         JOptionPane.showMessageDialog(null, "User has been successfully updated");
@@ -1825,14 +1849,16 @@ public class Home extends javax.swing.JFrame {
                             JOptionPane.showMessageDialog(null, "User has been successfully created!");
                             ResultSet rs = CRUD.selectUserInfoUsingUsername(con, username);
                             rs.next();
+                            String addedby = CRUD.selectUsername(con, rs.getInt("added_by"));
+                            String updatedby = CRUD.selectUsername(con, rs.getInt("updated_by"));
                             User u = new User(
                                 rs.getInt("user_id"),
                                 rs.getString("username"),
                                 rs.getString("full_name"),
-                                rs.getInt("added_by"),
-                                rs.getDate("added_date"),
-                                rs.getInt("updated_by"),
-                                rs.getDate("updated_date")
+                                addedby,
+                                rs.getTimestamp("added_date"),
+                                updatedby,
+                                rs.getTimestamp("updated_date")
                             );
                             addRowToUsersTable(u);
                         }else{
@@ -1872,21 +1898,27 @@ public class Home extends javax.swing.JFrame {
                 Connection con = Connect.getConnection();
                 ResultSet rs = CRUD.selectCategoryInfo(con,categoryEditID);
                 rs.next();
-                if(categoryName.equals(""))
+                if(categoryName.equals(rs.getString("category_name")))
                     JOptionPane.showMessageDialog(null, "No Changes Detected");
                 else{
                     if("".equals(categoryName)){
                         JOptionPane.showMessageDialog(null, "Category Name cannot be blank!");
                     }else{
+                        CRUD.updateCategoryName(con,categoryEditID,categoryName,userid);
                         categoryNameField.setText("");
-                        DefaultTableModel model = (DefaultTableModel)usersTable.getModel(); 
-                        int row = categoriesTable.getSelectedRow();
-                        model.setValueAt(categoryName, row, 1);
-                        model.setValueAt(userid, row, 4);
-                        model.setValueAt(dateFormat.format(new Date()), row, 5);
-                        
-                        categoryEditID = - 1;
-                        JOptionPane.showMessageDialog(null, "Category Name has been successfully updated");
+                        rs = CRUD.selectCategoryInfo(con,categoryEditID);
+                        if(rs.next()){
+                            DefaultTableModel model = (DefaultTableModel)categoriesTable.getModel(); 
+                            int row = categoriesTable.getSelectedRow();
+                            model.setValueAt(categoryName, row, 1);
+                            String updatedBy = CRUD.selectFullname(con, userid);
+                            model.setValueAt(updatedBy, row, 4);
+                            model.setValueAt(dateFormat.format(new Date()), row, 5);
+                            categoryEditID = - 1;
+                            JOptionPane.showMessageDialog(null, "Category Name has been successfully updated");
+                        }else{
+                            JOptionPane.showMessageDialog(null, "Null was returned");
+                        }
                     }
                 }
             } catch (SQLException ex) {
@@ -1906,13 +1938,15 @@ public class Home extends javax.swing.JFrame {
                         JOptionPane.showMessageDialog(null, "Category has been successfully created!");
                         ResultSet rs = CRUD.selectCategoryInfoUsingCategoryName(con, categoryName);
                         rs.next();
+                        String addedby = CRUD.selectFullname(con, rs.getInt("added_by"));
+                        String updatedby = CRUD.selectFullname(con, rs.getInt("updated_by"));
                         Category c = new Category(
                             rs.getInt("category_id"),
                             rs.getString("category_name"),
-                            rs.getInt("added_by"),
-                            rs.getDate("added_date"),
-                            rs.getInt("updated_by"),
-                            rs.getDate("updated_date")
+                            addedby,
+                            rs.getTimestamp("added_date"),
+                            updatedby,
+                            rs.getTimestamp("updated_date")
                         );
                         addRowToCategoriesTable(c);
                     }else{
@@ -1942,45 +1976,55 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_removeCategoryBtnActionPerformed
 
     private void removeCategoryBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeCategoryBtnMouseClicked
-        String categoryName = categoryNameField.getText();
-        Connection con = Connect.getConnection();
-        try {
-            ResultSet rs = CRUD.selectCategoryInfoUsingCategoryName(con, categoryName);
-            if(rs.next()){
-                boolean removed = CRUD.archiveCategory(con, rs.getInt("category_id"));
-                if(removed){
-                    JOptionPane.showMessageDialog(null, "Category successfully archived");
-                    TableModel tm = categoriesTable.getModel();
-                    for (int i = 0; i < tm.getRowCount(); i++) {
-                        Object o = tm.getValueAt(i, 1);
-                        if (o.equals(categoryNameField.getText())) {
-                            ((DefaultTableModel)categoriesTable.getModel()).removeRow(i);
-                            categoryNameField.setText("");
-                            categoryEditLabel.setText("");
-                            categoryItemEditLabel.setText("");
-                            categoryDropdown.setSelectedIndex(0);
-                            itemDropdown.setSelectedIndex(0);
-                            itemQuantitySpinner.setValue(0);
-                            categoriesTable.getSelectionModel().clearSelection();
-                            categoryEditID = - 1;
-                        }else{
-                            System.out.println((String)o);
-                            System.out.println(categoryNameField);
+        int dialogButton = JOptionPane.YES_NO_OPTION;
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Are you sure "
+            + "you want to arhive this category?","Confirm", dialogButton);
+        
+        if(dialogResult == JOptionPane.YES_OPTION){
+            String categoryName = categoryNameField.getText();
+            Connection con = Connect.getConnection();
+            try {
+                ResultSet rs = CRUD.selectCategoryInfoUsingCategoryName(con, categoryName);
+                if(rs.next()){
+                    boolean removed = CRUD.archiveCategory(con, rs.getInt("category_id"));
+                    if(removed){
+                        JOptionPane.showMessageDialog(null, "Category successfully archived");
+                        TableModel tm = categoriesTable.getModel();
+                        for (int i = 0; i < tm.getRowCount(); i++) {
+                            Object o = tm.getValueAt(i, 1);
+                            if (o.equals(categoryNameField.getText())) {
+                                ((DefaultTableModel)categoriesTable.getModel()).removeRow(i);
+                                categoryNameField.setText("");
+                                categoryEditLabel.setText("");
+                                categoryItemUpdatedDate.setText("");
+                                categoryDropdown.setSelectedIndex(0);
+                                itemDropdown.setSelectedIndex(0);
+                                itemQuantitySpinner.setValue(0);
+                                categoriesTable.getSelectionModel().clearSelection();
+                                categoryEditID = - 1;
+                            }else{
+                                System.out.println((String)o);
+                                System.out.println(categoryNameField);
+                            }
                         }
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Category remove unsuccessful");
                     }
-                }else{
-                    JOptionPane.showMessageDialog(null, "Category remove unsuccessful");
                 }
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }//GEN-LAST:event_removeCategoryBtnMouseClicked
 
     private void clearCategoryFieldsBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clearCategoryFieldsBtnMouseClicked
         categoryNameField.setText("");
         categoryEditLabel.setText("");
-        categoryItemEditLabel.setText("");
+        categoryItemAddedDate.setText("");
+        categoryItemAddedBy.setText("");
+        categoryItemUpdatedDate.setText("");
+        categoryItemUpdatedBy.setText("");
         categoryDropdown.setSelectedIndex(0);
         itemDropdown.setSelectedIndex(0);
         itemQuantitySpinner.setValue(0);
@@ -2008,37 +2052,44 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_clearUserFieldBtnActionPerformed
 
     private void removeUserBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeUserBtnMouseClicked
-        String username = usernameField.getText();
-        Connection con = Connect.getConnection();
-        try {
-            ResultSet rs = CRUD.selectUserIDPassword(con, username);
-            if(rs.next()){
-                boolean removed = CRUD.archiveUser(con, rs.getInt("user_id"));
-                if(removed){
-                    JOptionPane.showMessageDialog(null, "User successfully archived");
-                    TableModel tm = usersTable.getModel();
-                    for (int i = 0; i < tm.getRowCount(); i++) {
-                        Object o = tm.getValueAt(i, 1);
-                        if (o.equals(usernameField.getText())) {
-                            ((DefaultTableModel)usersTable.getModel()).removeRow(i);
-                            usernameField.setText("");
-                            fullnameField.setText("");
-                            passwordField.setText("");
-                            newPasswordField.setText("");
-                            usersTable.getSelectionModel().clearSelection();
-                            userEditID = - 1;
-                        }else{
-                            System.out.println((String)o);
-                            System.out.println(usernameField);
+        int dialogButton = JOptionPane.YES_NO_OPTION;
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Are you sure "
+            + "you want to archive this user?","Confirm", dialogButton);
+        
+        if(dialogResult == JOptionPane.YES_OPTION){
+            String username = usernameField.getText();
+            Connection con = Connect.getConnection();
+            try {
+                ResultSet rs = CRUD.selectUserIDPassword(con, username);
+                if(rs.next()){
+                    boolean removed = CRUD.archiveUser(con, rs.getInt("user_id"));
+                    if(removed){
+                        JOptionPane.showMessageDialog(null, "User successfully archived");
+                        TableModel tm = usersTable.getModel();
+                        for (int i = 0; i < tm.getRowCount(); i++) {
+                            Object o = tm.getValueAt(i, 1);
+                            if (o.equals(usernameField.getText())) {
+                                ((DefaultTableModel)usersTable.getModel()).removeRow(i);
+                                usernameField.setText("");
+                                fullnameField.setText("");
+                                passwordField.setText("");
+                                newPasswordField.setText("");
+                                usersTable.getSelectionModel().clearSelection();
+                                userEditID = - 1;
+                            }else{
+                                System.out.println((String)o);
+                                System.out.println(usernameField);
+                            }
                         }
+                    }else{
+                        JOptionPane.showMessageDialog(null, "User remove unsuccessful");
                     }
-                }else{
-                    JOptionPane.showMessageDialog(null, "User remove unsuccessful");
                 }
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }//GEN-LAST:event_removeUserBtnMouseClicked
 
     private void removeUserBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeUserBtnActionPerformed
@@ -2065,7 +2116,7 @@ public class Home extends javax.swing.JFrame {
                         if(catItem.getInt("item_quantity") == itemQuantity)
                             JOptionPane.showMessageDialog(null, "No changes detected");
                         else{
-                            CRUD.updateCategoryItemQuantity(con,categoryEditID,itemID,itemQuantity);
+                            CRUD.updateCategoryItemQuantity(con,categoryEditID,itemID,itemQuantity,userid);
                             JOptionPane.showMessageDialog(null, "Category Item has been successfully updated");
                             ResultSet rs = CRUD.selectCategoryItemInfoCategoryIDItemID(con, categoryEditID, itemID);
                             rs.next();
@@ -2077,12 +2128,16 @@ public class Home extends javax.swing.JFrame {
                                     model.setValueAt(itemQuantity, i, 1);
                                     categoryNameField.setText("");
                                     categoryEditLabel.setText("");
-                                    categoryItemEditLabel.setText("");
+                                    categoryItemAddedDate.setText("");
+                                    categoryItemAddedBy.setText("");
+                                    categoryItemUpdatedDate.setText("");
+                                    categoryItemUpdatedBy.setText("");
                                     categoryDropdown.setSelectedIndex(0);
                                     itemDropdown.setSelectedIndex(0);
                                     itemQuantitySpinner.setValue(0);
                                     categoriesTable.getSelectionModel().clearSelection();
                                     categoryEditID = - 1;
+                                    categoryItemTable.getSelectionModel().clearSelection();
                                 }
                             }                        
                         }
@@ -2095,9 +2150,9 @@ public class Home extends javax.swing.JFrame {
                                 rs.getInt("item_id"),
                                 rs.getInt("item_quantity"),
                                 rs.getInt("added_by"),
-                                rs.getDate("added_date"),
+                                rs.getTimestamp("added_date"),
                                 rs.getInt("updated_by"),
-                                rs.getDate("updated_date")
+                                rs.getTimestamp("updated_date")
                         );
                         addRowToCategoryItemsTable(ci);
                         JOptionPane.showMessageDialog(null, "Category Item has been successfully added");
@@ -2121,7 +2176,7 @@ public class Home extends javax.swing.JFrame {
             SpinnerNumberModel model = new SpinnerNumberModel();
             model.setMaximum(item.getInt("quantity"));
             model.setMinimum(0);
-            itemQuantitySpinner.setModel(model);
+            itemQuantitySpinner.setModel(model);            
         } catch (SQLException ex) {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -2130,45 +2185,75 @@ public class Home extends javax.swing.JFrame {
     private void categoryItemTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_categoryItemTableMouseClicked
         DefaultTableModel model = (DefaultTableModel)categoryItemTable.getModel();
         int row = categoryItemTable.getSelectedRow();
-        itemDropdown.setSelectedItem((model.getValueAt(row,0).toString()));
+        String itemName = model.getValueAt(row,0).toString();
+        String categoryName = String.valueOf(categoryDropdown.getSelectedItem());
+        itemDropdown.setSelectedItem(itemName);
         itemQuantitySpinner.setValue(model.getValueAt(row,1));
+        Connection con = Connect.getConnection();
+        try {
+            if(categoryEditID == -1)
+                categoryEditID = CRUD.selectCategoryID(con,categoryName);
+            int itemID = CRUD.selectItemID(con, itemName);
+            ResultSet rs = CRUD.selectCategoryItemAddedUpdated(con, categoryEditID, itemID);
+            if(rs.next()){
+                String addedby = CRUD.selectFullname(con, rs.getInt("added_by"));
+                String updatedby = CRUD.selectFullname(con, rs.getInt("updated_by"));
+                categoryItemAddedDate.setText("created on: "+dateFormat.format(rs.getTimestamp("added_date")));
+                categoryItemAddedBy.setText("created by: "+addedby);
+                categoryItemUpdatedDate.setText("last updated: "+dateFormat.format(rs.getTimestamp("updated_date")));
+                categoryItemUpdatedBy.setText("updated by: "+updatedby);
+            }else{
+                JOptionPane.showMessageDialog(null, "Null was returned.");
+                System.out.println(categoryEditID);
+                System.out.println(itemID);
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_categoryItemTableMouseClicked
 
     private void removeCategoryItemBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeCategoryItemBtnMouseClicked
-        String categoryName = (String) categoryDropdown.getSelectedItem();
-        String categoryItemName = (String) itemDropdown.getSelectedItem();
-        Connection con = Connect.getConnection();
-        try {
-            int categoryID = CRUD.selectCategoryID(con, categoryName);
-            int itemID = CRUD.selectItemID(con, categoryItemName);
-            ResultSet rs = CRUD.selectCategoryItemInfoCategoryIDItemID(con, categoryID, itemID);
-            if(rs.next()){
-                boolean removed = CRUD.archiveCategoryItem(con, rs.getInt("category_id"), rs.getInt("item_id"));
-                if(removed){
-                    JOptionPane.showMessageDialog(null, "Category successfully archived");
-                    TableModel tm = categoryItemTable.getModel();
-                    for (int i = 0; i < tm.getRowCount(); i++) {
-                        Object o = tm.getValueAt(i, 0);
-                        if (o.equals(categoryItemName)) {
-                            ((DefaultTableModel)categoryItemTable.getModel()).removeRow(i);
-                            categoryDropdown.setSelectedIndex(0);
-                            categoryEditLabel.setText("");
-                            categoriesTable.getSelectionModel().clearSelection();
-                            categoryItemTable.getSelectionModel().clearSelection();
-                            categoryEditID = - 1;
-                        }else{
-                            System.out.println((String)o);
-                            System.out.println(categoryItemName);
+        int dialogButton = JOptionPane.YES_NO_OPTION;
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Are you sure "
+            + "you want to archive this category item?","Confirm", dialogButton);
+        
+        if(dialogResult == JOptionPane.YES_OPTION){
+            String categoryName = (String) categoryDropdown.getSelectedItem();
+            String categoryItemName = (String) itemDropdown.getSelectedItem();
+            Connection con = Connect.getConnection();
+            try {
+                int categoryID = CRUD.selectCategoryID(con, categoryName);
+                int itemID = CRUD.selectItemID(con, categoryItemName);
+                ResultSet rs = CRUD.selectCategoryItemInfoCategoryIDItemID(con, categoryID, itemID);
+                if(rs.next()){
+                    boolean removed = CRUD.archiveCategoryItem(con, rs.getInt("category_id"), rs.getInt("item_id"));
+                    if(removed){
+                        JOptionPane.showMessageDialog(null, "Category successfully archived");
+                        TableModel tm = categoryItemTable.getModel();
+                        for (int i = 0; i < tm.getRowCount(); i++) {
+                            Object o = tm.getValueAt(i, 0);
+                            if (o.equals(categoryItemName)) {
+                                ((DefaultTableModel)categoryItemTable.getModel()).removeRow(i);
+                                categoryDropdown.setSelectedIndex(0);
+                                categoryEditLabel.setText("");
+                                categoriesTable.getSelectionModel().clearSelection();
+                                categoryItemTable.getSelectionModel().clearSelection();
+                                categoryEditID = - 1;
+                            }else{
+                                System.out.println((String)o);
+                                System.out.println(categoryItemName);
+                            }
                         }
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Category remove unsuccessful");
                     }
                 }else{
-                    JOptionPane.showMessageDialog(null, "Category remove unsuccessful");
+                    JOptionPane.showMessageDialog(null, "Category Item not Found");
                 }
-            }else{
-                JOptionPane.showMessageDialog(null, "Category Item not Found");
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_removeCategoryItemBtnMouseClicked
 
@@ -2216,8 +2301,11 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel categories_up_label;
     private javax.swing.JComboBox<String> categoryDropdown;
     private javax.swing.JLabel categoryEditLabel;
-    private javax.swing.JLabel categoryItemEditLabel;
+    private javax.swing.JLabel categoryItemAddedBy;
+    private javax.swing.JLabel categoryItemAddedDate;
     private javax.swing.JTable categoryItemTable;
+    private javax.swing.JLabel categoryItemUpdatedBy;
+    private javax.swing.JLabel categoryItemUpdatedDate;
     private javax.swing.JTextField categoryNameField;
     private javax.swing.JButton clearCategoryFieldsBtn;
     private javax.swing.JButton clearUserFieldBtn;

@@ -11,9 +11,9 @@ import java.util.Date;
 public class Category {
     private final int id;
     private String name;
-    private final int addedBy; 
+    private final String addedBy; 
     private final Date addedOn;
-    private int updatedBy; 
+    private String updatedBy; 
     private Date updatedOn;
 //    private boolean removed;
             
@@ -26,8 +26,8 @@ public class Category {
      * @param UpdatedBy integer that holds a user ID of the user who updated the category
      * @param UpdatedOn Date specifying when the category was updated
      */
-    public Category(int ID, String Name, int AddedBy,
-            Date AddedOn, int UpdatedBy, Date UpdatedOn){
+    public Category(int ID, String Name, String AddedBy,
+            Date AddedOn, String UpdatedBy, Date UpdatedOn){
         this.id = ID;
         this.name = Name;
         this.addedBy = AddedBy;
@@ -58,7 +58,7 @@ public class Category {
      *
      * @return the ID of the user who created the category
      */
-    public int getAddedBy(){
+    public String getAddedBy(){
         return addedBy;
     }
     
@@ -74,7 +74,7 @@ public class Category {
      * 
      * @return the ID of the user who updated the category
      */
-    public int getUpdatedBy(){
+    public String getUpdatedBy(){
         return updatedBy;
     }
     
@@ -100,7 +100,7 @@ public class Category {
      *
      * @param UpdatedBy the ID of the user who recently updated the category
      */
-    public void setUpdatedBy(int UpdatedBy){
+    public void setUpdatedBy(String UpdatedBy){
         this.updatedBy = UpdatedBy;
     }
     

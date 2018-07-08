@@ -16,9 +16,9 @@ public class User {
     private String username;
     private String password;
     private String fullname;
-    private final int addedBy; 
+    private final String addedBy; 
     private final Date addedOn;
-    private int updatedBy; 
+    private String updatedBy; 
     private Date updatedOn;
 //    private boolean removed;
     
@@ -33,8 +33,8 @@ public class User {
      * @param UpdatedBy
      * @param UpdatedOn
      */
-    public User(int ID, String Username, String Fullname, String Password, int AddedBy,
-            Date AddedOn, int UpdatedBy, Date UpdatedOn){
+    public User(int ID, String Username, String Fullname, String Password, String AddedBy,
+            Date AddedOn, String UpdatedBy, Date UpdatedOn){
         this.id = ID;
         this.fullname = Fullname;
         this.username = Username;
@@ -55,8 +55,8 @@ public class User {
      * @param UpdatedBy
      * @param UpdatedOn
      */
-    public User(int ID, String Username, String Fullname, int AddedBy,
-            Date AddedOn, int UpdatedBy, Date UpdatedOn){
+    public User(int ID, String Username, String Fullname, String AddedBy,
+            Date AddedOn, String UpdatedBy, Date UpdatedOn){
         this.id = ID;
         this.fullname = Fullname;
         this.username = Username;
@@ -104,7 +104,7 @@ public class User {
      *
      * @return ID of the administrator who created the user
      */
-    public int getAddedBy(){
+    public String getAddedBy(){
         return addedBy;
     }
     
@@ -120,7 +120,7 @@ public class User {
      *
      * @return ID of the administrator who updated the user 
      */
-    public int getUpdatedBy(){
+    public String getUpdatedBy(){
         return updatedBy;
     }
     
@@ -158,26 +158,11 @@ public class User {
         this.fullname = name;
     }
     
-//    /**
-//     *
-//     * @param Admin
-//     */
-//    public void setAddedBy(int Admin){
-//        this.addedBy = Admin;
-//    }
-//    
-//    /**
-//     *
-//     */
-//    public void setAddedOn(){
-//        this.addedOn = new Date();
-//    }
-    
     /**
      *
      * @param Admin ID of the user who recently updated the user
      */
-    public void setUpdatedBy(int Admin){
+    public void setUpdatedBy(String Admin){
         this.updatedBy = Admin;
     }
     

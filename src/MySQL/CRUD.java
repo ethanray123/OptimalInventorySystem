@@ -139,6 +139,16 @@ public class CRUD {
         return rs.next();
     }
     
+    public static String selectFullname(Connection con, int userid) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT full_name from user where user_id='" + userid + "'");
+        if(rs.next())
+            return rs.getString("full_name");
+        else
+            return "N/A";
+    }
+    
     /**
      * Method returns the user ID and Password of the user with the given username
      * @param con Connection connecting the system to the database
@@ -271,17 +281,36 @@ public class CRUD {
      * @param categoryID
      * @param itemID
      * @param newItemQuantity
+     * @param adminID
      * @throws SQLException
      */
     public static void updateCategoryItemQuantity(
-            Connection con, int categoryID, int itemID, int newItemQuantity) 
+            Connection con, int categoryID, int itemID, int newItemQuantity, int adminID) 
             throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
         stmt.executeUpdate("UPDATE `category_items` "+
-                "SET `item_quantity` = '" + newItemQuantity + 
-                "' WHERE category_id = '" + categoryID + 
-                "' AND item_id = '"+itemID+"'");
+                "SET `item_quantity` = " + newItemQuantity + 
+                ", `updated_by` = "+adminID+" WHERE category_id = " + categoryID + 
+                " AND item_id = "+itemID);
+    }
+    
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryID
+     * @param newCategoryName
+     * @param adminID
+     * @throws SQLException
+     */
+    public static void updateCategoryName(
+            Connection con, int categoryID, String newCategoryName, int adminID) 
+            throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        stmt.executeUpdate("UPDATE `cleaning_category` "+
+                "SET `category_name` = '" + newCategoryName + 
+                "', `updated_by` = "+adminID+" WHERE category_id = " + categoryID);
     }
     
     /**
@@ -329,6 +358,17 @@ public class CRUD {
         String query = "SELECT category_id, item_id, item_quantity, added_by, "+
                 "added_date, updated_by, updated_date FROM `category_items` "+
                 "WHERE category_name = '"+categoryName+"' AND removed = 0";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
+    }
+    
+    
+    public static ResultSet selectCategoryItemAddedUpdated(Connection con, int categoryID, int itemID) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT added_by, added_date, updated_by, updated_date "+
+                "FROM `category_items` "+
+                "WHERE category_id = '"+ categoryID +"' AND item_id = '"+ itemID +"' AND removed = 0";
         ResultSet rs = stmt.executeQuery(query);
         return rs;
     }
