@@ -1,17 +1,12 @@
 package MySQL;
 
-/**
- * It's for me
- * @author Ethan
- */
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
  *
- * @author Ethan
+ * @author TeamBangan
  */
 public class Connect {
 
