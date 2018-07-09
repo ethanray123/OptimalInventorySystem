@@ -11,9 +11,17 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import java.awt.Color;
 
-
+/**
+ *
+ * @author Ethan
+ */
 public class Login extends javax.swing.JFrame {
+    public static String admin;
+    public static int userid = -1;
 
+    /**
+     *
+     */
     public Login() {
         initComponents();
         usernameField.setBackground(new Color(0, 0, 0, 64));
@@ -38,20 +46,21 @@ public class Login extends javax.swing.JFrame {
         jPanel1.setMinimumSize(new java.awt.Dimension(940, 618));
         jPanel1.setLayout(null);
 
-        jLabel1.setFont(new java.awt.Font("Yu Gothic UI", 1, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Raleway", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("OPTIMAL INVENTORY SYSTEM");
         jPanel1.add(jLabel1);
-        jLabel1.setBounds(70, 80, 350, 60);
+        jLabel1.setBounds(70, 80, 370, 60);
         jPanel1.add(username_icon);
         username_icon.setBounds(80, 210, 30, 50);
 
         usernameField.setBackground(new java.awt.Color(238, 238, 238));
-        usernameField.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        usernameField.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
         usernameField.setForeground(new java.awt.Color(255, 255, 255));
         usernameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         usernameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(67, 101, 102), 2, true));
+        usernameField.setCaretColor(new java.awt.Color(0, 153, 153));
         usernameField.setOpaque(false);
         usernameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -63,19 +72,20 @@ public class Login extends javax.swing.JFrame {
         jPanel1.add(password_icon);
         password_icon.setBounds(80, 300, 0, 50);
 
-        passwordField.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        passwordField.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
         passwordField.setForeground(new java.awt.Color(255, 255, 255));
         passwordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         passwordField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(67, 101, 102), 2, true));
+        passwordField.setCaretColor(new java.awt.Color(0, 153, 153));
         passwordField.setOpaque(false);
         jPanel1.add(passwordField);
         passwordField.setBounds(70, 300, 360, 50);
 
-        login.setBackground(new java.awt.Color(155, 75, 77));
-        login.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        login.setBackground(new java.awt.Color(73, 185, 168));
+        login.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
         login.setForeground(new java.awt.Color(255, 255, 255));
         login.setText("LOGIN");
-        login.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(155, 75, 77), 2, true));
+        login.setBorder(null);
         login.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 loginMouseClicked(evt);
@@ -87,7 +97,12 @@ public class Login extends javax.swing.JFrame {
             }
         });
         jPanel1.add(login);
-        login.setBounds(70, 380, 360, 50);
+        login.setBounds(70, 390, 360, 50);
+
+        background.setBackground(new java.awt.Color(75, 83, 71));
+        background.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/27037619-geometric-wallpapers.png"))); // NOI18N
+        background.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jPanel1.add(background);
         background.setBounds(0, 0, 1000, 560);
 
@@ -116,8 +131,8 @@ public class Login extends javax.swing.JFrame {
 
     private void loginMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginMouseClicked
         String username = usernameField.getText();
-        String password = passwordField.getText();
-
+        String password = String.valueOf(passwordField.getPassword());
+        admin = username;
         if("".equals(username))
         JOptionPane.showMessageDialog(null, "Username is required!");
         else if("".equals(password))
@@ -126,9 +141,12 @@ public class Login extends javax.swing.JFrame {
             try{
                 Connection con = Connect.getConnection();
                 if(CRUD.checkUserExists(con,username)){
-                    ResultSet rs = CRUD.selectUserPassword(con, username);
+                    ResultSet rs = CRUD.selectUserIDPassword(con, username);
                     rs.next();
                     String retrievePassword = rs.getString("password");
+                    System.out.println(HashPassword.hashPassword(password));
+                    System.out.println(retrievePassword);
+                    userid = rs.getInt("user_id");
                     if((HashPassword.hashPassword(password)).equals(retrievePassword)){
                         Home h = new Home();
                         h.setVisible(true);
@@ -140,7 +158,7 @@ public class Login extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Username and Password did not match any account");
                 }
             }catch(HeadlessException | NoSuchAlgorithmException | SQLException e){
-                JOptionPane.showMessageDialog(null, "Username and Password did not match any account");
+                System.out.println(e);
             }
         }
     }//GEN-LAST:event_loginMouseClicked

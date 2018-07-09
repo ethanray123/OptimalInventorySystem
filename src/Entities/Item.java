@@ -17,14 +17,27 @@ public class Item {
     private int quantity;
     private String metric;
     private int type;
-    private String addedBy;
+    private int addedBy;
     private Date addedOn;
-    private String updatedBy;
+    private int updatedBy;
     private Date updatedOn;
     private boolean removed;
     
+    /**
+     *
+     * @param ID Integer representing the ID of the item
+     * @param Itemname String containing the name of the item
+     * @param Quantity Integer representing the quantity of the item
+     * @param Metric String containing the metric used for quantifying the item
+     * @param Type Integer representing the item type of the item
+     * @param Adder Integer representing the ID of the administrator who created the item
+     * @param AddDate Date when the item was created
+     * @param Updater Integer representing the ID of the administrator who most recently updated the item
+     * @param UpdateDate Date when the item was created
+     * @param Removed 
+     */
     public Item(int ID, String Itemname, int Quantity, String Metric, int Type,
-            String Adder, Date AddDate, String Updater, Date UpdateDate, boolean Removed){
+            int Adder, Date AddDate, int Updater, Date UpdateDate, boolean Removed){
         this.id = ID;
         this.name = Itemname;
         this.quantity = Quantity;
@@ -37,84 +50,183 @@ public class Item {
         this.removed = Removed;
     }
 
-    public Item(int aInt, String string, int aInt0, String string0, int aInt1, String string1, java.sql.Date date, String string2, java.sql.Date date0, boolean aBoolean) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    /**
+     *
+     * @param ID Integer representing the ID of the item
+     * @param Itemname String containing the name of the item
+     * @param Quantity Integer representing the quantity of the item
+     * @param Metric String containing the metric used for quantifying the item
+     * @param Type Integer representing the item type of the item
+     * @param Adder Integer representing the ID of the administrator who created the item
+     * @param AddDate Date when the item was created
+     * @param Updater Integer representing the ID of the administrator who most recently updated the item
+     * @param UpdateDate Date when the item was created
+     */
+    public Item(int ID, String Itemname, int Quantity, String Metric, int Type,
+            int Adder, Date AddDate, int Updater, Date UpdateDate) {
+        this.id = ID;
+        this.name = Itemname;
+        this.quantity = Quantity;
+        this.metric = Metric;
+        this.type = Type;
+        this.addedBy = Adder;
+        this.addedOn = AddDate;
+        this.updatedBy = Updater;
+        this.updatedOn = UpdateDate;
     }
     
     //GETTERS
+
+    /**
+     *
+     * @return
+     */
     public int getID(){
         return id;
     }
     
+    /**
+     *
+     * @return
+     */
     public String getName(){
         return name;
     }
     
+    /**
+     *
+     * @return
+     */
     public int getQuantity(){
         return quantity;
     }
     
+    /**
+     *
+     * @return
+     */
     public String getMetric(){
         return metric;
     }
     
+    /**
+     *
+     * @return
+     */
     public int getType(){
         return type;
     }
     
-    public String getAddedBy(){
+    /**
+     *
+     * @return
+     */
+    public int getAddedBy(){
         return addedBy;
     }
     
+    /**
+     *
+     * @return
+     */
     public Date getAddedOn(){
         return addedOn;
     }
     
-    public String getUpdatedBy(){
+    /**
+     *
+     * @return
+     */
+    public int getUpdatedBy(){
         return updatedBy;
     }
     
+    /**
+     *
+     * @return
+     */
     public Date getUpdatedOn(){
         return updatedOn;
     }
     
+    /**
+     *
+     * @return
+     */
     public boolean getRemoved(){
         return removed;
     }
     
     //SETTERS
+
+    /**
+     *
+     * @param itemName
+     */
     public void setName(String itemName){
         this.name = itemName;
     }
     
+    /**
+     *
+     * @param itemQuantity
+     */
     public void setQuantity(int itemQuantity){
         this.quantity = itemQuantity;
     }
     
+    /**
+     *
+     * @param itemMetric
+     */
     public void setMetric(String itemMetric){
         this.metric = itemMetric;
     }
     
+    /**
+     *
+     * @param itemType
+     */
     public void setType(int itemType){
         this.type = itemType;
     }
     
-    public void setAddedBy(String itemAdder){
+    /**
+     *
+     * @param itemAdder
+     */
+    public void setAddedBy(int itemAdder){
         this.addedBy = itemAdder;
     }
     
+    /**
+     *
+     * @param dateAdded
+     */
     public void setAddedOn(Date dateAdded){
         this.addedOn = dateAdded;
     }
     
-    public void setUpdatedBy(String itemUpdater){
+    /**
+     *
+     * @param itemUpdater
+     */
+    public void setUpdatedBy(int itemUpdater){
         this.updatedBy = itemUpdater;
     }
     
+    /**
+     *
+     * @param dateUpdated
+     */
     public void setUpdatedOn(Date dateUpdated){
         this.updatedOn = dateUpdated;
     }
     
+    /**
+     *
+     * @param removeBool
+     */
     public void setRemoved(boolean removeBool){
         this.removed = removeBool;
     }
