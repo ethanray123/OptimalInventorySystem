@@ -12,15 +12,15 @@ import MySQL.CRUD;
 import java.awt.Color;
 import java.awt.HeadlessException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 import javax.swing.JOptionPane;
+import static optimalinventorysystem.Login.userid;
 /**
  *
  * @author Ethan
  */
 public class Register extends javax.swing.JFrame {
-
     /**
      * Creates new form Register
      */
@@ -100,7 +100,7 @@ public class Register extends javax.swing.JFrame {
         jPanel1.add(unLabel);
         unLabel.setBounds(90, 230, 146, 28);
 
-        submitBtn.setBackground(new java.awt.Color(155, 75, 77));
+        submitBtn.setBackground(new java.awt.Color(73, 185, 168));
         submitBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
         submitBtn.setForeground(new java.awt.Color(255, 255, 255));
         submitBtn.setText("Submit");
@@ -121,7 +121,7 @@ public class Register extends javax.swing.JFrame {
         jPanel1.add(jLabel6);
         jLabel6.setBounds(70, 40, 309, 58);
 
-        jLabel2.setIcon(new javax.swing.ImageIcon("C:\\Users\\Hazel Cavite\\Documents\\NetBeansProjects\\Optimal Inventory System\\OptimalInventorySystem\\img\\27037619-geometric-wallpapers.png")); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/27037619-geometric-wallpapers.png"))); // NOI18N
         jPanel1.add(jLabel2);
         jLabel2.setBounds(0, 0, 1000, 560);
 
@@ -143,8 +143,8 @@ public class Register extends javax.swing.JFrame {
     private void submitBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_submitBtnMouseClicked
         String fullname = fullnameField.getText();
         String username = usernameField.getText();
-        String password = passwordField.getText();
-
+        String password = String.valueOf(passwordField.getPassword());
+        
         if("".equals(fullname))
         JOptionPane.showMessageDialog(null, "Full Name is required!");
         else if("".equals(username))
@@ -157,10 +157,14 @@ public class Register extends javax.swing.JFrame {
                 if(!CRUD.checkUserExists(con,username)){
                     if(password.length() >= 8){
                         password=HashPassword.hashPassword(password);
-                        Date now = new Date();
-                        java.sql.Date sqlDate = new java.sql.Date(now.getTime());
                         CRUD.insertUser(con,fullname,username,password,-1);
                         JOptionPane.showMessageDialog(null, "User has been successfully created!");
+                        ResultSet rs = CRUD.selectUserIDPassword(con, username);
+                        rs.next();
+                        String retrievePassword = rs.getString("password");
+                        System.out.println(HashPassword.hashPassword(password));
+                        System.out.println(retrievePassword);
+                        userid = rs.getInt("user_id");
                         new Login().setVisible(true);
                         this.dispose();
                     }else{

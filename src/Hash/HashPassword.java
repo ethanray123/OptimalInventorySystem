@@ -12,6 +12,13 @@ import java.security.NoSuchAlgorithmException;
  * @author Ethan
  */
 public class HashPassword {
+
+    /**
+     *
+     * @param password
+     * @return
+     * @throws NoSuchAlgorithmException
+     */
     public static String hashPassword(String password) throws NoSuchAlgorithmException{
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(password.getBytes());

@@ -12,79 +12,165 @@ import java.util.Date;
  * @author Ethan
  */
 public class User {
-    private int id;
+    private final int id;
     private String username;
     private String password;
     private String fullname;
-    private String addedBy; //username
-    private Date addedOn;
-    private String updatedBy; //username
+    private final String addedBy; 
+    private final Date addedOn;
+    private String updatedBy; 
     private Date updatedOn;
-    private boolean removed;
+//    private boolean removed;
     
-    User(int ID, String Fullname, String Username, String Password, String Admin){
+    /**
+     *
+     * @param ID
+     * @param Username
+     * @param Fullname
+     * @param Password
+     * @param AddedBy
+     * @param AddedOn
+     * @param UpdatedBy
+     * @param UpdatedOn
+     */
+    public User(int ID, String Username, String Fullname, String Password, String AddedBy,
+            Date AddedOn, String UpdatedBy, Date UpdatedOn){
         this.id = ID;
         this.fullname = Fullname;
         this.username = Username;
         this.password = Password;
-        this.addedBy = Admin;
+        this.addedBy = AddedBy;
+        this.addedOn = AddedOn;
+        this.updatedBy = UpdatedBy;
+        this.updatedOn = UpdatedOn;
+    }
+    
+    /**
+     *
+     * @param ID
+     * @param Username
+     * @param Fullname
+     * @param AddedBy
+     * @param AddedOn
+     * @param UpdatedBy
+     * @param UpdatedOn
+     */
+    public User(int ID, String Username, String Fullname, String AddedBy,
+            Date AddedOn, String UpdatedBy, Date UpdatedOn){
+        this.id = ID;
+        this.fullname = Fullname;
+        this.username = Username;
+        this.addedBy = AddedBy;
+        this.addedOn = AddedOn;
+        this.updatedBy = UpdatedBy;
+        this.updatedOn = UpdatedOn;
     }
     
     //GETTERS
+
+    /**
+     *
+     * @return ID of the user
+     */
+    public int getID(){
+        return id;
+    }
+    
+    /**
+     *
+     * @return username of the user
+     */
     public String getUsername(){
         return username;
     }
     
+    /**
+     *
+     * @return encrypted password of the user
+     */
     public String getPassword(){
         return password;
     }
     
-    public String getFullName(){
+    /**
+     *
+     * @return full name of the user
+     */
+    public String getFullname(){
         return fullname;
     }
     
+    /**
+     *
+     * @return ID of the administrator who created the user
+     */
     public String getAddedBy(){
         return addedBy;
     }
     
+    /**
+     *
+     * @return Date when the user was created
+     */
     public Date getAddedOn(){
         return addedOn;
     }
     
+    /**
+     *
+     * @return ID of the administrator who updated the user 
+     */
     public String getUpdatedBy(){
         return updatedBy;
     }
     
+    /**
+     *
+     * @return Date when the user was updated
+     */
     public Date getUpdatedOn(){
         return updatedOn;
     }
     
     //SETTERS
+
+    /**
+     *
+     * @param newusername String updates the username of the user
+     */
     public void setUsername(String newusername){
         this.username = newusername;
     }
     
+    /**
+     *
+     * @param hashpass String updates the encrypted password of the user
+     */
     public void setPassword(String hashpass){
         this.password = hashpass;
     }
     
+    /**
+     *
+     * @param name String that updates the full name of the user
+     */
     public void setFullname(String name){
         this.fullname = name;
     }
     
-    public void setAddedBy(String Admin){
-        this.addedBy = Admin;
-    }
-    
-    public void setAddedOn(){
-        this.addedOn = new Date();
-    }
-    
+    /**
+     *
+     * @param Admin ID of the user who recently updated the user
+     */
     public void setUpdatedBy(String Admin){
         this.updatedBy = Admin;
     }
     
-    public void setUpdatedOn(){
-        this.updatedOn = new Date();
+    /**
+     *
+     * @param UpdatedOn the latest Date the user was updated
+     */
+    public void setUpdatedOn(Date UpdatedOn){
+        this.updatedOn = UpdatedOn;
     }
 }
