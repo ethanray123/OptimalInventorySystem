@@ -17,38 +17,10 @@ public class Item {
     private int quantity;
     private String metric;
     private int type;
-    private int addedBy;
+    private String addedBy;
     private Date addedOn;
-    private int updatedBy;
+    private String updatedBy;
     private Date updatedOn;
-    private boolean removed;
-    
-    /**
-     *
-     * @param ID Integer representing the ID of the item
-     * @param Itemname String containing the name of the item
-     * @param Quantity Integer representing the quantity of the item
-     * @param Metric String containing the metric used for quantifying the item
-     * @param Type Integer representing the item type of the item
-     * @param Adder Integer representing the ID of the administrator who created the item
-     * @param AddDate Date when the item was created
-     * @param Updater Integer representing the ID of the administrator who most recently updated the item
-     * @param UpdateDate Date when the item was created
-     * @param Removed 
-     */
-    public Item(int ID, String Itemname, int Quantity, String Metric, int Type,
-            int Adder, Date AddDate, int Updater, Date UpdateDate, boolean Removed){
-        this.id = ID;
-        this.name = Itemname;
-        this.quantity = Quantity;
-        this.metric = Metric;
-        this.type = Type;
-        this.addedBy = Adder;
-        this.addedOn = AddDate;
-        this.updatedBy = Updater;
-        this.updatedOn = UpdateDate;
-        this.removed = Removed;
-    }
 
     /**
      *
@@ -63,7 +35,7 @@ public class Item {
      * @param UpdateDate Date when the item was created
      */
     public Item(int ID, String Itemname, int Quantity, String Metric, int Type,
-            int Adder, Date AddDate, int Updater, Date UpdateDate) {
+            String Adder, Date AddDate, String Updater, Date UpdateDate) {
         this.id = ID;
         this.name = Itemname;
         this.quantity = Quantity;
@@ -74,7 +46,7 @@ public class Item {
         this.updatedBy = Updater;
         this.updatedOn = UpdateDate;
     }
-    
+  
     //GETTERS
 
     /**
@@ -121,7 +93,7 @@ public class Item {
      *
      * @return
      */
-    public int getAddedBy(){
+    public String getAddedBy(){
         return addedBy;
     }
     
@@ -137,7 +109,7 @@ public class Item {
      *
      * @return
      */
-    public int getUpdatedBy(){
+    public String getUpdatedBy(){
         return updatedBy;
     }
     
@@ -147,14 +119,6 @@ public class Item {
      */
     public Date getUpdatedOn(){
         return updatedOn;
-    }
-    
-    /**
-     *
-     * @return
-     */
-    public boolean getRemoved(){
-        return removed;
     }
     
     //SETTERS
@@ -195,7 +159,7 @@ public class Item {
      *
      * @param itemAdder
      */
-    public void setAddedBy(int itemAdder){
+    public void setAddedBy(String itemAdder){
         this.addedBy = itemAdder;
     }
     
@@ -211,7 +175,7 @@ public class Item {
      *
      * @param itemUpdater
      */
-    public void setUpdatedBy(int itemUpdater){
+    public void setUpdatedBy(String itemUpdater){
         this.updatedBy = itemUpdater;
     }
     
@@ -223,11 +187,4 @@ public class Item {
         this.updatedOn = dateUpdated;
     }
     
-    /**
-     *
-     * @param removeBool
-     */
-    public void setRemoved(boolean removeBool){
-        this.removed = removeBool;
-    }
 }
