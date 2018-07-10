@@ -1260,6 +1260,12 @@ public class CRUD {
         else
             return "N/A";       
     }
+    public static ResultSet selectPartialItemInfoUsingItemName(Connection con,String itemName)throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT quantity,metric,type from item where item_name = '"+itemName+"'");
+        return rs;
+    }
     public static ResultSet selectItemInfoUsingItemName(Connection con,String itemName)throws SQLException{
         Statement stmt;
         stmt = con.createStatement();
