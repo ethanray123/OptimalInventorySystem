@@ -565,8 +565,8 @@ public class Home extends javax.swing.JFrame {
             Job job;
             while(rs.next()){
                 job = new Job(rs.getInt("job_id"), rs.getString("job_name"),
-                    rs.getInt("category_id"), rs.getString("added_by"), 
-                    rs.getTimestamp("added_date"), rs.getString("updated_by"),
+                    CRUD.getCleaningCatName(con, rs.getInt("category_id")), CRUD.getUsername(con,rs.getInt("added_by")), 
+                    rs.getTimestamp("added_date"), CRUD.getUsername(con,rs.getInt("updated_by")),
                     rs.getTimestamp("updated_date"));
                 jobList.add(job);
             }
@@ -581,10 +581,11 @@ public class Home extends javax.swing.JFrame {
         ArrayList<Job> list = getJobList();
         DefaultTableModel model = (DefaultTableModel) jobsTable.getModel();
         Object[] row = new Object[7];
+        Connection con = Connect.getConnection();
         for(Job j : list){
             row[0] = j.getID();
             row[1] = j.getName();
-            row[2] = j.getCatID();
+            row[2] = j.getCatName();
             row[3] = j.getAddedBy();
             row[4] = dateFormat.format(j.getAddedOn());
             row[5] = j.getUpdatedBy();  
@@ -601,9 +602,9 @@ public class Home extends javax.swing.JFrame {
             ResultSet rs = CRUD.selectJobItemsInfo(con);
             JobItem jobItem;
             while(rs.next()){
-                jobItem = new JobItem(rs.getInt("jobItem_id"), rs.getInt("item_id"), rs.getInt("item_quantity"), 
-                    rs.getInt("job_id"), rs.getString("added_by"), 
-                    rs.getTimestamp("added_date"), rs.getString("updated_by"),
+                jobItem = new JobItem(rs.getInt("jobItem_id"), CRUD.getJobItem_ItemName(con, rs.getInt("item_id")), rs.getInt("item_quantity"), 
+                    CRUD.getJobName(con, rs.getInt("job_id")), CRUD.getUsername(con,rs.getInt("added_by")), 
+                    rs.getTimestamp("added_date"), CRUD.getUsername(con,rs.getInt("updated_by")),
                     rs.getTimestamp("updated_date"));
                 jobItemList.add(jobItem);
             }
@@ -622,7 +623,7 @@ public class Home extends javax.swing.JFrame {
             row[0] = ji.getID();
             row[1] = ji.getItemID();
             row[2] = ji.getQty();
-            row[3] = ji.getJobID();
+            row[3] = ji.getJob();
             row[4] = ji.getAddedBy();
             row[5] = dateFormat.format(ji.getAddedOn());
             row[6] = ji.getUpdatedBy();  
@@ -637,7 +638,7 @@ public class Home extends javax.swing.JFrame {
         Object[] row = new Object[7];
             row[0] = j.getID();
             row[1] = j.getName();
-            row[2] = j.getCatID();
+            row[2] = j.getCatName();
             row[3] = j.getAddedBy();
             row[4] = dateFormat.format(j.getAddedOn());
             row[5] = j.getUpdatedBy();  
@@ -652,7 +653,7 @@ public class Home extends javax.swing.JFrame {
         row[0] = ji.getID();
         row[1] = ji.getItemID();
         row[2] = ji.getQty();
-        row[3] = ji.getJobID();
+        row[3] = ji.getJob();
         row[4] = ji.getAddedBy();
         row[5] = dateFormat.format(ji.getAddedOn());
         row[6] = ji.getUpdatedBy();  
@@ -956,6 +957,32 @@ public class Home extends javax.swing.JFrame {
 
         whole = new javax.swing.JPanel();
         right_sidebar = new javax.swing.JPanel();
+        jobsPanel = new javax.swing.JPanel();
+        jobs_tab = new javax.swing.JTabbedPane();
+        jobs = new javax.swing.JPanel();
+        crud_jobs = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
+        jobcat = new javax.swing.JComboBox<>();
+        addJob = new javax.swing.JButton();
+        updateJob = new javax.swing.JButton();
+        deleteJob = new javax.swing.JButton();
+        jLabel15 = new javax.swing.JLabel();
+        jobname = new javax.swing.JTextField();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jobsTable = new javax.swing.JTable();
+        job_items = new javax.swing.JPanel();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        jobItemsTable = new javax.swing.JTable();
+        crud_jobItems = new javax.swing.JPanel();
+        jLabel17 = new javax.swing.JLabel();
+        addJobItem = new javax.swing.JButton();
+        updateJobItem = new javax.swing.JButton();
+        deleteJobItem = new javax.swing.JButton();
+        jobitemqty = new javax.swing.JTextField();
+        jLabel18 = new javax.swing.JLabel();
+        jobitemcombobox = new javax.swing.JComboBox<>();
+        jLabel19 = new javax.swing.JLabel();
+        jobcombobox = new javax.swing.JComboBox<>();
         dashboard = new javax.swing.JPanel();
         dashboard_weeklylabel = new javax.swing.JLabel();
         dashboard_yearlylabel = new javax.swing.JLabel();
@@ -964,13 +991,13 @@ public class Home extends javax.swing.JFrame {
         yearlysmallarrow = new javax.swing.JLabel();
         maindashboardpanel = new javax.swing.JPanel();
         monthlydashboardpanel = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
         monthlydashboardtable = new javax.swing.JTable();
         yearlydashboardpanel = new javax.swing.JPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
         yearlydashboardtable = new javax.swing.JTable();
         weeklydashboardpanel = new javax.swing.JPanel();
-        jScrollPane6 = new javax.swing.JScrollPane();
+        jScrollPane2 = new javax.swing.JScrollPane();
         weeklydashboardtable = new javax.swing.JTable();
         dashboardBtn = new javax.swing.JPanel();
         itemsBtn = new javax.swing.JLabel();
@@ -997,12 +1024,12 @@ public class Home extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         Tables = new javax.swing.JTabbedPane();
         itemsTablePanel = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
+        jScrollPane13 = new javax.swing.JScrollPane();
         itemsTable = new javax.swing.JTable();
         iTtable = new javax.swing.JPanel();
         jScrollPane10 = new javax.swing.JScrollPane();
         itemTypeTable = new javax.swing.JTable();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane14 = new javax.swing.JScrollPane();
         itemsTab = new javax.swing.JTabbedPane();
         additemtype = new javax.swing.JPanel();
         additemtype_form = new javax.swing.JPanel();
@@ -1043,32 +1070,6 @@ public class Home extends javax.swing.JFrame {
         newitemname = new javax.swing.JTextField();
         Archive = new javax.swing.JButton();
         addItem_save = new javax.swing.JButton();
-        jobsPanel = new javax.swing.JPanel();
-        jobs_tab = new javax.swing.JTabbedPane();
-        jobs = new javax.swing.JPanel();
-        crud_jobs = new javax.swing.JPanel();
-        jLabel11 = new javax.swing.JLabel();
-        jobcat = new javax.swing.JComboBox<>();
-        addJob = new javax.swing.JButton();
-        updateJob = new javax.swing.JButton();
-        deleteJob = new javax.swing.JButton();
-        jLabel15 = new javax.swing.JLabel();
-        jobname = new javax.swing.JTextField();
-        jScrollPane7 = new javax.swing.JScrollPane();
-        jobsTable = new javax.swing.JTable();
-        job_items = new javax.swing.JPanel();
-        jScrollPane8 = new javax.swing.JScrollPane();
-        jobItemsTable = new javax.swing.JTable();
-        crud_jobItems = new javax.swing.JPanel();
-        jLabel17 = new javax.swing.JLabel();
-        addJobItem = new javax.swing.JButton();
-        updateJobItem = new javax.swing.JButton();
-        deleteJobItem = new javax.swing.JButton();
-        jobitemqty = new javax.swing.JTextField();
-        jLabel18 = new javax.swing.JLabel();
-        jobitemcombobox = new javax.swing.JComboBox<>();
-        jLabel19 = new javax.swing.JLabel();
-        jobcombobox = new javax.swing.JComboBox<>();
         users = new javax.swing.JPanel();
         jScrollPane9 = new javax.swing.JScrollPane();
         usersTable = new javax.swing.JTable();
@@ -1088,7 +1089,7 @@ public class Home extends javax.swing.JFrame {
         categories = new javax.swing.JPanel();
         jScrollPane11 = new javax.swing.JScrollPane();
         categoriesTable = new javax.swing.JTable();
-        jScrollPane12 = new javax.swing.JScrollPane();
+        jScrollPane6 = new javax.swing.JScrollPane();
         categoryItemTable = new javax.swing.JTable();
         additems_form1 = new javax.swing.JPanel();
         categoryNameField = new javax.swing.JTextField();
@@ -1146,6 +1147,338 @@ public class Home extends javax.swing.JFrame {
         right_sidebar.setPreferredSize(new java.awt.Dimension(1500, 800));
         right_sidebar.setLayout(null);
 
+        jobsPanel.setBackground(new java.awt.Color(5, 32, 33));
+
+        jobs.setBackground(new java.awt.Color(8, 40, 41));
+
+        crud_jobs.setBackground(new java.awt.Color(15, 74, 74));
+        crud_jobs.setPreferredSize(new java.awt.Dimension(623, 184));
+
+        jLabel11.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel11.setText("JOB CATEGORY");
+
+        jobcat.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        jobcat.setToolTipText("");
+
+        addJob.setBackground(new java.awt.Color(0, 204, 51));
+        addJob.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        addJob.setForeground(new java.awt.Color(255, 255, 255));
+        addJob.setText("CREATE");
+        addJob.setBorder(null);
+        addJob.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addJobMouseClicked(evt);
+            }
+        });
+
+        updateJob.setBackground(new java.awt.Color(0, 204, 51));
+        updateJob.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        updateJob.setForeground(new java.awt.Color(255, 255, 255));
+        updateJob.setText("UPDATE");
+        updateJob.setBorder(null);
+        updateJob.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                updateJobMouseClicked(evt);
+            }
+        });
+
+        deleteJob.setBackground(new java.awt.Color(235, 85, 85));
+        deleteJob.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        deleteJob.setForeground(new java.awt.Color(255, 255, 255));
+        deleteJob.setText("REMOVE");
+        deleteJob.setBorder(null);
+        deleteJob.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                deleteJobMouseClicked(evt);
+            }
+        });
+
+        jLabel15.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel15.setText("JOB NAME");
+
+        jobname.setBackground(new java.awt.Color(15, 74, 74));
+        jobname.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        jobname.setForeground(new java.awt.Color(255, 255, 255));
+        jobname.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jobname.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        jobname.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jobname.setOpaque(false);
+
+        javax.swing.GroupLayout crud_jobsLayout = new javax.swing.GroupLayout(crud_jobs);
+        crud_jobs.setLayout(crud_jobsLayout);
+        crud_jobsLayout.setHorizontalGroup(
+            crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, crud_jobsLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addGroup(crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
+                        .addComponent(jobcat, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jobname, javax.swing.GroupLayout.Alignment.TRAILING)))
+                .addGap(57, 57, 57)
+                .addGroup(crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(updateJob, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addJob, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(deleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(111, Short.MAX_VALUE))
+        );
+        crud_jobsLayout.setVerticalGroup(
+            crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(crud_jobsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(crud_jobsLayout.createSequentialGroup()
+                        .addComponent(addJob, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(updateJob, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(deleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(crud_jobsLayout.createSequentialGroup()
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jobcat, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jobname, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(34, Short.MAX_VALUE))
+        );
+
+        jobsTable.setAutoCreateRowSorter(true);
+        jobsTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "JOB ID", "JOB NAME", "JOB CATEGORY", "ADDED BY", "DATE ADDED", "UPDATED BY", "DATE UPDATED"
+            }
+        ));
+        jobsTable.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jobsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jobsTableMouseClicked(evt);
+            }
+        });
+        jScrollPane5.setViewportView(jobsTable);
+
+        javax.swing.GroupLayout jobsLayout = new javax.swing.GroupLayout(jobs);
+        jobs.setLayout(jobsLayout);
+        jobsLayout.setHorizontalGroup(
+            jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jobsLayout.createSequentialGroup()
+                .addGroup(jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jobsLayout.createSequentialGroup()
+                        .addGap(54, 54, 54)
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 1065, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jobsLayout.createSequentialGroup()
+                        .addGap(292, 292, 292)
+                        .addComponent(crud_jobs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(124, Short.MAX_VALUE))
+        );
+        jobsLayout.setVerticalGroup(
+            jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jobsLayout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50)
+                .addComponent(crud_jobs, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(51, Short.MAX_VALUE))
+        );
+
+        jobs_tab.addTab("JOBS", jobs);
+
+        job_items.setBackground(new java.awt.Color(8, 40, 41));
+
+        jobItemsTable.setAutoCreateRowSorter(true);
+        jobItemsTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "ITEM ID", "ITEM QUANTITY", "JOB ID", "ADDED BY", "DATE ADDED", "UPDATED BY", "DATE UPDATED"
+            }
+        ));
+        jobItemsTable.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jobItemsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jobItemsTableMouseClicked(evt);
+            }
+        });
+        jScrollPane8.setViewportView(jobItemsTable);
+
+        crud_jobItems.setBackground(new java.awt.Color(15, 74, 74));
+        crud_jobItems.setPreferredSize(new java.awt.Dimension(623, 270));
+
+        jLabel17.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel17.setText("ITEM QUANTITY");
+
+        addJobItem.setBackground(new java.awt.Color(0, 204, 51));
+        addJobItem.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        addJobItem.setForeground(new java.awt.Color(255, 255, 255));
+        addJobItem.setText("CREATE");
+        addJobItem.setBorder(null);
+        addJobItem.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addJobItemMouseClicked(evt);
+            }
+        });
+
+        updateJobItem.setBackground(new java.awt.Color(0, 204, 51));
+        updateJobItem.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        updateJobItem.setForeground(new java.awt.Color(255, 255, 255));
+        updateJobItem.setText("UPDATE");
+        updateJobItem.setBorder(null);
+        updateJobItem.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                updateJobItemMouseClicked(evt);
+            }
+        });
+
+        deleteJobItem.setBackground(new java.awt.Color(235, 85, 85));
+        deleteJobItem.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        deleteJobItem.setForeground(new java.awt.Color(255, 255, 255));
+        deleteJobItem.setText("REMOVE");
+        deleteJobItem.setBorder(null);
+        deleteJobItem.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                deleteJobItemMouseClicked(evt);
+            }
+        });
+
+        jobitemqty.setBackground(new java.awt.Color(15, 74, 74));
+        jobitemqty.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        jobitemqty.setForeground(new java.awt.Color(255, 255, 255));
+        jobitemqty.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jobitemqty.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        jobitemqty.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jobitemqty.setOpaque(false);
+
+        jLabel18.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel18.setText("ITEM NAME");
+
+        jobitemcombobox.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        jobitemcombobox.setToolTipText("");
+
+        jLabel19.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel19.setText("JOB NAME");
+
+        jobcombobox.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        jobcombobox.setToolTipText("");
+
+        javax.swing.GroupLayout crud_jobItemsLayout = new javax.swing.GroupLayout(crud_jobItems);
+        crud_jobItems.setLayout(crud_jobItemsLayout);
+        crud_jobItemsLayout.setHorizontalGroup(
+            crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(crud_jobItemsLayout.createSequentialGroup()
+                .addGroup(crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jobitemqty, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, crud_jobItemsLayout.createSequentialGroup()
+                            .addGap(68, 68, 68)
+                            .addComponent(jobcombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(crud_jobItemsLayout.createSequentialGroup()
+                        .addGap(120, 120, 120)
+                        .addComponent(jLabel17))
+                    .addGroup(crud_jobItemsLayout.createSequentialGroup()
+                        .addGap(140, 140, 140)
+                        .addComponent(jLabel19))
+                    .addGroup(crud_jobItemsLayout.createSequentialGroup()
+                        .addGap(66, 66, 66)
+                        .addComponent(jobitemcombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+                .addGroup(crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(updateJobItem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(addJobItem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(deleteJobItem, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE))
+                .addGap(57, 57, 57))
+            .addGroup(crud_jobItemsLayout.createSequentialGroup()
+                .addGap(135, 135, 135)
+                .addComponent(jLabel18)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        crud_jobItemsLayout.setVerticalGroup(
+            crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(crud_jobItemsLayout.createSequentialGroup()
+                .addGap(7, 7, 7)
+                .addGroup(crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(crud_jobItemsLayout.createSequentialGroup()
+                        .addGroup(crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(crud_jobItemsLayout.createSequentialGroup()
+                                .addComponent(addJobItem, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(updateJobItem, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(30, 30, 30))
+                            .addGroup(crud_jobItemsLayout.createSequentialGroup()
+                                .addComponent(jLabel18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jobitemcombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel17)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jobitemqty, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                        .addComponent(jLabel19))
+                    .addComponent(deleteJobItem, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jobcombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(34, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout job_itemsLayout = new javax.swing.GroupLayout(job_items);
+        job_items.setLayout(job_itemsLayout);
+        job_itemsLayout.setHorizontalGroup(
+            job_itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(job_itemsLayout.createSequentialGroup()
+                .addGroup(job_itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(job_itemsLayout.createSequentialGroup()
+                        .addGap(54, 54, 54)
+                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 1065, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(job_itemsLayout.createSequentialGroup()
+                        .addGap(310, 310, 310)
+                        .addComponent(crud_jobItems, javax.swing.GroupLayout.PREFERRED_SIZE, 515, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(124, Short.MAX_VALUE))
+        );
+        job_itemsLayout.setVerticalGroup(
+            job_itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(job_itemsLayout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(crud_jobItems, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(24, Short.MAX_VALUE))
+        );
+
+        jobs_tab.addTab("JOB ITEMS", job_items);
+
+        javax.swing.GroupLayout jobsPanelLayout = new javax.swing.GroupLayout(jobsPanel);
+        jobsPanel.setLayout(jobsPanelLayout);
+        jobsPanelLayout.setHorizontalGroup(
+            jobsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jobsPanelLayout.createSequentialGroup()
+                .addComponent(jobs_tab, javax.swing.GroupLayout.PREFERRED_SIZE, 1248, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 412, Short.MAX_VALUE))
+        );
+        jobsPanelLayout.setVerticalGroup(
+            jobsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jobsPanelLayout.createSequentialGroup()
+                .addComponent(jobs_tab, javax.swing.GroupLayout.PREFERRED_SIZE, 726, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        right_sidebar.add(jobsPanel);
+        jobsPanel.setBounds(0, 0, 1660, 720);
+
         dashboard.setBackground(new java.awt.Color(5, 32, 33));
         dashboard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -1170,14 +1503,8 @@ public class Home extends javax.swing.JFrame {
             }
         });
         dashboard.add(dashboard_yearlylabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(452, 80, 160, 70));
-
-        weeklysmallarrow.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\arrow-navigate-close.png")); // NOI18N
         dashboard.add(weeklysmallarrow, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 200, 70, 30));
-
-        monthlysmallarrow.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\arrow-navigate-close.png")); // NOI18N
         dashboard.add(monthlysmallarrow, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 200, 70, 30));
-
-        yearlysmallarrow.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\arrow-navigate-close.png")); // NOI18N
         dashboard.add(yearlysmallarrow, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 200, 70, 30));
 
         maindashboardpanel.setBackground(new java.awt.Color(15, 74, 74));
@@ -1193,7 +1520,7 @@ public class Home extends javax.swing.JFrame {
                 "ITEM", "QUANTITY", "JOB NAME", "CLEANING CATEGORY", "DATE LAST UPDATED", "LAST UPDATED BY"
             }
         ));
-        jScrollPane2.setViewportView(monthlydashboardtable);
+        jScrollPane1.setViewportView(monthlydashboardtable);
 
         javax.swing.GroupLayout monthlydashboardpanelLayout = new javax.swing.GroupLayout(monthlydashboardpanel);
         monthlydashboardpanel.setLayout(monthlydashboardpanelLayout);
@@ -1201,14 +1528,14 @@ public class Home extends javax.swing.JFrame {
             monthlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(monthlydashboardpanelLayout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(41, Short.MAX_VALUE))
         );
         monthlydashboardpanelLayout.setVerticalGroup(
             monthlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(monthlydashboardpanelLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
                 .addGap(27, 27, 27))
         );
 
@@ -1225,7 +1552,7 @@ public class Home extends javax.swing.JFrame {
                 "ITEM", "QUANTITY", "JOB NAME", "CLEANING CATEGORY", "DATE LAST UPDATED", "LAST UPDATED BY"
             }
         ));
-        jScrollPane5.setViewportView(yearlydashboardtable);
+        jScrollPane3.setViewportView(yearlydashboardtable);
 
         javax.swing.GroupLayout yearlydashboardpanelLayout = new javax.swing.GroupLayout(yearlydashboardpanel);
         yearlydashboardpanel.setLayout(yearlydashboardpanelLayout);
@@ -1233,14 +1560,14 @@ public class Home extends javax.swing.JFrame {
             yearlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(yearlydashboardpanelLayout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(41, Short.MAX_VALUE))
         );
         yearlydashboardpanelLayout.setVerticalGroup(
             yearlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(yearlydashboardpanelLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
                 .addGap(27, 27, 27))
         );
 
@@ -1257,7 +1584,7 @@ public class Home extends javax.swing.JFrame {
                 "ITEM", "QUANTITY", "JOB NAME", "CLEANING CATEGORY", "DATE LAST UPDATED", "LAST UPDATED BY"
             }
         ));
-        jScrollPane6.setViewportView(weeklydashboardtable);
+        jScrollPane2.setViewportView(weeklydashboardtable);
 
         javax.swing.GroupLayout weeklydashboardpanelLayout = new javax.swing.GroupLayout(weeklydashboardpanel);
         weeklydashboardpanel.setLayout(weeklydashboardpanelLayout);
@@ -1265,14 +1592,14 @@ public class Home extends javax.swing.JFrame {
             weeklydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(weeklydashboardpanelLayout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(41, Short.MAX_VALUE))
         );
         weeklydashboardpanelLayout.setVerticalGroup(
             weeklydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(weeklydashboardpanelLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
                 .addGap(27, 27, 27))
         );
 
@@ -1282,12 +1609,6 @@ public class Home extends javax.swing.JFrame {
         dashboard.add(maindashboardpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, 1050, 430));
 
         dashboardBtn.setBackground(new java.awt.Color(5, 32, 33));
-
-        itemsBtn.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\chevron_1.png")); // NOI18N
-
-        jobsBtn.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\chevron_2.png")); // NOI18N
-
-        categoriesBtn.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\chevron_4.png")); // NOI18N
 
         dashboard_monthlylabel.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
         dashboard_monthlylabel.setForeground(new java.awt.Color(255, 255, 255));
@@ -1552,17 +1873,17 @@ public class Home extends javax.swing.JFrame {
                 itemsTableMouseClicked(evt);
             }
         });
-        jScrollPane3.setViewportView(itemsTable);
+        jScrollPane13.setViewportView(itemsTable);
 
         javax.swing.GroupLayout itemsTablePanelLayout = new javax.swing.GroupLayout(itemsTablePanel);
         itemsTablePanel.setLayout(itemsTablePanelLayout);
         itemsTablePanelLayout.setHorizontalGroup(
             itemsTablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1337, Short.MAX_VALUE)
+            .addComponent(jScrollPane13, javax.swing.GroupLayout.DEFAULT_SIZE, 1337, Short.MAX_VALUE)
         );
         itemsTablePanelLayout.setVerticalGroup(
             itemsTablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
+            .addComponent(jScrollPane13, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
         );
 
         Tables.addTab("Items Table", itemsTablePanel);
@@ -2086,7 +2407,7 @@ public class Home extends javax.swing.JFrame {
 
         itemsTab.addTab("ITEM", updateitems);
 
-        jScrollPane1.setViewportView(itemsTab);
+        jScrollPane14.setViewportView(itemsTab);
 
         javax.swing.GroupLayout itemsLayout = new javax.swing.GroupLayout(items);
         items.setLayout(itemsLayout);
@@ -2095,7 +2416,7 @@ public class Home extends javax.swing.JFrame {
             .addGroup(itemsLayout.createSequentialGroup()
                 .addGroup(itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1244, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
+                    .addComponent(jScrollPane14))
                 .addContainerGap(256, Short.MAX_VALUE))
         );
         itemsLayout.setVerticalGroup(
@@ -2103,7 +2424,7 @@ public class Home extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, itemsLayout.createSequentialGroup()
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane14, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(42, 42, 42))
         );
 
@@ -2111,338 +2432,6 @@ public class Home extends javax.swing.JFrame {
 
         right_sidebar.add(items);
         items.setBounds(0, 0, 1500, 700);
-
-        jobsPanel.setBackground(new java.awt.Color(5, 32, 33));
-
-        jobs.setBackground(new java.awt.Color(8, 40, 41));
-
-        crud_jobs.setBackground(new java.awt.Color(15, 74, 74));
-        crud_jobs.setPreferredSize(new java.awt.Dimension(623, 184));
-
-        jLabel11.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel11.setText("JOB CATEGORY");
-
-        jobcat.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        jobcat.setToolTipText("");
-
-        addJob.setBackground(new java.awt.Color(0, 204, 51));
-        addJob.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        addJob.setForeground(new java.awt.Color(255, 255, 255));
-        addJob.setText("CREATE");
-        addJob.setBorder(null);
-        addJob.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                addJobMouseClicked(evt);
-            }
-        });
-
-        updateJob.setBackground(new java.awt.Color(0, 204, 51));
-        updateJob.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        updateJob.setForeground(new java.awt.Color(255, 255, 255));
-        updateJob.setText("UPDATE");
-        updateJob.setBorder(null);
-        updateJob.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                updateJobMouseClicked(evt);
-            }
-        });
-
-        deleteJob.setBackground(new java.awt.Color(235, 85, 85));
-        deleteJob.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        deleteJob.setForeground(new java.awt.Color(255, 255, 255));
-        deleteJob.setText("REMOVE");
-        deleteJob.setBorder(null);
-        deleteJob.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                deleteJobMouseClicked(evt);
-            }
-        });
-
-        jLabel15.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel15.setText("JOB NAME");
-
-        jobname.setBackground(new java.awt.Color(15, 74, 74));
-        jobname.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        jobname.setForeground(new java.awt.Color(255, 255, 255));
-        jobname.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jobname.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        jobname.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jobname.setOpaque(false);
-
-        javax.swing.GroupLayout crud_jobsLayout = new javax.swing.GroupLayout(crud_jobs);
-        crud_jobs.setLayout(crud_jobsLayout);
-        crud_jobsLayout.setHorizontalGroup(
-            crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, crud_jobsLayout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
-                        .addComponent(jobcat, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jobname, javax.swing.GroupLayout.Alignment.TRAILING)))
-                .addGap(57, 57, 57)
-                .addGroup(crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(updateJob, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(addJob, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(deleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(111, Short.MAX_VALUE))
-        );
-        crud_jobsLayout.setVerticalGroup(
-            crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(crud_jobsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(crud_jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(crud_jobsLayout.createSequentialGroup()
-                        .addComponent(addJob, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(updateJob, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(deleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(crud_jobsLayout.createSequentialGroup()
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jobcat, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jobname, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(30, Short.MAX_VALUE))
-        );
-
-        jobsTable.setAutoCreateRowSorter(true);
-        jobsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "JOB ID", "JOB NAME", "JOB CATEGORY", "ADDED BY", "DATE ADDED", "UPDATED BY", "DATE UPDATED"
-            }
-        ));
-        jobsTable.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jobsTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jobsTableMouseClicked(evt);
-            }
-        });
-        jScrollPane7.setViewportView(jobsTable);
-
-        javax.swing.GroupLayout jobsLayout = new javax.swing.GroupLayout(jobs);
-        jobs.setLayout(jobsLayout);
-        jobsLayout.setHorizontalGroup(
-            jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jobsLayout.createSequentialGroup()
-                .addGroup(jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jobsLayout.createSequentialGroup()
-                        .addGap(54, 54, 54)
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 1065, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jobsLayout.createSequentialGroup()
-                        .addGap(292, 292, 292)
-                        .addComponent(crud_jobs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(124, Short.MAX_VALUE))
-        );
-        jobsLayout.setVerticalGroup(
-            jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jobsLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(50, 50, 50)
-                .addComponent(crud_jobs, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(51, Short.MAX_VALUE))
-        );
-
-        jobs_tab.addTab("JOBS", jobs);
-
-        job_items.setBackground(new java.awt.Color(8, 40, 41));
-
-        jobItemsTable.setAutoCreateRowSorter(true);
-        jobItemsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "ID", "ITEM ID", "ITEM QUANTITY", "JOB ID", "ADDED BY", "DATE ADDED", "UPDATED BY", "DATE UPDATED"
-            }
-        ));
-        jobItemsTable.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jobItemsTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jobItemsTableMouseClicked(evt);
-            }
-        });
-        jScrollPane8.setViewportView(jobItemsTable);
-
-        crud_jobItems.setBackground(new java.awt.Color(15, 74, 74));
-        crud_jobItems.setPreferredSize(new java.awt.Dimension(623, 270));
-
-        jLabel17.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel17.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel17.setText("ITEM QUANTITY");
-
-        addJobItem.setBackground(new java.awt.Color(0, 204, 51));
-        addJobItem.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        addJobItem.setForeground(new java.awt.Color(255, 255, 255));
-        addJobItem.setText("CREATE");
-        addJobItem.setBorder(null);
-        addJobItem.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                addJobItemMouseClicked(evt);
-            }
-        });
-
-        updateJobItem.setBackground(new java.awt.Color(0, 204, 51));
-        updateJobItem.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        updateJobItem.setForeground(new java.awt.Color(255, 255, 255));
-        updateJobItem.setText("UPDATE");
-        updateJobItem.setBorder(null);
-        updateJobItem.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                updateJobItemMouseClicked(evt);
-            }
-        });
-
-        deleteJobItem.setBackground(new java.awt.Color(235, 85, 85));
-        deleteJobItem.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        deleteJobItem.setForeground(new java.awt.Color(255, 255, 255));
-        deleteJobItem.setText("REMOVE");
-        deleteJobItem.setBorder(null);
-        deleteJobItem.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                deleteJobItemMouseClicked(evt);
-            }
-        });
-
-        jobitemqty.setBackground(new java.awt.Color(15, 74, 74));
-        jobitemqty.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        jobitemqty.setForeground(new java.awt.Color(255, 255, 255));
-        jobitemqty.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jobitemqty.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        jobitemqty.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jobitemqty.setOpaque(false);
-
-        jLabel18.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel18.setText("ITEM NAME");
-
-        jobitemcombobox.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        jobitemcombobox.setToolTipText("");
-
-        jLabel19.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel19.setText("JOB NAME");
-
-        jobcombobox.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        jobcombobox.setToolTipText("");
-
-        javax.swing.GroupLayout crud_jobItemsLayout = new javax.swing.GroupLayout(crud_jobItems);
-        crud_jobItems.setLayout(crud_jobItemsLayout);
-        crud_jobItemsLayout.setHorizontalGroup(
-            crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(crud_jobItemsLayout.createSequentialGroup()
-                .addGroup(crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jobitemqty, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, crud_jobItemsLayout.createSequentialGroup()
-                            .addGap(68, 68, 68)
-                            .addComponent(jobcombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(crud_jobItemsLayout.createSequentialGroup()
-                        .addGap(120, 120, 120)
-                        .addComponent(jLabel17))
-                    .addGroup(crud_jobItemsLayout.createSequentialGroup()
-                        .addGap(140, 140, 140)
-                        .addComponent(jLabel19))
-                    .addGroup(crud_jobItemsLayout.createSequentialGroup()
-                        .addGap(66, 66, 66)
-                        .addComponent(jobitemcombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
-                .addGroup(crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(updateJobItem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(addJobItem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(deleteJobItem, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE))
-                .addGap(57, 57, 57))
-            .addGroup(crud_jobItemsLayout.createSequentialGroup()
-                .addGap(135, 135, 135)
-                .addComponent(jLabel18)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        crud_jobItemsLayout.setVerticalGroup(
-            crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(crud_jobItemsLayout.createSequentialGroup()
-                .addGap(7, 7, 7)
-                .addGroup(crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(crud_jobItemsLayout.createSequentialGroup()
-                        .addGroup(crud_jobItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(crud_jobItemsLayout.createSequentialGroup()
-                                .addComponent(addJobItem, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(updateJobItem, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(30, 30, 30))
-                            .addGroup(crud_jobItemsLayout.createSequentialGroup()
-                                .addComponent(jLabel18)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jobitemcombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel17)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jobitemqty, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                        .addComponent(jLabel19))
-                    .addComponent(deleteJobItem, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jobcombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(27, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout job_itemsLayout = new javax.swing.GroupLayout(job_items);
-        job_items.setLayout(job_itemsLayout);
-        job_itemsLayout.setHorizontalGroup(
-            job_itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(job_itemsLayout.createSequentialGroup()
-                .addGroup(job_itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(job_itemsLayout.createSequentialGroup()
-                        .addGap(54, 54, 54)
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 1065, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(job_itemsLayout.createSequentialGroup()
-                        .addGap(310, 310, 310)
-                        .addComponent(crud_jobItems, javax.swing.GroupLayout.PREFERRED_SIZE, 515, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(124, Short.MAX_VALUE))
-        );
-        job_itemsLayout.setVerticalGroup(
-            job_itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(job_itemsLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(crud_jobItems, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
-        );
-
-        jobs_tab.addTab("JOB ITEMS", job_items);
-
-        javax.swing.GroupLayout jobsPanelLayout = new javax.swing.GroupLayout(jobsPanel);
-        jobsPanel.setLayout(jobsPanelLayout);
-        jobsPanelLayout.setHorizontalGroup(
-            jobsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jobsPanelLayout.createSequentialGroup()
-                .addComponent(jobs_tab, javax.swing.GroupLayout.PREFERRED_SIZE, 1248, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 412, Short.MAX_VALUE))
-        );
-        jobsPanelLayout.setVerticalGroup(
-            jobsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jobsPanelLayout.createSequentialGroup()
-                .addComponent(jobs_tab, javax.swing.GroupLayout.PREFERRED_SIZE, 726, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        right_sidebar.add(jobsPanel);
-        jobsPanel.setBounds(0, 0, 1660, 720);
 
         users.setBackground(new java.awt.Color(5, 32, 33));
         users.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -2644,14 +2633,14 @@ public class Home extends javax.swing.JFrame {
                 categoryItemTableMouseClicked(evt);
             }
         });
-        jScrollPane12.setViewportView(categoryItemTable);
+        jScrollPane6.setViewportView(categoryItemTable);
         if (categoryItemTable.getColumnModel().getColumnCount() > 0) {
             categoryItemTable.getColumnModel().getColumn(0).setResizable(false);
             categoryItemTable.getColumnModel().getColumn(1).setResizable(false);
             categoryItemTable.getColumnModel().getColumn(1).setPreferredWidth(5);
         }
 
-        categories.add(jScrollPane12, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 60, 400, 350));
+        categories.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 60, 400, 350));
 
         additems_form1.setBackground(new java.awt.Color(15, 74, 74));
         additems_form1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -2948,7 +2937,7 @@ public class Home extends javax.swing.JFrame {
         );
 
         left_sidebar.add(dashboard_side);
-        dashboard_side.setBounds(0, 280, 250, 62);
+        dashboard_side.setBounds(0, 280, 250, 60);
 
         items_side.setBackground(new java.awt.Color(8, 40, 41));
         items_side.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -2980,7 +2969,7 @@ public class Home extends javax.swing.JFrame {
         );
 
         left_sidebar.add(items_side);
-        items_side.setBounds(0, 340, 250, 62);
+        items_side.setBounds(0, 340, 250, 60);
 
         jobs_side.setBackground(new java.awt.Color(8, 40, 41));
         jobs_side.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -3108,7 +3097,7 @@ public class Home extends javax.swing.JFrame {
         );
 
         left_sidebar.add(logout_side);
-        logout_side.setBounds(0, 580, 250, 60);
+        logout_side.setBounds(0, 580, 250, 58);
 
         whole.add(left_sidebar);
         left_sidebar.setBounds(0, 80, 250, 720);
@@ -3511,8 +3500,8 @@ public class Home extends javax.swing.JFrame {
                 ResultSet rs = CRUD.selectJobsInfoUsingID(con, jobID);
                 rs.next();
                 Job j = new Job(rs.getInt("job_id"), rs.getString("job_name"),
-                    rs.getInt("category_id"), rs.getString("added_by"), 
-                    rs.getTimestamp("added_date"), rs.getString("updated_by"),
+                    CRUD.getCleaningCatName(con, rs.getInt("category_id")), CRUD.getUsername(con,rs.getInt("added_by")), 
+                    rs.getTimestamp("added_date"), CRUD.getUsername(con,rs.getInt("updated_by")),
                     rs.getTimestamp("updated_date"));
                 addRowToJobsTable(j);
                 JOptionPane.showMessageDialog(null, "Job has been successfully inserted!");
@@ -3551,14 +3540,18 @@ public class Home extends javax.swing.JFrame {
 
     private void jobItemsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jobItemsTableMouseClicked
        selectrow = jobItemsTable.getSelectedRow();
+       Connection con = Connect.getConnection();
         DefaultTableModel model = (DefaultTableModel)jobItemsTable.getModel();
-        int itemid = (int) model.getValueAt(selectrow,1);
+        String itemString = (String) model.getValueAt(selectrow,1);
+        
         int qty = (int) model.getValueAt(selectrow,2);
-        int jobid = (int) model.getValueAt(selectrow,3);
-        Connection con = Connect.getConnection();
+        String jobString = (String) model.getValueAt(selectrow,3);
+        
         String ItemName, JobName;
         ItemName = JobName = "";
         try {
+            int jobid = CRUD.getJobID(con, jobString);
+            int itemid = CRUD.getJobItem_ItemID(con, itemString);
             ItemName = CRUD.getJobItem_ItemName(con, itemid);
             JobName = CRUD.getJobName(con, jobid);
             
@@ -3570,7 +3563,12 @@ public class Home extends javax.swing.JFrame {
         jobcombobox.setSelectedItem(JobName);
         JobItemsIDFromTable = (int) model.getValueAt(selectrow,0);
         System.out.println(JobItemsIDFromTable);
-        JobItems_ItemIDFromTable = (int) model.getValueAt(selectrow,1);
+        String itemIDFromTable = (String) model.getValueAt(selectrow,1);
+        try {
+            JobItems_ItemIDFromTable = CRUD.getJobItem_ItemID(con, itemIDFromTable);
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jobItemsTableMouseClicked
 
     private void updateJobMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_updateJobMouseClicked
@@ -3672,9 +3670,9 @@ public class Home extends javax.swing.JFrame {
                         ResultSet rs = CRUD.selectJobItemsInfoUsingID(con, jobitemID);
                         rs.next();
                         JobItem JI = new JobItem(rs.getInt("jobItem_id"),
-                                rs.getInt("item_id"), rs.getInt("item_quantity"),
-                                rs.getInt("job_id"), rs.getString("added_by"), 
-                                rs.getTimestamp("added_date"), rs.getString("updated_by"),
+                                CRUD.getJobItem_ItemName(con, rs.getInt("item_id")), rs.getInt("item_quantity"),
+                                CRUD.getJobName(con, rs.getInt("job_id")), CRUD.getUsername(con,rs.getInt("added_by")), 
+                                rs.getTimestamp("added_date"), CRUD.getUsername(con,rs.getInt("updated_by")),
                                 rs.getTimestamp("updated_date"));
                         addRowToJobItemsTable(JI);
                         jobitemqty.setText("");
@@ -3691,7 +3689,7 @@ public class Home extends javax.swing.JFrame {
             }
             
         }
-    }//GEN-LAST:event_addJobItemMouseClicked
+    }                                       
 
     private void updateJobItemMouseClicked(java.awt.event.MouseEvent evt) {                                           
         int dialogButton = JOptionPane.YES_NO_OPTION;
@@ -3726,10 +3724,10 @@ public class Home extends javax.swing.JFrame {
                             for (int i = 0; i < model.getRowCount(); i++) {
                                 Object o = model.getValueAt(i, 0);
                                 if (o.equals(jobItemID)) {
-                                    model.setValueAt(rs.getInt("item_id"), i, 1);
+                                    model.setValueAt(CRUD.getJobItem_ItemName(con, rs.getInt("item_id")), i, 1);
                                     model.setValueAt(rs.getInt("item_quantity"), i, 2);
-                                    model.setValueAt(rs.getInt("job_id"), i, 3);
-                                    model.setValueAt(rs.getString("updated_by"), i, 6);
+                                    model.setValueAt(CRUD.getJobName(con, rs.getInt("job_id")), i, 3);
+                                    model.setValueAt(CRUD.getUsername(con,rs.getInt("updated_by")), i, 6);
                                     model.setValueAt(dateFormat.format(rs.getTimestamp("updated_date")), i, 7);
                                 }
                             }
@@ -3751,7 +3749,7 @@ public class Home extends javax.swing.JFrame {
         }
         
             
-    }//GEN-LAST:event_updateJobItemMouseClicked
+    }                                          
 
     private void deleteJobItemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteJobItemMouseClicked
         int dialogButton = JOptionPane.YES_NO_OPTION;
@@ -4531,13 +4529,13 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
-    private javax.swing.JScrollPane jScrollPane12;
+    private javax.swing.JScrollPane jScrollPane13;
+    private javax.swing.JScrollPane jScrollPane14;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
-    private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JSpinner jSpinner1;
