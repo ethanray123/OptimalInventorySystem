@@ -23,7 +23,7 @@ public class Connect {
             con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/optimaldb"+
                     "?useUnicode=true&useJDBCCompliantTimezoneShift=true"+
-                    "&useLegacyDatetimeCode=false&serverTimezone=UTC","root","root");
+                    "&useLegacyDatetimeCode=false&serverTimezone=UTC","root","");
             return con;
         }catch(ClassNotFoundException | SQLException e){
             return null;
