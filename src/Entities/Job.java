@@ -11,29 +11,29 @@ import java.util.Date;
 public class Job {
     private final int job_id;
     private String job_name;
-    private final int category_id;
+    private final String category_name;
     private String added_by;
     private Timestamp added_date;
     private String updated_by;
     private Timestamp updated_date;
     private int removedVal;
     
-    public Job(int ID, String name, int catID, String Adder, Timestamp AddDate, String Updater, 
+    public Job(int ID, String name, String catName, String Adder, Timestamp AddDate, String Updater, 
         Timestamp UpdateDate){
         this.job_id = ID;
         this.job_name = name;
-        this.category_id = catID;
+        this.category_name = catName;
         this.added_by = Adder;
         this.added_date = AddDate;
         this.updated_by = Updater;
         this.updated_date = UpdateDate;
     }
     
-    public Job(int ID, String name, int catID, String Adder, Timestamp AddDate, String Updater, 
+    public Job(int ID, String name, String catName, String Adder, Timestamp AddDate, String Updater, 
         Timestamp UpdateDate, int removed){
         this.job_id = ID;
         this.job_name = name;
-        this.category_id = catID;
+        this.category_name = catName;
         this.added_by = Adder;
         this.added_date = AddDate;
         this.updated_by = Updater;
@@ -54,8 +54,8 @@ public class Job {
         return this.job_name;
     }
     
-    public int getCatID(){
-        return this.category_id;
+    public String getCatName(){
+        return this.category_name;
     }
     
     public String getAddedBy(){

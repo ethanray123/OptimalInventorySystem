@@ -13,21 +13,21 @@ import java.sql.Timestamp;
  */
 public class JobItem {
     private int jobitem_id;
-    private int item_id;
+    private String item_id;
     private int item_qty;
-    private int job_id;
+    private String job;
     private String added_by;
     private Timestamp added_date;
     private String updated_by;
     private Timestamp updated_date;
     private int removedVal;
     
-    public JobItem(int jobItemID, int ID, int qty, int jobID, String Adder, Timestamp AddDate, String Updater, 
+    public JobItem(int jobItemID, String ID, int qty, String job, String Adder, Timestamp AddDate, String Updater, 
         Timestamp UpdateDate){
         this.jobitem_id = jobItemID;
         this.item_id = ID;
         this.item_qty = qty;
-        this.job_id = jobID;
+        this.job = job;
         this.added_by = Adder;
         this.added_date = AddDate;
         this.updated_by = Updater;
@@ -43,7 +43,7 @@ public class JobItem {
         return this.jobitem_id;
     }
     
-    public int getItemID(){
+    public String getItemID(){
         return this.item_id;
     }
     
@@ -51,8 +51,8 @@ public class JobItem {
         return this.item_qty;
     }
     
-    public int getJobID(){
-        return this.job_id;
+    public String getJob(){
+        return this.job;
     }
     
     public String getAddedBy(){
