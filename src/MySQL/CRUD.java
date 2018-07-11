@@ -1251,15 +1251,6 @@ public class CRUD {
         ResultSet rs = stmt.executeQuery("SELECT * from item where removed = 0");
         return rs;
     }
-    public static String selectFullName(Connection con, int userid) throws SQLException{
-        Statement stmt;
-        stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT full_name from user where user_id='" + userid + "'");
-        if(rs.next())
-            return rs.getString("full_name");
-        else
-            return "N/A";       
-    }
     public static ResultSet selectPartialItemInfoUsingItemName(Connection con,String itemName)throws SQLException{
         Statement stmt;
         stmt = con.createStatement();
@@ -1327,7 +1318,6 @@ public class CRUD {
         ResultSet rs = stmt.executeQuery("SELECT type_name from item_type where removed = 0");
         return rs;
     }
-    
     public static void insertItemType(Connection con, String typeName, String typeDetails, int addedBy, int updatedBy, int removed) throws SQLException{
         Statement stmt;
         stmt = con.createStatement();

@@ -442,8 +442,8 @@ public class Home extends javax.swing.JFrame {
             Item item;
             while(rs.next())
             {
-                String addedBy = CRUD.selectFullName(con, rs.getInt("added_by"));
-                String updatedBy = CRUD.selectFullName(con, rs.getInt("updated_by"));
+                String addedBy = CRUD.selectFullname(con, rs.getInt("added_by"));
+                String updatedBy = CRUD.selectFullname(con, rs.getInt("updated_by"));
                 item = new Item(
                            rs.getInt("item_id"),
                            rs.getString("item_name"),
@@ -641,7 +641,7 @@ public class Home extends javax.swing.JFrame {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     public void ShowItemsTable(){
         ArrayList<Item> itemList = getItemList();
         DefaultTableModel model = (DefaultTableModel)itemsTable.getModel();
@@ -685,8 +685,8 @@ public class Home extends javax.swing.JFrame {
             ResultSet rs = CRUD.selectItemTypeInfo(con);       
             ItemType itp;
             while(rs.next()){
-                String addedBy = CRUD.selectFullName(con,  rs.getInt("added_by"));
-                String updatedBy = CRUD.selectFullName(con,  rs.getInt("updated_by"));
+                String addedBy = CRUD.selectFullname(con,  rs.getInt("added_by"));
+                String updatedBy = CRUD.selectFullname(con,  rs.getInt("updated_by"));
                 itp = new ItemType(
                 rs.getInt("type_id"),
                 rs.getString("type_name"),
@@ -773,10 +773,10 @@ public class Home extends javax.swing.JFrame {
         jLabel33 = new javax.swing.JLabel();
         archiveitemtype_form = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        itemtypedetails2 = new javax.swing.JTextField();
         typename2 = new javax.swing.JTextField();
         jLabel25 = new javax.swing.JLabel();
         jLabel34 = new javax.swing.JLabel();
+        itemtypedetails2 = new javax.swing.JTextField();
         archiveItemType = new javax.swing.JButton();
         jLabel32 = new javax.swing.JLabel();
         updateitems = new javax.swing.JPanel();
@@ -1065,14 +1065,6 @@ public class Home extends javax.swing.JFrame {
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel9.setText("TYPE NAME");
 
-        itemtypedetails2.setBackground(new java.awt.Color(15, 74, 74));
-        itemtypedetails2.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        itemtypedetails2.setForeground(new java.awt.Color(255, 255, 255));
-        itemtypedetails2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        itemtypedetails2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        itemtypedetails2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        itemtypedetails2.setOpaque(false);
-
         typename2.setBackground(new java.awt.Color(15, 74, 74));
         typename2.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
         typename2.setForeground(new java.awt.Color(255, 255, 255));
@@ -1091,33 +1083,49 @@ public class Home extends javax.swing.JFrame {
         jLabel34.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel34.setText("ARCHIVE ITEM TYPE");
 
+        itemtypedetails2.setBackground(new java.awt.Color(15, 74, 74));
+        itemtypedetails2.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        itemtypedetails2.setForeground(new java.awt.Color(255, 255, 255));
+        itemtypedetails2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        itemtypedetails2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        itemtypedetails2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        itemtypedetails2.setOpaque(false);
+
         javax.swing.GroupLayout archiveitemtype_formLayout = new javax.swing.GroupLayout(archiveitemtype_form);
         archiveitemtype_form.setLayout(archiveitemtype_formLayout);
         archiveitemtype_formLayout.setHorizontalGroup(
             archiveitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(archiveitemtype_formLayout.createSequentialGroup()
-                .addGap(43, 43, 43)
-                .addGroup(archiveitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel34)
-                    .addComponent(itemtypedetails2, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-                    .addComponent(jLabel25, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-                    .addComponent(typename2))
-                .addContainerGap(289, Short.MAX_VALUE))
+                .addGroup(archiveitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(archiveitemtype_formLayout.createSequentialGroup()
+                        .addGap(62, 62, 62)
+                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(archiveitemtype_formLayout.createSequentialGroup()
+                        .addGap(53, 53, 53)
+                        .addComponent(itemtypedetails2, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(archiveitemtype_formLayout.createSequentialGroup()
+                        .addGap(38, 38, 38)
+                        .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(archiveitemtype_formLayout.createSequentialGroup()
+                        .addGap(53, 53, 53)
+                        .addGroup(archiveitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel34)
+                            .addComponent(typename2, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(279, Short.MAX_VALUE))
         );
         archiveitemtype_formLayout.setVerticalGroup(
             archiveitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(archiveitemtype_formLayout.createSequentialGroup()
                 .addGap(7, 7, 7)
                 .addComponent(jLabel34)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(itemtypedetails2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                .addComponent(typename2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                 .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(typename2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(itemtypedetails2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         archiveItemType.setBackground(new java.awt.Color(235, 85, 85));
@@ -1145,41 +1153,37 @@ public class Home extends javax.swing.JFrame {
                     .addGroup(updateitemtype_formLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(typename3, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                         .addComponent(newtypename, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(6, 6, 6))
                     .addGroup(updateitemtype_formLayout.createSequentialGroup()
                         .addGroup(updateitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(updateitemtype_formLayout.createSequentialGroup()
-                                .addGap(40, 40, 40)
-                                .addComponent(jLabel23))
-                            .addGroup(updateitemtype_formLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(itemtypedetails1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(updateitemtype_formLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jLabel33))
                             .addGroup(updateitemtype_formLayout.createSequentialGroup()
                                 .addGap(75, 75, 75)
-                                .addComponent(updateItemType)))
+                                .addComponent(updateItemType))
+                            .addGroup(updateitemtype_formLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(itemtypedetails1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(updateitemtype_formLayout.createSequentialGroup()
+                                .addGap(53, 53, 53)
+                                .addComponent(jLabel23)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(updateitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(archiveitemtype_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(updateitemtype_formLayout.createSequentialGroup()
                         .addGap(122, 122, 122)
-                        .addComponent(archiveItemType, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(333, 333, 333))
+                        .addComponent(archiveItemType, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(archiveitemtype_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(329, 329, 329))
         );
         updateitemtype_formLayout.setVerticalGroup(
             updateitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(updateitemtype_formLayout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addGroup(updateitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(13, 13, 13)
+                .addGroup(updateitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(updateitemtype_formLayout.createSequentialGroup()
-                        .addComponent(archiveitemtype_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(updateitemtype_formLayout.createSequentialGroup()
-                        .addGap(7, 7, 7)
                         .addComponent(jLabel33)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(updateitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1191,13 +1195,14 @@ public class Home extends javax.swing.JFrame {
                             .addComponent(newtypename, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel23)
-                        .addGap(6, 6, 6)
-                        .addComponent(itemtypedetails1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(updateitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(updateItemType)
-                            .addComponent(archiveItemType))
-                        .addGap(9, 9, 9))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(itemtypedetails1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(archiveitemtype_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addGroup(updateitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(updateItemType)
+                    .addComponent(archiveItemType))
+                .addGap(9, 9, 9))
         );
 
         jLabel32.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
@@ -1218,14 +1223,14 @@ public class Home extends javax.swing.JFrame {
                             .addComponent(typename, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel32)))
                     .addGroup(additemtype_formLayout.createSequentialGroup()
-                        .addGap(84, 84, 84)
-                        .addComponent(jLabel21))
-                    .addGroup(additemtype_formLayout.createSequentialGroup()
                         .addGap(94, 94, 94)
                         .addComponent(jLabel20))
                     .addGroup(additemtype_formLayout.createSequentialGroup()
                         .addGap(113, 113, 113)
-                        .addComponent(addItemType_save)))
+                        .addComponent(addItemType_save))
+                    .addGroup(additemtype_formLayout.createSequentialGroup()
+                        .addGap(85, 85, 85)
+                        .addComponent(jLabel21)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addComponent(updateitemtype_form, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(98, 98, 98))
@@ -1239,11 +1244,11 @@ public class Home extends javax.swing.JFrame {
                 .addComponent(jLabel20)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(typename, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel21)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(itemtypedetails, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(16, 16, 16)
                 .addComponent(addItemType_save)
                 .addContainerGap())
             .addComponent(updateitemtype_form, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1321,7 +1326,7 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
-        ItemMetricList.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Units", "Pcs", "Sets" }));
+        ItemMetricList.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "units", "pcs", "sets" }));
         ItemMetricList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ItemMetricListActionPerformed(evt);
@@ -1377,14 +1382,13 @@ public class Home extends javax.swing.JFrame {
         additems_form2Layout.setHorizontalGroup(
             additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(additems_form2Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
                 .addGroup(additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(additems_form2Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
                         .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(additems_form2Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
                         .addComponent(ItemMetricList, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(ItemTypeNameList, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -1414,14 +1418,14 @@ public class Home extends javax.swing.JFrame {
         additems_form2Layout.setVerticalGroup(
             additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(additems_form2Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, additems_form2Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(addItem_save, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(Update, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(additems_form2Layout.createSequentialGroup()
-                        .addContainerGap()
                         .addGroup(additems_form2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -2568,8 +2572,8 @@ public class Home extends javax.swing.JFrame {
                    CRUD.insertItem(con, itemName, itemQty, itemTypeID, itemMetric,userid,userid);
                    rs = CRUD.selectItemInfoUsingItemName(con,itemName);
                    rs.next();
-                   String addedBy = CRUD.selectFullName(con, userid);
-                   String updatedBy = CRUD.selectFullName(con, userid);
+                   String addedBy = CRUD.selectFullname(con, userid);
+                   String updatedBy = CRUD.selectFullname(con, userid);
                    Item it = new Item(
                            rs.getInt("item_id"),
                            rs.getString("item_name"),
@@ -2631,7 +2635,7 @@ public class Home extends javax.swing.JFrame {
                             int row = itemsTable.getSelectedRow();
                             model.setValueAt(newItemName, row, 1);
                             model.setValueAt(itemQty,row,2);
-                            String updatedBy = CRUD.selectFullName(con, userid);
+                            String updatedBy = CRUD.selectFullname(con, userid);
                             model.setValueAt(itemMetric,row,3);
                             model.setValueAt(itemTypeID,row,4);
                             model.setValueAt(updatedBy,row,7);
@@ -2672,8 +2676,8 @@ public class Home extends javax.swing.JFrame {
                     CRUD.insertItemType(con, typeName, typeDetails,userid,userid,0);
                     ResultSet rs = CRUD.selectItemTypeInfoUsingTypeName(con, typeName);
                     rs.next();  
-                    String addedBy = CRUD.selectFullName(con, userid);
-                    String updatedBy = CRUD.selectFullName(con, userid);
+                    String addedBy = CRUD.selectFullname(con, userid);
+                    String updatedBy = CRUD.selectFullname(con, userid);
                     ItemType itp = new ItemType(
                         rs.getInt("type_id"),
                         rs.getString("type_name"),
@@ -2751,9 +2755,9 @@ public class Home extends javax.swing.JFrame {
             index = 0;
         }else if(metric.equals("pcs")){
             index = 1;
-        }else{
+        }else if(metric.equals("sets")){
             index = 2;
-        }     
+        }  
         ItemMetricList.setSelectedIndex(index);
         //End of setting value for ItemMetricList comboBox
         
@@ -2795,12 +2799,16 @@ public class Home extends javax.swing.JFrame {
                             int row = itemTypeTable.getSelectedRow();
                             model.setValueAt(newTypeName, row, 1);
                             model.setValueAt(typeDetails,row,2);
-                            String updatedBy = CRUD.selectFullName(con, userid);
+                            String updatedBy = CRUD.selectFullname(con, userid);
                             model.setValueAt(updatedBy,row,3);
                             model.setValueAt(dateFormat.format(new Date()),row,6);
+                            typename2.setText("");
                             typename3.setText("");
                             itemtypedetails1.setText("");
+                            itemtypedetails2.setText("");
                             newtypename.setText("");
+                            typename.setText("");
+                            itemtypedetails.setText("");
                             //Removing item type names from combobox
                             ItemTypeNameList.removeAllItems();
                             //Adding item type name to combobox                   
@@ -2844,14 +2852,16 @@ public class Home extends javax.swing.JFrame {
                          for(int x = 0; x < tm.getRowCount();x++){
                             Object o = tm.getValueAt(x, 1);                        
                             if(o.equals(typeName)){
-                                System.out.println("ey");
                                 ((DefaultTableModel)itemTypeTable.getModel()).removeRow(x);
                                 typename2.setText("");
+                                typename3.setText("");
+                                itemtypedetails1.setText("");
                                 itemtypedetails2.setText("");
+                                newtypename.setText("");
+                                typename.setText("");
+                                itemtypedetails.setText("");
                                 itemTypeTable.getSelectionModel().clearSelection();                             
                                 ItemTypeNameList.removeItem(typeName);
-                            }else{
-                                System.out.println(typeName);
                             }
                         }
                     }else{
