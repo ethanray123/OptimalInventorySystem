@@ -1246,7 +1246,7 @@ public class Home extends javax.swing.JFrame {
                         .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jobname, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
 
         jobsTable.setAutoCreateRowSorter(true);
@@ -1432,7 +1432,7 @@ public class Home extends javax.swing.JFrame {
                     .addComponent(deleteJobItem, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jobcombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout job_itemsLayout = new javax.swing.GroupLayout(job_items);
@@ -2415,9 +2415,9 @@ public class Home extends javax.swing.JFrame {
             itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(itemsLayout.createSequentialGroup()
                 .addGroup(itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1244, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1150, Short.MAX_VALUE)
                     .addComponent(jScrollPane14))
-                .addContainerGap(256, Short.MAX_VALUE))
+                .addContainerGap(350, Short.MAX_VALUE))
         );
         itemsLayout.setVerticalGroup(
             itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2937,7 +2937,7 @@ public class Home extends javax.swing.JFrame {
         );
 
         left_sidebar.add(dashboard_side);
-        dashboard_side.setBounds(0, 280, 250, 60);
+        dashboard_side.setBounds(0, 280, 250, 58);
 
         items_side.setBackground(new java.awt.Color(8, 40, 41));
         items_side.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -2969,7 +2969,7 @@ public class Home extends javax.swing.JFrame {
         );
 
         left_sidebar.add(items_side);
-        items_side.setBounds(0, 340, 250, 60);
+        items_side.setBounds(0, 340, 250, 58);
 
         jobs_side.setBackground(new java.awt.Color(8, 40, 41));
         jobs_side.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -3097,7 +3097,7 @@ public class Home extends javax.swing.JFrame {
         );
 
         left_sidebar.add(logout_side);
-        logout_side.setBounds(0, 580, 250, 58);
+        logout_side.setBounds(0, 580, 246, 56);
 
         whole.add(left_sidebar);
         left_sidebar.setBounds(0, 80, 250, 720);
