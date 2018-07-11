@@ -15,7 +15,6 @@ public class Category {
     private final Date addedOn;
     private String updatedBy; 
     private Date updatedOn;
-//    private boolean removed;
             
     /**
      *

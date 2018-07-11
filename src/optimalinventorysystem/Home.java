@@ -38,6 +38,7 @@ import static MySQL.CRUD.getJobItem_ItemID;
 import java.awt.event.ActionEvent;
 import static optimalinventorysystem.Login.userid;
 import static java.lang.Integer.parseInt;
+import java.util.Calendar;
 
 /**
  *
@@ -50,6 +51,7 @@ public class Home extends javax.swing.JFrame {
     public static int JobIDFromTable, JobItemsIDFromTable, JobItems_ItemIDFromTable = 0;
     public static int selectrow;
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    DateFormat dayFormat = new SimpleDateFormat("dd");
     DateFormat monthFormat = new SimpleDateFormat("M");
     DateFormat yearFormat = new SimpleDateFormat("yyyy");
     // 5,32,33      -- darkest
@@ -78,6 +80,7 @@ public class Home extends javax.swing.JFrame {
         initializeItemTypeNameList();
         ShowItemsTable();
         showItemTypeTable();
+        Show_WeeklyTable();
     }
     
     /**
@@ -240,12 +243,12 @@ public class Home extends javax.swing.JFrame {
         yearlydashboardpanel.setVisible(false);
         
         //hide and show date panels
-        weeklydate.setVisible(true);
         monthlydate.setVisible(false);
         yearlydate.setVisible(false);
         
         Clear_MonthlyTable();
         Clear_YearlyTable();
+        //Show_WeeklyTable();
     }
     
     public void dashboard_monthly_onclick() throws SQLException
@@ -262,7 +265,6 @@ public class Home extends javax.swing.JFrame {
         
         //hide and show date panels
         monthlydate.setVisible(true);
-        weeklydate.setVisible(false);
         yearlydate.setVisible(false);
         
         Clear_YearlyTable();
@@ -284,7 +286,6 @@ public class Home extends javax.swing.JFrame {
         //hide and show date panels
         yearlydate.setVisible(true);
         monthlydate.setVisible(false);
-        weeklydate.setVisible(false);
         
         Clear_MonthlyTable();
         Clear_WeeklyTable();
@@ -541,14 +542,22 @@ public class Home extends javax.swing.JFrame {
         return itemList;
     }
     
+    public void initCategoryDropdown(){
+        categoryDropdown.removeAllItems();
+        ArrayList<Category> list = getCategoryList();
+        for(Category c : list) {
+            categoryDropdown.addItem(c.getName());
+        }
+    }
+    
     /**
      *
      */
     public void initItemDropdown(){
+        itemDropdown.removeAllItems();
         ArrayList<Item> list = getItemList();
         System.out.println("Items Available:");
         for(Item c : list) {
-            System.out.println(c.getName());
             itemDropdown.addItem(c.getName());
         }
     }
@@ -818,6 +827,55 @@ public class Home extends javax.swing.JFrame {
     
     //START OF DASHBOARD METHODS
     
+    public ArrayList<Dashboard> getWeeklyList ()
+    {
+        ArrayList<Dashboard> WeekList = new ArrayList<>();
+        Connection con = Connect.getConnection();
+        try {
+            ResultSet rs = CRUD.selectJobItemsInfoWeek(con);
+            Dashboard db;
+            while(rs.next()){
+                System.out.println("A report is made");
+                String itemName = CRUD.getJobItem_ItemName(con, rs.getInt("item_id"));
+                int itemQty = rs.getInt("item_quantity");
+                String jobName = CRUD.getJobName(con, rs.getInt("job_id"));
+                int jobID = rs.getInt("job_id");
+                int catID = CRUD.getCatID(con, jobID);
+                String catName = CRUD.getCleaningCatName(con, catID);
+                Timestamp updatedOn = rs.getTimestamp("updated_date");
+                String updatedBy = CRUD.getUsername(con,rs.getInt("updated_by"));
+                
+                db = new Dashboard(itemName, itemQty, jobName, catName, updatedOn, updatedBy);
+                WeekList.add(db);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return WeekList;
+    }
+    
+    public void Show_WeeklyTable() throws SQLException
+    {
+        ArrayList<Dashboard> list = getWeeklyList();
+        DefaultTableModel model = (DefaultTableModel) weeklydashboardtable.getModel();
+        Object[] row = new Object[6];
+        int ctr = 0;
+        for(Dashboard ji : list){
+            ctr++;
+            System.out.println(ji.getItemName());
+            row[0] = ji.getItemName();
+            row[1] = ji.getItemQty();
+            row[2] = ji.getJobName();
+            row[3] = ji.getCleaningCategory();
+            row[4] = dateFormat.format(ji.getLastUpdated());
+            row[5] = ji.getLastUpdater();
+            model.addRow(row);
+        }
+        if(ctr == 0){
+            JOptionPane.showMessageDialog(null, "No reports for Last Week");
+        }
+    }
+    
     public ArrayList<Dashboard> getMonthlyList ()
     {
         ArrayList<Dashboard> MonthList = new ArrayList<>();
@@ -956,6 +1014,31 @@ public class Home extends javax.swing.JFrame {
 
         whole = new javax.swing.JPanel();
         right_sidebar = new javax.swing.JPanel();
+        categories = new javax.swing.JPanel();
+        jScrollPane11 = new javax.swing.JScrollPane();
+        categoriesTable = new javax.swing.JTable();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        categoryItemTable = new javax.swing.JTable();
+        additems_form1 = new javax.swing.JPanel();
+        categoryNameField = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        addEditCategoryBtn = new javax.swing.JButton();
+        categoryDropdown = new javax.swing.JComboBox<>();
+        itemQuantitySpinner = new javax.swing.JSpinner();
+        addEditCategoryItemBtn = new javax.swing.JButton();
+        itemDropdown = new javax.swing.JComboBox<>();
+        jLabel12 = new javax.swing.JLabel();
+        removeCategoryItemBtn = new javax.swing.JButton();
+        categoryEditLabel = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        removeCategoryBtn = new javax.swing.JButton();
+        categoryItemUpdatedDate = new javax.swing.JLabel();
+        clearCategoryFieldsBtn = new javax.swing.JButton();
+        categoryItemUpdatedBy = new javax.swing.JLabel();
+        categoryItemAddedDate = new javax.swing.JLabel();
+        categoryItemAddedBy = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
         dashboard = new javax.swing.JPanel();
         dashboard_weeklylabel = new javax.swing.JLabel();
         dashboard_yearlylabel = new javax.swing.JLabel();
@@ -964,45 +1047,39 @@ public class Home extends javax.swing.JFrame {
         yearlysmallarrow = new javax.swing.JLabel();
         maindashboardpanel = new javax.swing.JPanel();
         monthlydashboardpanel = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
         monthlydashboardtable = new javax.swing.JTable();
         yearlydashboardpanel = new javax.swing.JPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
         yearlydashboardtable = new javax.swing.JTable();
         weeklydashboardpanel = new javax.swing.JPanel();
-        jScrollPane6 = new javax.swing.JScrollPane();
+        jScrollPane2 = new javax.swing.JScrollPane();
         weeklydashboardtable = new javax.swing.JTable();
         dashboardBtn = new javax.swing.JPanel();
         itemsBtn = new javax.swing.JLabel();
         jobsBtn = new javax.swing.JLabel();
         categoriesBtn = new javax.swing.JLabel();
         dashboard_monthlylabel = new javax.swing.JLabel();
-        yearlydate = new javax.swing.JPanel();
-        yearlabel = new javax.swing.JLabel();
-        yearlyGo = new javax.swing.JButton();
-        clearYearTable = new javax.swing.JButton();
-        yearlyChooser = new com.toedter.calendar.JDateChooser();
         monthlydate = new javax.swing.JPanel();
         monthlabel1 = new javax.swing.JLabel();
         monthlyGo = new javax.swing.JButton();
         monthlyChooser = new com.toedter.calendar.JDateChooser();
         clearMonthTable = new javax.swing.JButton();
-        weeklydate = new javax.swing.JPanel();
-        monthlabel = new javax.swing.JLabel();
-        weeklyGo = new javax.swing.JButton();
-        jSpinner1 = new javax.swing.JSpinner();
-        weeklyChooser = new com.toedter.calendar.JDateChooser();
-        clearWeekTable = new javax.swing.JButton();
+        yearlydate = new javax.swing.JPanel();
+        yearlabel = new javax.swing.JLabel();
+        yearlyGo = new javax.swing.JButton();
+        clearYearTable = new javax.swing.JButton();
+        yearlyChooser = new com.toedter.calendar.JDateChooser();
         items = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         Tables = new javax.swing.JTabbedPane();
         itemsTablePanel = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
+        jScrollPane13 = new javax.swing.JScrollPane();
         itemsTable = new javax.swing.JTable();
         iTtable = new javax.swing.JPanel();
         jScrollPane10 = new javax.swing.JScrollPane();
         itemTypeTable = new javax.swing.JTable();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane14 = new javax.swing.JScrollPane();
         itemsTab = new javax.swing.JTabbedPane();
         additemtype = new javax.swing.JPanel();
         additemtype_form = new javax.swing.JPanel();
@@ -1054,7 +1131,7 @@ public class Home extends javax.swing.JFrame {
         deleteJob = new javax.swing.JButton();
         jLabel15 = new javax.swing.JLabel();
         jobname = new javax.swing.JTextField();
-        jScrollPane7 = new javax.swing.JScrollPane();
+        jScrollPane5 = new javax.swing.JScrollPane();
         jobsTable = new javax.swing.JTable();
         job_items = new javax.swing.JPanel();
         jScrollPane8 = new javax.swing.JScrollPane();
@@ -1085,31 +1162,6 @@ public class Home extends javax.swing.JFrame {
         fullnameField = new javax.swing.JTextField();
         clearUserFieldBtn = new javax.swing.JButton();
         removeUserBtn = new javax.swing.JButton();
-        categories = new javax.swing.JPanel();
-        jScrollPane11 = new javax.swing.JScrollPane();
-        categoriesTable = new javax.swing.JTable();
-        jScrollPane12 = new javax.swing.JScrollPane();
-        categoryItemTable = new javax.swing.JTable();
-        additems_form1 = new javax.swing.JPanel();
-        categoryNameField = new javax.swing.JTextField();
-        jLabel10 = new javax.swing.JLabel();
-        addEditCategoryBtn = new javax.swing.JButton();
-        categoryDropdown = new javax.swing.JComboBox<>();
-        itemQuantitySpinner = new javax.swing.JSpinner();
-        addEditCategoryItemBtn = new javax.swing.JButton();
-        itemDropdown = new javax.swing.JComboBox<>();
-        jLabel12 = new javax.swing.JLabel();
-        removeCategoryItemBtn = new javax.swing.JButton();
-        categoryEditLabel = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        removeCategoryBtn = new javax.swing.JButton();
-        categoryItemUpdatedDate = new javax.swing.JLabel();
-        clearCategoryFieldsBtn = new javax.swing.JButton();
-        categoryItemUpdatedBy = new javax.swing.JLabel();
-        categoryItemAddedDate = new javax.swing.JLabel();
-        categoryItemAddedBy = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
         upper_dashboard_panel = new javax.swing.JPanel();
         dashboard_up_label = new javax.swing.JLabel();
         upper_items_panel = new javax.swing.JPanel();
@@ -1145,6 +1197,243 @@ public class Home extends javax.swing.JFrame {
         right_sidebar.setBackground(new java.awt.Color(5, 32, 33));
         right_sidebar.setPreferredSize(new java.awt.Dimension(1500, 800));
         right_sidebar.setLayout(null);
+
+        categories.setBackground(new java.awt.Color(5, 32, 33));
+        categories.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        categoriesTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Name", "Added By", "Date Added", "Updated By", "Date Updated"
+            }
+        ));
+        categoriesTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                categoriesTableMouseClicked(evt);
+            }
+        });
+        jScrollPane11.setViewportView(categoriesTable);
+        if (categoriesTable.getColumnModel().getColumnCount() > 0) {
+            categoriesTable.getColumnModel().getColumn(0).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(0).setPreferredWidth(2);
+            categoriesTable.getColumnModel().getColumn(1).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(1).setPreferredWidth(2);
+            categoriesTable.getColumnModel().getColumn(2).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(2).setPreferredWidth(5);
+            categoriesTable.getColumnModel().getColumn(3).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(3).setPreferredWidth(5);
+            categoriesTable.getColumnModel().getColumn(4).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(4).setPreferredWidth(5);
+            categoriesTable.getColumnModel().getColumn(5).setResizable(false);
+            categoriesTable.getColumnModel().getColumn(5).setPreferredWidth(5);
+        }
+
+        categories.add(jScrollPane11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 820, 350));
+
+        categoryItemTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Name", "Quantity"
+            }
+        ));
+        categoryItemTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                categoryItemTableMouseClicked(evt);
+            }
+        });
+        jScrollPane6.setViewportView(categoryItemTable);
+        if (categoryItemTable.getColumnModel().getColumnCount() > 0) {
+            categoryItemTable.getColumnModel().getColumn(0).setResizable(false);
+            categoryItemTable.getColumnModel().getColumn(1).setResizable(false);
+            categoryItemTable.getColumnModel().getColumn(1).setPreferredWidth(5);
+        }
+
+        categories.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 60, 400, 350));
+
+        additems_form1.setBackground(new java.awt.Color(15, 74, 74));
+        additems_form1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        categoryNameField.setBackground(new java.awt.Color(15, 74, 74));
+        categoryNameField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        categoryNameField.setForeground(new java.awt.Color(255, 255, 255));
+        categoryNameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        categoryNameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
+        categoryNameField.setCaretColor(new java.awt.Color(0, 153, 153));
+        categoryNameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        categoryNameField.setOpaque(false);
+        categoryNameField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                categoryNameFieldActionPerformed(evt);
+            }
+        });
+        additems_form1.add(categoryNameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 59, 260, 40));
+
+        jLabel10.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel10.setText("CATEGORY");
+        additems_form1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 260, 28));
+
+        addEditCategoryBtn.setBackground(new java.awt.Color(0, 204, 51));
+        addEditCategoryBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        addEditCategoryBtn.setForeground(new java.awt.Color(255, 255, 255));
+        addEditCategoryBtn.setText("ADD / EDIT");
+        addEditCategoryBtn.setBorder(null);
+        addEditCategoryBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addEditCategoryBtnMouseClicked(evt);
+            }
+        });
+        addEditCategoryBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addEditCategoryBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(addEditCategoryBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 60, 127, 42));
+
+        categoryDropdown.setModel(new javax.swing.DefaultComboBoxModel<>());
+        categoryDropdown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                categoryDropdownActionPerformed(evt);
+            }
+        });
+        additems_form1.add(categoryDropdown, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 260, 41));
+
+        itemQuantitySpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
+        additems_form1.add(itemQuantitySpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 170, 42, 41));
+
+        addEditCategoryItemBtn.setBackground(new java.awt.Color(0, 204, 51));
+        addEditCategoryItemBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        addEditCategoryItemBtn.setForeground(new java.awt.Color(255, 255, 255));
+        addEditCategoryItemBtn.setText("ADD / EDIT");
+        addEditCategoryItemBtn.setBorder(null);
+        addEditCategoryItemBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addEditCategoryItemBtnMouseClicked(evt);
+            }
+        });
+        addEditCategoryItemBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addEditCategoryItemBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(addEditCategoryItemBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 170, 127, 42));
+
+        itemDropdown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemDropdownActionPerformed(evt);
+            }
+        });
+        additems_form1.add(itemDropdown, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 170, 260, 41));
+
+        jLabel12.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("ITEM");
+        additems_form1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 130, 260, 28));
+
+        removeCategoryItemBtn.setBackground(new java.awt.Color(236, 82, 82));
+        removeCategoryItemBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        removeCategoryItemBtn.setForeground(new java.awt.Color(255, 255, 255));
+        removeCategoryItemBtn.setText("REMOVE");
+        removeCategoryItemBtn.setBorder(null);
+        removeCategoryItemBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                removeCategoryItemBtnMouseClicked(evt);
+            }
+        });
+        removeCategoryItemBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeCategoryItemBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(removeCategoryItemBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 170, 127, 42));
+
+        categoryEditLabel.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        categoryEditLabel.setForeground(new java.awt.Color(255, 255, 255));
+        categoryEditLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        additems_form1.add(categoryEditLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 20, 410, 28));
+
+        jLabel8.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("CATEGORY NAME");
+        additems_form1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 260, 28));
+
+        removeCategoryBtn.setBackground(new java.awt.Color(236, 82, 82));
+        removeCategoryBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        removeCategoryBtn.setForeground(new java.awt.Color(255, 255, 255));
+        removeCategoryBtn.setText("REMOVE");
+        removeCategoryBtn.setBorder(null);
+        removeCategoryBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                removeCategoryBtnMouseClicked(evt);
+            }
+        });
+        removeCategoryBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeCategoryBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(removeCategoryBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 60, 127, 42));
+
+        categoryItemUpdatedDate.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        categoryItemUpdatedDate.setForeground(new java.awt.Color(255, 255, 255));
+        categoryItemUpdatedDate.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        additems_form1.add(categoryItemUpdatedDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 210, 330, 30));
+
+        clearCategoryFieldsBtn.setBackground(new java.awt.Color(175, 174, 174));
+        clearCategoryFieldsBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        clearCategoryFieldsBtn.setForeground(new java.awt.Color(255, 255, 255));
+        clearCategoryFieldsBtn.setText("CLEAR");
+        clearCategoryFieldsBtn.setBorder(null);
+        clearCategoryFieldsBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                clearCategoryFieldsBtnMouseClicked(evt);
+            }
+        });
+        clearCategoryFieldsBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearCategoryFieldsBtnActionPerformed(evt);
+            }
+        });
+        additems_form1.add(clearCategoryFieldsBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 60, 127, 42));
+
+        categoryItemUpdatedBy.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        categoryItemUpdatedBy.setForeground(new java.awt.Color(255, 255, 255));
+        categoryItemUpdatedBy.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        additems_form1.add(categoryItemUpdatedBy, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 240, 330, 30));
+
+        categoryItemAddedDate.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        categoryItemAddedDate.setForeground(new java.awt.Color(255, 255, 255));
+        categoryItemAddedDate.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        additems_form1.add(categoryItemAddedDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 150, 330, 30));
+
+        categoryItemAddedBy.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        categoryItemAddedBy.setForeground(new java.awt.Color(255, 255, 255));
+        categoryItemAddedBy.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        additems_form1.add(categoryItemAddedBy, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 180, 330, 30));
+
+        categories.add(additems_form1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 420, 1230, 280));
+
+        jLabel7.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel7.setText("CATEGORY ITEM DETAILS");
+        categories.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 260, 28));
+
+        jLabel14.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel14.setText("CATEGORY DETAILS");
+        categories.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 260, 28));
+
+        right_sidebar.add(categories);
+        categories.setBounds(0, 0, 1250, 720);
 
         dashboard.setBackground(new java.awt.Color(5, 32, 33));
         dashboard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -1193,7 +1482,7 @@ public class Home extends javax.swing.JFrame {
                 "ITEM", "QUANTITY", "JOB NAME", "CLEANING CATEGORY", "DATE LAST UPDATED", "LAST UPDATED BY"
             }
         ));
-        jScrollPane2.setViewportView(monthlydashboardtable);
+        jScrollPane1.setViewportView(monthlydashboardtable);
 
         javax.swing.GroupLayout monthlydashboardpanelLayout = new javax.swing.GroupLayout(monthlydashboardpanel);
         monthlydashboardpanel.setLayout(monthlydashboardpanelLayout);
@@ -1201,14 +1490,14 @@ public class Home extends javax.swing.JFrame {
             monthlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(monthlydashboardpanelLayout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(41, Short.MAX_VALUE))
         );
         monthlydashboardpanelLayout.setVerticalGroup(
             monthlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(monthlydashboardpanelLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
                 .addGap(27, 27, 27))
         );
 
@@ -1225,7 +1514,7 @@ public class Home extends javax.swing.JFrame {
                 "ITEM", "QUANTITY", "JOB NAME", "CLEANING CATEGORY", "DATE LAST UPDATED", "LAST UPDATED BY"
             }
         ));
-        jScrollPane5.setViewportView(yearlydashboardtable);
+        jScrollPane3.setViewportView(yearlydashboardtable);
 
         javax.swing.GroupLayout yearlydashboardpanelLayout = new javax.swing.GroupLayout(yearlydashboardpanel);
         yearlydashboardpanel.setLayout(yearlydashboardpanelLayout);
@@ -1233,14 +1522,14 @@ public class Home extends javax.swing.JFrame {
             yearlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(yearlydashboardpanelLayout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(41, Short.MAX_VALUE))
         );
         yearlydashboardpanelLayout.setVerticalGroup(
             yearlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(yearlydashboardpanelLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
                 .addGap(27, 27, 27))
         );
 
@@ -1257,7 +1546,7 @@ public class Home extends javax.swing.JFrame {
                 "ITEM", "QUANTITY", "JOB NAME", "CLEANING CATEGORY", "DATE LAST UPDATED", "LAST UPDATED BY"
             }
         ));
-        jScrollPane6.setViewportView(weeklydashboardtable);
+        jScrollPane2.setViewportView(weeklydashboardtable);
 
         javax.swing.GroupLayout weeklydashboardpanelLayout = new javax.swing.GroupLayout(weeklydashboardpanel);
         weeklydashboardpanel.setLayout(weeklydashboardpanelLayout);
@@ -1265,14 +1554,14 @@ public class Home extends javax.swing.JFrame {
             weeklydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(weeklydashboardpanelLayout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(41, Short.MAX_VALUE))
         );
         weeklydashboardpanelLayout.setVerticalGroup(
             weeklydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(weeklydashboardpanelLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
                 .addGap(27, 27, 27))
         );
 
@@ -1338,7 +1627,70 @@ public class Home extends javax.swing.JFrame {
 
         dashboard.add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 70, 560, 90));
 
+        monthlydate.setBackground(new java.awt.Color(5, 32, 33));
+        monthlydate.setPreferredSize(new java.awt.Dimension(310, 102));
+
+        monthlabel1.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        monthlabel1.setForeground(new java.awt.Color(255, 255, 255));
+        monthlabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        monthlabel1.setText("PICK A DATE");
+
+        monthlyGo.setBackground(new java.awt.Color(0, 204, 51));
+        monthlyGo.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        monthlyGo.setForeground(new java.awt.Color(255, 255, 255));
+        monthlyGo.setText("GO");
+        monthlyGo.setBorder(null);
+        monthlyGo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                monthlyGoMouseClicked(evt);
+            }
+        });
+
+        monthlyChooser.setDateFormatString("yyyy/MM/dd");
+
+        clearMonthTable.setBackground(new java.awt.Color(175, 174, 174));
+        clearMonthTable.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        clearMonthTable.setForeground(new java.awt.Color(255, 255, 255));
+        clearMonthTable.setText("CLEAR");
+        clearMonthTable.setBorder(null);
+        clearMonthTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                clearMonthTableMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout monthlydateLayout = new javax.swing.GroupLayout(monthlydate);
+        monthlydate.setLayout(monthlydateLayout);
+        monthlydateLayout.setHorizontalGroup(
+            monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, monthlydateLayout.createSequentialGroup()
+                .addContainerGap(25, Short.MAX_VALUE)
+                .addGroup(monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(monthlabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(monthlydateLayout.createSequentialGroup()
+                        .addComponent(monthlyChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(monthlyGo, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(clearMonthTable, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))))
+        );
+        monthlydateLayout.setVerticalGroup(
+            monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(monthlydateLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(monthlabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(monthlyGo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(clearMonthTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(monthlyChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        dashboard.add(monthlydate, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 70, 310, -1));
+
         yearlydate.setBackground(new java.awt.Color(5, 32, 33));
+        yearlydate.setPreferredSize(new java.awt.Dimension(310, 102));
 
         yearlabel.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
         yearlabel.setForeground(new java.awt.Color(255, 255, 255));
@@ -1375,161 +1727,29 @@ public class Home extends javax.swing.JFrame {
             yearlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(yearlydateLayout.createSequentialGroup()
                 .addGap(33, 33, 33)
-                .addComponent(yearlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(yearlydateLayout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(yearlyChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(yearlyGo, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(clearYearTable, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE))
+                .addGroup(yearlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(yearlydateLayout.createSequentialGroup()
+                        .addComponent(yearlyChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(yearlyGo, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(clearYearTable, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE))
+                    .addComponent(yearlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         yearlydateLayout.setVerticalGroup(
             yearlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(yearlydateLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(yearlabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
-                .addGroup(yearlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(yearlyChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(yearlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(yearlyChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
                     .addComponent(yearlyGo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(clearYearTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(clearYearTable, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
-        dashboard.add(yearlydate, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 70, 310, -1));
-
-        monthlydate.setBackground(new java.awt.Color(5, 32, 33));
-
-        monthlabel1.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
-        monthlabel1.setForeground(new java.awt.Color(255, 255, 255));
-        monthlabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        monthlabel1.setText("PICK A DATE");
-
-        monthlyGo.setBackground(new java.awt.Color(0, 204, 51));
-        monthlyGo.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        monthlyGo.setForeground(new java.awt.Color(255, 255, 255));
-        monthlyGo.setText("GO");
-        monthlyGo.setBorder(null);
-        monthlyGo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                monthlyGoMouseClicked(evt);
-            }
-        });
-
-        monthlyChooser.setDateFormatString("yyyy/MM/dd");
-
-        clearMonthTable.setBackground(new java.awt.Color(175, 174, 174));
-        clearMonthTable.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        clearMonthTable.setForeground(new java.awt.Color(255, 255, 255));
-        clearMonthTable.setText("CLEAR");
-        clearMonthTable.setBorder(null);
-        clearMonthTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                clearMonthTableMouseClicked(evt);
-            }
-        });
-
-        javax.swing.GroupLayout monthlydateLayout = new javax.swing.GroupLayout(monthlydate);
-        monthlydate.setLayout(monthlydateLayout);
-        monthlydateLayout.setHorizontalGroup(
-            monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(monthlydateLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(monthlabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(monthlydateLayout.createSequentialGroup()
-                        .addComponent(monthlyChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(monthlyGo, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(clearMonthTable, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 19, Short.MAX_VALUE)))
-                .addGap(14, 14, 14))
-        );
-        monthlydateLayout.setVerticalGroup(
-            monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(monthlydateLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(monthlabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(monthlyGo, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
-                    .addComponent(monthlyChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(clearMonthTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-
-        dashboard.add(monthlydate, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 70, 310, -1));
-
-        weeklydate.setBackground(new java.awt.Color(5, 32, 33));
-
-        monthlabel.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
-        monthlabel.setForeground(new java.awt.Color(255, 255, 255));
-        monthlabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        monthlabel.setText("PICK A DATE");
-
-        weeklyGo.setBackground(new java.awt.Color(0, 204, 51));
-        weeklyGo.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        weeklyGo.setForeground(new java.awt.Color(255, 255, 255));
-        weeklyGo.setText("GO");
-        weeklyGo.setBorder(null);
-        weeklyGo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                weeklyGoMouseClicked(evt);
-            }
-        });
-
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, 1, 1, 1));
-
-        weeklyChooser.setDateFormatString("yyyy/MM/dd");
-
-        clearWeekTable.setBackground(new java.awt.Color(175, 174, 174));
-        clearWeekTable.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        clearWeekTable.setForeground(new java.awt.Color(255, 255, 255));
-        clearWeekTable.setText("CLEAR");
-        clearWeekTable.setBorder(null);
-        clearWeekTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                clearWeekTableMouseClicked(evt);
-            }
-        });
-
-        javax.swing.GroupLayout weeklydateLayout = new javax.swing.GroupLayout(weeklydate);
-        weeklydate.setLayout(weeklydateLayout);
-        weeklydateLayout.setHorizontalGroup(
-            weeklydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(weeklydateLayout.createSequentialGroup()
-                .addGroup(weeklydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(weeklydateLayout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(monthlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(weeklydateLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(weeklyChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(weeklyGo, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(clearWeekTable, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        weeklydateLayout.setVerticalGroup(
-            weeklydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(weeklydateLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(monthlabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(weeklydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-                    .addComponent(weeklyChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(weeklyGo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(clearWeekTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(22, Short.MAX_VALUE))
-        );
-
-        dashboard.add(weeklydate, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 70, 380, -1));
+        dashboard.add(yearlydate, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 70, 310, -1));
 
         right_sidebar.add(dashboard);
         dashboard.setBounds(0, 0, 1250, 720);
@@ -1552,17 +1772,17 @@ public class Home extends javax.swing.JFrame {
                 itemsTableMouseClicked(evt);
             }
         });
-        jScrollPane3.setViewportView(itemsTable);
+        jScrollPane13.setViewportView(itemsTable);
 
         javax.swing.GroupLayout itemsTablePanelLayout = new javax.swing.GroupLayout(itemsTablePanel);
         itemsTablePanel.setLayout(itemsTablePanelLayout);
         itemsTablePanelLayout.setHorizontalGroup(
             itemsTablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1337, Short.MAX_VALUE)
+            .addComponent(jScrollPane13, javax.swing.GroupLayout.DEFAULT_SIZE, 1337, Short.MAX_VALUE)
         );
         itemsTablePanelLayout.setVerticalGroup(
             itemsTablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
+            .addComponent(jScrollPane13, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
         );
 
         Tables.addTab("Items Table", itemsTablePanel);
@@ -2086,7 +2306,7 @@ public class Home extends javax.swing.JFrame {
 
         itemsTab.addTab("ITEM", updateitems);
 
-        jScrollPane1.setViewportView(itemsTab);
+        jScrollPane14.setViewportView(itemsTab);
 
         javax.swing.GroupLayout itemsLayout = new javax.swing.GroupLayout(items);
         items.setLayout(itemsLayout);
@@ -2095,7 +2315,7 @@ public class Home extends javax.swing.JFrame {
             .addGroup(itemsLayout.createSequentialGroup()
                 .addGroup(itemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1244, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
+                    .addComponent(jScrollPane14))
                 .addContainerGap(256, Short.MAX_VALUE))
         );
         itemsLayout.setVerticalGroup(
@@ -2103,7 +2323,7 @@ public class Home extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, itemsLayout.createSequentialGroup()
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane14, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(42, 42, 42))
         );
 
@@ -2229,7 +2449,7 @@ public class Home extends javax.swing.JFrame {
                 jobsTableMouseClicked(evt);
             }
         });
-        jScrollPane7.setViewportView(jobsTable);
+        jScrollPane5.setViewportView(jobsTable);
 
         javax.swing.GroupLayout jobsLayout = new javax.swing.GroupLayout(jobs);
         jobs.setLayout(jobsLayout);
@@ -2239,7 +2459,7 @@ public class Home extends javax.swing.JFrame {
                 .addGroup(jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jobsLayout.createSequentialGroup()
                         .addGap(54, 54, 54)
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 1065, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 1065, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jobsLayout.createSequentialGroup()
                         .addGap(292, 292, 292)
                         .addComponent(crud_jobs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -2249,7 +2469,7 @@ public class Home extends javax.swing.JFrame {
             jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jobsLayout.createSequentialGroup()
                 .addGap(22, 22, 22)
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(50, 50, 50)
                 .addComponent(crud_jobs, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(51, Short.MAX_VALUE))
@@ -2597,243 +2817,6 @@ public class Home extends javax.swing.JFrame {
         right_sidebar.add(users);
         users.setBounds(0, 0, 1250, 720);
 
-        categories.setBackground(new java.awt.Color(5, 32, 33));
-        categories.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        categoriesTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "ID", "Name", "Added By", "Date Added", "Updated By", "Date Updated"
-            }
-        ));
-        categoriesTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                categoriesTableMouseClicked(evt);
-            }
-        });
-        jScrollPane11.setViewportView(categoriesTable);
-        if (categoriesTable.getColumnModel().getColumnCount() > 0) {
-            categoriesTable.getColumnModel().getColumn(0).setResizable(false);
-            categoriesTable.getColumnModel().getColumn(0).setPreferredWidth(2);
-            categoriesTable.getColumnModel().getColumn(1).setResizable(false);
-            categoriesTable.getColumnModel().getColumn(1).setPreferredWidth(2);
-            categoriesTable.getColumnModel().getColumn(2).setResizable(false);
-            categoriesTable.getColumnModel().getColumn(2).setPreferredWidth(5);
-            categoriesTable.getColumnModel().getColumn(3).setResizable(false);
-            categoriesTable.getColumnModel().getColumn(3).setPreferredWidth(5);
-            categoriesTable.getColumnModel().getColumn(4).setResizable(false);
-            categoriesTable.getColumnModel().getColumn(4).setPreferredWidth(5);
-            categoriesTable.getColumnModel().getColumn(5).setResizable(false);
-            categoriesTable.getColumnModel().getColumn(5).setPreferredWidth(5);
-        }
-
-        categories.add(jScrollPane11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 820, 350));
-
-        categoryItemTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Name", "Quantity"
-            }
-        ));
-        categoryItemTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                categoryItemTableMouseClicked(evt);
-            }
-        });
-        jScrollPane12.setViewportView(categoryItemTable);
-        if (categoryItemTable.getColumnModel().getColumnCount() > 0) {
-            categoryItemTable.getColumnModel().getColumn(0).setResizable(false);
-            categoryItemTable.getColumnModel().getColumn(1).setResizable(false);
-            categoryItemTable.getColumnModel().getColumn(1).setPreferredWidth(5);
-        }
-
-        categories.add(jScrollPane12, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 60, 400, 350));
-
-        additems_form1.setBackground(new java.awt.Color(15, 74, 74));
-        additems_form1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        categoryNameField.setBackground(new java.awt.Color(15, 74, 74));
-        categoryNameField.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
-        categoryNameField.setForeground(new java.awt.Color(255, 255, 255));
-        categoryNameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        categoryNameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
-        categoryNameField.setCaretColor(new java.awt.Color(0, 153, 153));
-        categoryNameField.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        categoryNameField.setOpaque(false);
-        categoryNameField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                categoryNameFieldActionPerformed(evt);
-            }
-        });
-        additems_form1.add(categoryNameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 59, 260, 40));
-
-        jLabel10.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel10.setText("CATEGORY");
-        additems_form1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 260, 28));
-
-        addEditCategoryBtn.setBackground(new java.awt.Color(0, 204, 51));
-        addEditCategoryBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
-        addEditCategoryBtn.setForeground(new java.awt.Color(255, 255, 255));
-        addEditCategoryBtn.setText("ADD / EDIT");
-        addEditCategoryBtn.setBorder(null);
-        addEditCategoryBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                addEditCategoryBtnMouseClicked(evt);
-            }
-        });
-        addEditCategoryBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addEditCategoryBtnActionPerformed(evt);
-            }
-        });
-        additems_form1.add(addEditCategoryBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 60, 127, 42));
-
-        categoryDropdown.setModel(new javax.swing.DefaultComboBoxModel<>());
-        categoryDropdown.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                categoryDropdownActionPerformed(evt);
-            }
-        });
-        additems_form1.add(categoryDropdown, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 260, 41));
-
-        itemQuantitySpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
-        additems_form1.add(itemQuantitySpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 170, 42, 41));
-
-        addEditCategoryItemBtn.setBackground(new java.awt.Color(0, 204, 51));
-        addEditCategoryItemBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
-        addEditCategoryItemBtn.setForeground(new java.awt.Color(255, 255, 255));
-        addEditCategoryItemBtn.setText("ADD / EDIT");
-        addEditCategoryItemBtn.setBorder(null);
-        addEditCategoryItemBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                addEditCategoryItemBtnMouseClicked(evt);
-            }
-        });
-        addEditCategoryItemBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addEditCategoryItemBtnActionPerformed(evt);
-            }
-        });
-        additems_form1.add(addEditCategoryItemBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 170, 127, 42));
-
-        itemDropdown.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                itemDropdownActionPerformed(evt);
-            }
-        });
-        additems_form1.add(itemDropdown, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 170, 260, 41));
-
-        jLabel12.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel12.setText("ITEM");
-        additems_form1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 130, 260, 28));
-
-        removeCategoryItemBtn.setBackground(new java.awt.Color(236, 82, 82));
-        removeCategoryItemBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
-        removeCategoryItemBtn.setForeground(new java.awt.Color(255, 255, 255));
-        removeCategoryItemBtn.setText("REMOVE");
-        removeCategoryItemBtn.setBorder(null);
-        removeCategoryItemBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                removeCategoryItemBtnMouseClicked(evt);
-            }
-        });
-        removeCategoryItemBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeCategoryItemBtnActionPerformed(evt);
-            }
-        });
-        additems_form1.add(removeCategoryItemBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 170, 127, 42));
-
-        categoryEditLabel.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        categoryEditLabel.setForeground(new java.awt.Color(255, 255, 255));
-        categoryEditLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        additems_form1.add(categoryEditLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 20, 410, 28));
-
-        jLabel8.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("CATEGORY NAME");
-        additems_form1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 260, 28));
-
-        removeCategoryBtn.setBackground(new java.awt.Color(236, 82, 82));
-        removeCategoryBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
-        removeCategoryBtn.setForeground(new java.awt.Color(255, 255, 255));
-        removeCategoryBtn.setText("REMOVE");
-        removeCategoryBtn.setBorder(null);
-        removeCategoryBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                removeCategoryBtnMouseClicked(evt);
-            }
-        });
-        removeCategoryBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeCategoryBtnActionPerformed(evt);
-            }
-        });
-        additems_form1.add(removeCategoryBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 60, 127, 42));
-
-        categoryItemUpdatedDate.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        categoryItemUpdatedDate.setForeground(new java.awt.Color(255, 255, 255));
-        categoryItemUpdatedDate.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        additems_form1.add(categoryItemUpdatedDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 210, 330, 30));
-
-        clearCategoryFieldsBtn.setBackground(new java.awt.Color(175, 174, 174));
-        clearCategoryFieldsBtn.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
-        clearCategoryFieldsBtn.setForeground(new java.awt.Color(255, 255, 255));
-        clearCategoryFieldsBtn.setText("CLEAR");
-        clearCategoryFieldsBtn.setBorder(null);
-        clearCategoryFieldsBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                clearCategoryFieldsBtnMouseClicked(evt);
-            }
-        });
-        clearCategoryFieldsBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clearCategoryFieldsBtnActionPerformed(evt);
-            }
-        });
-        additems_form1.add(clearCategoryFieldsBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 60, 127, 42));
-
-        categoryItemUpdatedBy.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        categoryItemUpdatedBy.setForeground(new java.awt.Color(255, 255, 255));
-        categoryItemUpdatedBy.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        additems_form1.add(categoryItemUpdatedBy, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 240, 330, 30));
-
-        categoryItemAddedDate.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        categoryItemAddedDate.setForeground(new java.awt.Color(255, 255, 255));
-        categoryItemAddedDate.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        additems_form1.add(categoryItemAddedDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 150, 330, 30));
-
-        categoryItemAddedBy.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        categoryItemAddedBy.setForeground(new java.awt.Color(255, 255, 255));
-        categoryItemAddedBy.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        additems_form1.add(categoryItemAddedBy, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 180, 330, 30));
-
-        categories.add(additems_form1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 420, 1230, 280));
-
-        jLabel7.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel7.setText("CATEGORY ITEM DETAILS");
-        categories.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 260, 28));
-
-        jLabel14.setFont(new java.awt.Font("Raleway", 1, 18)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel14.setText("CATEGORY DETAILS");
-        categories.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 260, 28));
-
-        right_sidebar.add(categories);
-        categories.setBounds(0, 0, 1250, 720);
-
         whole.add(right_sidebar);
         right_sidebar.setBounds(250, 80, 1260, 720);
 
@@ -2841,9 +2824,15 @@ public class Home extends javax.swing.JFrame {
         upper_dashboard_panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(67, 101, 102)));
         upper_dashboard_panel.setLayout(null);
 
-        dashboard_up_label.setBackground(new java.awt.Color(5, 32, 33));
+        dashboard_up_label.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        dashboard_up_label.setForeground(new java.awt.Color(255, 255, 255));
+        dashboard_up_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        dashboard_up_label.setText("OPTIMAL / DASHBOARD");
+        dashboard_up_label.setMaximumSize(new java.awt.Dimension(156, 25));
+        dashboard_up_label.setMinimumSize(new java.awt.Dimension(156, 25));
+        dashboard_up_label.setPreferredSize(new java.awt.Dimension(156, 25));
         upper_dashboard_panel.add(dashboard_up_label);
-        dashboard_up_label.setBounds(0, 0, 1250, 720);
+        dashboard_up_label.setBounds(30, 10, 220, 60);
 
         whole.add(upper_dashboard_panel);
         upper_dashboard_panel.setBounds(0, 0, 1510, 80);
@@ -3691,7 +3680,7 @@ public class Home extends javax.swing.JFrame {
             }
             
         }
-    }//GEN-LAST:event_addJobItemMouseClicked
+    }                                       
 
     private void updateJobItemMouseClicked(java.awt.event.MouseEvent evt) {                                           
         int dialogButton = JOptionPane.YES_NO_OPTION;
@@ -3751,7 +3740,7 @@ public class Home extends javax.swing.JFrame {
         }
         
             
-    }//GEN-LAST:event_updateJobItemMouseClicked
+    }                                          
 
     private void deleteJobItemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteJobItemMouseClicked
         int dialogButton = JOptionPane.YES_NO_OPTION;
@@ -3972,6 +3961,7 @@ public class Home extends javax.swing.JFrame {
                             model.setValueAt(updatedBy, row, 4);
                             model.setValueAt(dateFormat.format(new Date()), row, 5);
                             categoryEditID = - 1;
+                            initCategoryDropdown();
                             JOptionPane.showMessageDialog(null, "Category Name has been successfully updated");
                         }else{
                             JOptionPane.showMessageDialog(null, "Null was returned");
@@ -4086,6 +4076,7 @@ public class Home extends javax.swing.JFrame {
         itemDropdown.setSelectedIndex(0);
         itemQuantitySpinner.setValue(0);
         categoriesTable.getSelectionModel().clearSelection();
+        categoryItemTable.getSelectionModel().clearSelection();
         categoryEditID = - 1;
     }//GEN-LAST:event_clearCategoryFieldsBtnMouseClicked
 
@@ -4319,6 +4310,7 @@ public class Home extends javax.swing.JFrame {
             String categoryName = String.valueOf(categoryDropdown.getSelectedItem());
             Connection con = Connect.getConnection();
             categoryEditID = CRUD.selectCategoryID(con, categoryName);
+            Show_CategoryItemsTable();
         } catch (SQLException ex) {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -4342,6 +4334,7 @@ public class Home extends javax.swing.JFrame {
 
     private void dashboard_weeklylabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboard_weeklylabelMouseClicked
         try {
+            Show_WeeklyTable();
             dashboard_weekly_onclick();
         } catch (SQLException ex) {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
@@ -4363,10 +4356,6 @@ public class Home extends javax.swing.JFrame {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_dashboard_monthlylabelMouseClicked
-
-    private void weeklyGoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_weeklyGoMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_weeklyGoMouseClicked
 
     private void monthlyGoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_monthlyGoMouseClicked
         try {
@@ -4404,14 +4393,6 @@ public class Home extends javax.swing.JFrame {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_clearYearTableMouseClicked
-
-    private void clearWeekTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clearWeekTableMouseClicked
-        try {
-            Clear_WeeklyTable();
-        } catch (SQLException ex) {
-            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_clearWeekTableMouseClicked
 
     /**
      *
@@ -4467,7 +4448,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JButton clearCategoryFieldsBtn;
     private javax.swing.JButton clearMonthTable;
     private javax.swing.JButton clearUserFieldBtn;
-    private javax.swing.JButton clearWeekTable;
     private javax.swing.JButton clearYearTable;
     private javax.swing.JPanel crud_jobItems;
     private javax.swing.JPanel crud_jobs;
@@ -4531,16 +4511,15 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
-    private javax.swing.JScrollPane jScrollPane12;
+    private javax.swing.JScrollPane jScrollPane13;
+    private javax.swing.JScrollPane jScrollPane14;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
-    private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
-    private javax.swing.JSpinner jSpinner1;
     private javax.swing.JTable jobItemsTable;
     private javax.swing.JPanel job_items;
     private javax.swing.JComboBox<String> jobcat;
@@ -4560,7 +4539,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel logout_side;
     private javax.swing.JLabel logout_side_label;
     private javax.swing.JPanel maindashboardpanel;
-    private javax.swing.JLabel monthlabel;
     private javax.swing.JLabel monthlabel1;
     private com.toedter.calendar.JDateChooser monthlyChooser;
     private javax.swing.JButton monthlyGo;
@@ -4598,11 +4576,8 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel users_side;
     private javax.swing.JLabel users_side_label;
     private javax.swing.JLabel users_up_label;
-    private com.toedter.calendar.JDateChooser weeklyChooser;
-    private javax.swing.JButton weeklyGo;
     private javax.swing.JPanel weeklydashboardpanel;
     private javax.swing.JTable weeklydashboardtable;
-    private javax.swing.JPanel weeklydate;
     private javax.swing.JLabel weeklysmallarrow;
     private javax.swing.JPanel whole;
     private javax.swing.JLabel yearlabel;

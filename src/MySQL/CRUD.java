@@ -1,6 +1,7 @@
 package MySQL;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -228,9 +229,9 @@ public class CRUD {
     
     /**
      *
-     * @param con
-     * @param username
-     * @return
+     * @param con Connection connecting the system to the database
+     * @param username String holding the username of the user
+     * @return ResultSet of user info from the user with the given username
      * @throws SQLException
      */
     public static ResultSet selectUserInfoUsingUsername(Connection con, String username) throws SQLException {
@@ -250,8 +251,8 @@ public class CRUD {
     /**
      *
      * @param con Connection connecting the system to the database
-     * @param name
-     * @param admin
+     * @param name String containing new category name
+     * @param admin Integer containing the administrator adding the category
      * @throws SQLException
      */
     
@@ -267,10 +268,10 @@ public class CRUD {
     /**
      *
      * @param con Connection connecting the system to the database
-     * @param categoryID
-     * @param itemID
-     * @param itemQuantity
-     * @param admin
+     * @param categoryID Integer containing the category ID
+     * @param itemID Integer containing item ID
+     * @param itemQuantity Integer containing the item quantity required for the category
+     * @param admin Integer containing ID 
      * @throws SQLException
      */
     public static void insertCategoryItem(
@@ -291,10 +292,10 @@ public class CRUD {
     /**
      *
      * @param con Connection connecting the system to the database
-     * @param categoryID
-     * @param itemID
-     * @param newItemQuantity
-     * @param adminID
+     * @param categoryID Integer containing the ID of the category
+     * @param itemID Integer containing the ID of the item
+     * @param newItemQuantity Integer specifying the new category item quantity 
+     * @param adminID Integer containing the ID of the administrator updating the category item
      * @throws SQLException
      */
     public static void updateCategoryItemQuantity(
@@ -311,9 +312,9 @@ public class CRUD {
     /**
      *
      * @param con Connection connecting the system to the database
-     * @param categoryID
-     * @param newCategoryName
-     * @param adminID
+     * @param categoryID Integer Integer containing the ID of the category to be updated
+     * @param newCategoryName String holding the new category name
+     * @param adminID Integer containing the ID of the administrator updating the category
      * @throws SQLException
      */
     public static void updateCategoryName(
@@ -329,7 +330,7 @@ public class CRUD {
     /**
      *
      * @param con Connection connecting the system to the database
-     * @return
+     * @return ResultSet of all the category information given the category is not archived
      * @throws SQLException
      */
     public static ResultSet selectCategoriesInfo(Connection con) throws SQLException {
@@ -345,7 +346,7 @@ public class CRUD {
     /**
      *
      * @param con Connection connecting the system to the database
-     * @return
+     * @return ResultSet of all the category information given the category item is not archived
      * @throws SQLException
      */
     public static ResultSet selectCategoryItemsInfo(Connection con) throws SQLException {
@@ -361,8 +362,8 @@ public class CRUD {
     /**
      *
      * @param con Connection connecting the system to the database
-     * @param categoryName
-     * @return
+     * @param categoryName String containing name of category 
+     * @return ResultSet of category items that belong to the specified category
      * @throws SQLException
      */
     public static ResultSet selectCategoryItemsInfoUsingCategoryName(Connection con, String categoryName) throws SQLException {
@@ -375,7 +376,14 @@ public class CRUD {
         return rs;
     }
     
-    
+    /**
+     *
+     * @param con Connection connecting the system to the database
+     * @param categoryID Integer representing category ID
+     * @param itemID Integer representing item ID
+     * @return ResultSet of category item info of creation and updating
+     * @throws SQLException
+     */
     public static ResultSet selectCategoryItemAddedUpdated(Connection con, int categoryID, int itemID) throws SQLException {
         Statement stmt;
         stmt = con.createStatement();
@@ -1119,6 +1127,18 @@ public class CRUD {
         stmt = con.createStatement();
         String query = "SELECT `jobItem_id`, `item_id`, `item_quantity`, `job_id`, `added_by`, `added_date`,"
             + "`updated_by`, `updated_date` FROM `job_items` WHERE `removed` = 0";
+        ResultSet rs = stmt.executeQuery(query);
+        return rs;
+    }
+    
+    public static ResultSet selectJobItemsInfoWeek(Connection con) throws SQLException
+    {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT `jobItem_id`, `item_id`, `item_quantity`, `job_id`, `added_by`, `added_date`, "
+            + "`updated_by`, `updated_date` FROM `job_items` WHERE `removed` = 0 "
+            + "AND `added_date` <= curdate() + INTERVAL DAYOFWEEK(curdate())+6 DAY " 
+            + "AND DAYOFWEEK(`added_date`) > 0";
         ResultSet rs = stmt.executeQuery(query);
         return rs;
     }
