@@ -2557,41 +2557,46 @@ public class Home extends javax.swing.JFrame {
 
     private void addJobItemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addJobItemMouseClicked
         String itemName = (String) jobitemcombobox.getSelectedItem();
-        int inputqty = parseInt(jobitemqty.getText());
         String jobName = (String) jobcombobox.getSelectedItem();
-        if("".equals(jobitemqty.getText()) && "".equals(itemName) && "".equals(jobName)){
+        if("".equals(jobitemqty.getText()) && jobitemqty.getText().matches("[0-9]+") && "".equals(itemName) && "".equals(jobName)){
             JOptionPane.showMessageDialog(null, "Fields required!");
         }else{
-            try{
-                Connection con = Connect.getConnection();
-                int itemid = CRUD.getJobItem_ItemID(con, itemName);
-                int qty = CRUD.getJobItem_ItemQty(con, itemid);
-                
-                if(inputqty <= qty){
-                    int jobid = CRUD.getJobID(con, jobName);
-                    int qtyDiff = CRUD.DeductJobItemQty(con, inputqty, itemid);
-                    int jobitemID = CRUD.insertJobItemReturnID(con, itemid, inputqty, jobid, userid);
-                    CRUD.UpdateJobItemQty(con, qtyDiff, userid, itemid);
-                    
-                    ResultSet rs = CRUD.selectJobItemsInfoUsingID(con, jobitemID);
-                    rs.next();
-                    JobItem JI = new JobItem(rs.getInt("jobItem_id"),
-                            rs.getInt("item_id"), rs.getInt("item_quantity"),
-                            rs.getInt("job_id"), rs.getString("added_by"), 
-                            rs.getTimestamp("added_date"), rs.getString("updated_by"),
-                            rs.getTimestamp("updated_date"));
-                    addRowToJobItemsTable(JI);
-                    jobitemqty.setText("");
-                    jobitemcombobox.setSelectedItem("");
-                    jobcombobox.setSelectedItem("");
-                    JOptionPane.showMessageDialog(null, "Item has been successfully inserted!");
-                }else{
-                    JOptionPane.showMessageDialog(null, "Quantity inputted is not valid!");
+            if(!jobitemqty.getText().matches("[0-9]+")){
+                JOptionPane.showMessageDialog(null, "Please input a number!");
+            }else{
+                try{
+                    int inputqty = parseInt(jobitemqty.getText());
+                    Connection con = Connect.getConnection();
+                    int itemid = CRUD.getJobItem_ItemID(con, itemName);
+                    int qty = CRUD.getJobItem_ItemQty(con, itemid);
+
+                    if(inputqty <= qty){
+                        int jobid = CRUD.getJobID(con, jobName);
+                        int qtyDiff = CRUD.DeductJobItemQty(con, inputqty, itemid);
+                        int jobitemID = CRUD.insertJobItemReturnID(con, itemid, inputqty, jobid, userid);
+                        CRUD.UpdateJobItemQty(con, qtyDiff, userid, itemid);
+
+                        ResultSet rs = CRUD.selectJobItemsInfoUsingID(con, jobitemID);
+                        rs.next();
+                        JobItem JI = new JobItem(rs.getInt("jobItem_id"),
+                                rs.getInt("item_id"), rs.getInt("item_quantity"),
+                                rs.getInt("job_id"), rs.getString("added_by"), 
+                                rs.getTimestamp("added_date"), rs.getString("updated_by"),
+                                rs.getTimestamp("updated_date"));
+                        addRowToJobItemsTable(JI);
+                        jobitemqty.setText("");
+                        jobitemcombobox.setSelectedItem("");
+                        jobcombobox.setSelectedItem("");
+                        JOptionPane.showMessageDialog(null, "Item has been successfully inserted!");
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Quantity inputted is not valid!");
+                    }
+
+                }catch(HeadlessException | SQLException e){
+                    System.out.println(e);
                 }
-                
-            }catch(HeadlessException | SQLException e){
-                System.out.println(e);
             }
+            
         }
     }//GEN-LAST:event_addJobItemMouseClicked
 
@@ -2602,47 +2607,51 @@ public class Home extends javax.swing.JFrame {
         
         if(dialogResult == JOptionPane.YES_OPTION){
             String itemName = (String) jobitemcombobox.getSelectedItem();
-            int inputqty = parseInt(jobitemqty.getText());
             String jobName = (String) jobcombobox.getSelectedItem();
             Connection con = Connect.getConnection();
-            if("".equals(jobitemqty.getText()) && "".equals(itemName) && "".equals(jobName)){
+            
+            if("".equals(jobitemqty.getText()) && jobitemqty.getText().matches("[0-9]+") && "".equals(itemName) && "".equals(jobName)){
                 JOptionPane.showMessageDialog(null, "Fields required!");
             }else{
-                if(inputqty > 0){
-                    try{
-                        int jobItemID = JobItemsIDFromTable;
-                        System.out.println("JobItemsIDFromTable  "+jobItemID);
-                        int jobid = CRUD.getJobID(con, jobName);
-                        int itemID = getJobItem_ItemID(con, itemName);
-                        int finalqty = AddDeductItemQty(con, inputqty, jobItemID);
-                        CRUD.UpdateItemQty(con, finalqty, userid, itemID);
-                        CRUD.UpdateJobItem(con, itemID, inputqty, jobid, userid, jobItemID);
+                if(!jobitemqty.getText().matches("[0-9]+")){
+                    JOptionPane.showMessageDialog(null, "Please input a number!");
+                }else{
+                    int inputqty = parseInt(jobitemqty.getText());
+                    if(inputqty > 0){
+                        try{
+                            int jobItemID = JobItemsIDFromTable;
+                            System.out.println("JobItemsIDFromTable  "+jobItemID);
+                            int jobid = CRUD.getJobID(con, jobName);
+                            int itemID = getJobItem_ItemID(con, itemName);
+                            int finalqty = AddDeductItemQty(con, inputqty, jobItemID);
+                            CRUD.UpdateItemQty(con, finalqty, userid, itemID);
+                            CRUD.UpdateJobItem(con, itemID, inputqty, jobid, userid, jobItemID);
 
-                        ResultSet rs = CRUD.selectJobItemsInfoUsingID(con, jobItemID);
-                        rs.next();
-                        DefaultTableModel model = (DefaultTableModel) jobItemsTable.getModel();
-                        for (int i = 0; i < model.getRowCount(); i++) {
-                            Object o = model.getValueAt(i, 0);
-                            if (o.equals(jobItemID)) {
-                                model.setValueAt(rs.getInt("item_id"), i, 1);
-                                model.setValueAt(rs.getInt("item_quantity"), i, 2);
-                                model.setValueAt(rs.getInt("job_id"), i, 3);
-                                model.setValueAt(rs.getString("updated_by"), i, 6);
-                                model.setValueAt(dateFormat.format(rs.getTimestamp("updated_date")), i, 7);
+                            ResultSet rs = CRUD.selectJobItemsInfoUsingID(con, jobItemID);
+                            rs.next();
+                            DefaultTableModel model = (DefaultTableModel) jobItemsTable.getModel();
+                            for (int i = 0; i < model.getRowCount(); i++) {
+                                Object o = model.getValueAt(i, 0);
+                                if (o.equals(jobItemID)) {
+                                    model.setValueAt(rs.getInt("item_id"), i, 1);
+                                    model.setValueAt(rs.getInt("item_quantity"), i, 2);
+                                    model.setValueAt(rs.getInt("job_id"), i, 3);
+                                    model.setValueAt(rs.getString("updated_by"), i, 6);
+                                    model.setValueAt(dateFormat.format(rs.getTimestamp("updated_date")), i, 7);
+                                }
                             }
-                        }
-                        JOptionPane.showMessageDialog(null, "Item has been successfully updated!");
+                            JOptionPane.showMessageDialog(null, "Item has been successfully updated!");
 
-                    }catch(HeadlessException | SQLException e){
-                        System.out.println(e);
+                        }catch(HeadlessException | SQLException e){
+                            System.out.println(e);
+                        }
+                    }else if(inputqty < 0){
+                        JOptionPane.showMessageDialog(null, "Quantity cannot be zero!");
+                        jobitemqty.setText("");
+                        jobitemcombobox.setSelectedItem("");
+                        jobcombobox.setSelectedItem("");
                     }
-                }else if(inputqty < 0){
-                    JOptionPane.showMessageDialog(null, "Quantity cannot be zero!");
-                    jobitemqty.setText("");
-                    jobitemcombobox.setSelectedItem("");
-                    jobcombobox.setSelectedItem("");
-                }
-                    
+                }  
             }
         }else{
             JOptionPane.showMessageDialog(null, "Update cancelled.");

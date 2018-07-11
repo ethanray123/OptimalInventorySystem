@@ -52,6 +52,8 @@ public class Login extends javax.swing.JFrame {
         jLabel1.setText("OPTIMAL INVENTORY SYSTEM");
         jPanel1.add(jLabel1);
         jLabel1.setBounds(70, 80, 370, 60);
+
+        username_icon.setIcon(new javax.swing.ImageIcon("C:\\Users\\Hazel Cavite\\Documents\\NetBeansProjects\\Optimal Inventory System\\OptimalInventorySystem\\img\\profile.png")); // NOI18N
         jPanel1.add(username_icon);
         username_icon.setBounds(80, 210, 30, 50);
 
@@ -69,8 +71,10 @@ public class Login extends javax.swing.JFrame {
         });
         jPanel1.add(usernameField);
         usernameField.setBounds(70, 210, 360, 50);
+
+        password_icon.setIcon(new javax.swing.ImageIcon("C:\\Users\\Hazel Cavite\\Documents\\NetBeansProjects\\Optimal Inventory System\\OptimalInventorySystem\\img\\key.png")); // NOI18N
         jPanel1.add(password_icon);
-        password_icon.setBounds(80, 300, 0, 50);
+        password_icon.setBounds(80, 300, 24, 50);
 
         passwordField.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
         passwordField.setForeground(new java.awt.Color(255, 255, 255));
