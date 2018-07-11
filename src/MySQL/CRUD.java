@@ -215,6 +215,17 @@ public class CRUD {
         return rs;
     }
     
+    public static String getUsername(Connection con, int id) throws SQLException {
+        Statement stmt;
+        stmt = con.createStatement();
+        String query = "SELECT username FROM user WHERE user_id = '"+ id +"'";
+        ResultSet rs = stmt.executeQuery(query);
+        rs.next();
+        String un = rs.getString("username");
+        
+        return un;
+    }
+    
     /**
      *
      * @param con
@@ -230,6 +241,7 @@ public class CRUD {
         ResultSet rs = stmt.executeQuery(query);
         return rs;
     }
+    
 
     //END OF USER RELATED 
     
@@ -960,6 +972,7 @@ public class CRUD {
         return catName;
     }
     
+    
     public static ResultSet selectJobsInfo(Connection con) throws SQLException
     {
         Statement stmt;
@@ -1036,6 +1049,19 @@ public class CRUD {
         
         if(rs.next()){
            ID = rs.getInt("job_id");
+        }
+        return ID;
+    }
+    
+    public static int getCatID(Connection con, int jobid) throws SQLException{
+        Statement stmt;
+        stmt = con.createStatement();
+        int ID = 0;
+        ResultSet rs = stmt.executeQuery("SELECT `category_id` FROM "
+            + "`job` WHERE `job_id`='" + jobid + "'");
+        
+        if(rs.next()){
+           ID = rs.getInt("category_id");
         }
         return ID;
     }
@@ -1191,7 +1217,7 @@ public class CRUD {
         return temp;
     }
     
-    public static void UpdateJobItem(Connection con, int itemid, int qty, int jobid, int admin) throws SQLException
+    public static void UpdateJobItem(Connection con, int itemid, int qty, int jobid, int admin, int jobItemID) throws SQLException
     {
         Statement stmt;
         stmt = con.createStatement();
@@ -1199,7 +1225,7 @@ public class CRUD {
             stmt = con.createStatement();
             stmt.executeUpdate("UPDATE `job_items` SET `item_id` = '"+itemid+"',"
                 + " `item_quantity` = '"+qty+"', `job_id` = '"+jobid+"', "
-                + "`updated_by` = '"+admin+"' WHERE `item_id` = '"+itemid+"'");
+                + "`updated_by` = '"+admin+"' WHERE `jobItem_id` = '"+jobItemID+"'");
         }
     }
     
@@ -1231,7 +1257,6 @@ public class CRUD {
         return rs.next();
     }
     //END OF JOB_ITEMS CRUD
-
     //ITEM RELATED
     public static boolean checkItemExists(Connection con, String itemName) throws SQLException{
         Statement stmt;
@@ -1342,5 +1367,10 @@ public class CRUD {
         return rs.next();
     }
     //END OF ITEM TYPE RELATED
+    
+    //START OF DASHBOARD CRUD
+    
+    
+    //END OF DASHBOARD CRUD
 }
     

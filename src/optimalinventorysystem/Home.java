@@ -2,12 +2,12 @@ package optimalinventorysystem;
 
 import Entities.Category;
 import Entities.CategoryItem;
+import Entities.Dashboard;
 import Entities.Item;
 import Entities.ItemType;
 import Entities.User;
 import Entities.Job;
 import Entities.JobItem;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
@@ -20,7 +20,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import javax.swing.JDialog;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
@@ -28,6 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import Hash.HashPassword;
+import java.security.NoSuchAlgorithmException;
 import MySQL.CRUD;
 import MySQL.Connect;
 import static MySQL.CRUD.AddDeductItemQty;
@@ -47,6 +50,8 @@ public class Home extends javax.swing.JFrame {
     public static int JobIDFromTable, JobItemsIDFromTable, JobItems_ItemIDFromTable = 0;
     public static int selectrow;
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    DateFormat monthFormat = new SimpleDateFormat("M");
+    DateFormat yearFormat = new SimpleDateFormat("yyyy");
     // 5,32,33      -- darkest
     // 15, 74, 74   -- middle
     // 8, 40, 41    -- lightest
@@ -78,7 +83,7 @@ public class Home extends javax.swing.JFrame {
     /**
      *
      */
-    public void dashboard()
+    public void dashboard() throws SQLException
     {
         //set bg color when sidebar tab clicked
         dashboard_side.setBackground(new Color(15, 74, 74));
@@ -100,12 +105,14 @@ public class Home extends javax.swing.JFrame {
         upper_jobs_panel.setVisible(false);
         upper_categories_panel.setVisible(false);
         upper_users_panel.setVisible(false);
+        
+        dashboard_weekly_onclick();
     }
     
     /**
      *
      */
-    public void items_sideBar_onclick()
+    public void items_sideBar_onclick() throws SQLException
     {
         //set bg color when sidebar tab clicked
         items_side.setBackground(new Color(15, 74, 74));
@@ -127,12 +134,14 @@ public class Home extends javax.swing.JFrame {
         upper_jobs_panel.setVisible(false);
         upper_categories_panel.setVisible(false);
         upper_users_panel.setVisible(false);
+        
+        Clear_MonthlyTable();
     }
     
     /**
      *
      */
-    public void jobs_sideBar_onclick()
+    public void jobs_sideBar_onclick() throws SQLException
     {
         //set bg color when sidebar tab clicked
         jobs_side.setBackground(new Color(15, 74, 74));
@@ -154,12 +163,14 @@ public class Home extends javax.swing.JFrame {
         upper_items_panel.setVisible(false);
         upper_categories_panel.setVisible(false);
         upper_users_panel.setVisible(false);
+        
+        Clear_MonthlyTable();
     }
     
     /**
      *
      */
-    public void categories_sideBar_onclick()
+    public void categories_sideBar_onclick() throws SQLException
     {
         //set bg color when sidebar tab clicked
         categories_side.setBackground(new Color(15, 74, 74));
@@ -182,12 +193,14 @@ public class Home extends javax.swing.JFrame {
         upper_jobs_panel.setVisible(false);
         upper_users_panel.setVisible(false);
         
+        Clear_MonthlyTable();
+        
     }
     
     /**
      *
      */
-    public void users_sideBar_onclick()
+    public void users_sideBar_onclick() throws SQLException
     {
         //set bg color when sidebar tab clicked
         users_side.setBackground(new Color(15, 74, 74));
@@ -210,8 +223,73 @@ public class Home extends javax.swing.JFrame {
         upper_jobs_panel.setVisible(false);
         upper_categories_panel.setVisible(false);
         
+        Clear_MonthlyTable();
+        
     }
-
+    
+    public void dashboard_weekly_onclick() throws SQLException
+    {
+        // hide and show small arrows
+        weeklysmallarrow.setVisible(true);
+        monthlysmallarrow.setVisible(false);
+        yearlysmallarrow.setVisible(false);
+        
+        // hide and show main panels
+        weeklydashboardpanel.setVisible(true);
+        monthlydashboardpanel.setVisible(false);
+        yearlydashboardpanel.setVisible(false);
+        
+        //hide and show date panels
+        weeklydate.setVisible(true);
+        monthlydate.setVisible(false);
+        yearlydate.setVisible(false);
+        
+        Clear_MonthlyTable();
+        Clear_YearlyTable();
+    }
+    
+    public void dashboard_monthly_onclick() throws SQLException
+    {
+        // hide and show small arrows
+        monthlysmallarrow.setVisible(true);
+        weeklysmallarrow.setVisible(false);
+        yearlysmallarrow.setVisible(false);
+        
+        // hide and show main panels
+        monthlydashboardpanel.setVisible(true);
+        weeklydashboardpanel.setVisible(false);
+        yearlydashboardpanel.setVisible(false);
+        
+        //hide and show date panels
+        monthlydate.setVisible(true);
+        weeklydate.setVisible(false);
+        yearlydate.setVisible(false);
+        
+        Clear_YearlyTable();
+        Clear_WeeklyTable();
+    }
+    
+    public void dashboard_yearly_onclick() throws SQLException
+    {
+        // hide and show small arrows
+        yearlysmallarrow.setVisible(true);
+        weeklysmallarrow.setVisible(false);
+        monthlysmallarrow.setVisible(false);
+        
+        // hide and show main panels
+        yearlydashboardpanel.setVisible(true);
+        monthlydashboardpanel.setVisible(false);
+        weeklydashboardpanel.setVisible(false);
+        
+        //hide and show date panels
+        yearlydate.setVisible(true);
+        monthlydate.setVisible(false);
+        weeklydate.setVisible(false);
+        
+        Clear_MonthlyTable();
+        Clear_WeeklyTable();
+    }
+    
     //USER TABLE METHODS
     
     /**
@@ -738,12 +816,183 @@ public class Home extends javax.swing.JFrame {
     
     //END OF ITEM TYPE TABLE
     
+    //START OF DASHBOARD METHODS
+    
+    public ArrayList<Dashboard> getMonthlyList ()
+    {
+        ArrayList<Dashboard> MonthList = new ArrayList<>();
+        Connection con = Connect.getConnection();
+        try {
+            ResultSet rs = CRUD.selectJobItemsInfo(con);
+            Dashboard db;
+            while(rs.next()){
+                String itemName = CRUD.getJobItem_ItemName(con, rs.getInt("item_id"));
+                int itemQty = rs.getInt("item_quantity");
+                String jobName = CRUD.getJobName(con, rs.getInt("job_id"));
+                int jobID = rs.getInt("job_id");
+                int catID = CRUD.getCatID(con, jobID);
+                String catName = CRUD.getCleaningCatName(con, catID);
+                Timestamp updatedOn = rs.getTimestamp("updated_date");
+                String updatedBy = CRUD.getUsername(con,rs.getInt("updated_by"));
+                
+                db = new Dashboard(itemName, itemQty, jobName, catName, updatedOn, updatedBy);
+                MonthList.add(db);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return MonthList;
+    }
+    
+    public void Show_MonthlyTable(String month) throws SQLException
+    {
+        ArrayList<Dashboard> list = getMonthlyList();
+        DefaultTableModel model = (DefaultTableModel) monthlydashboardtable.getModel();
+        Object[] row = new Object[6];
+        int ctr = 0;
+        for(Dashboard ji : list){
+            if( month.equals(monthFormat.format(ji.getLastUpdated())) ){
+                ctr++;
+                row[0] = ji.getItemName();
+                row[1] = ji.getItemQty();
+                row[2] = ji.getJobName();
+                row[3] = ji.getCleaningCategory();
+                row[4] = dateFormat.format(ji.getLastUpdated());
+                row[5] = ji.getLastUpdater();
+                model.addRow(row);
+            }
+        }
+        switch(month){
+            case "1": month = "January"; break;
+            case "2": month = "February"; break;
+            case "3": month = "March"; break;
+            case "4": month = "April"; break;
+            case "5": month = "May"; break;
+            case "6": month = "June"; break;
+            case "7": month = "July"; break;
+            case "8": month = "August"; break;
+            case "9": month = "September"; break;
+            case "10": month = "October"; break;
+            case "11": month = "November"; break;
+            case "12": month = "December"; break;
+        }
+        if(ctr == 0){
+            JOptionPane.showMessageDialog(null, "No reports for month of "+month);
+        }
+    }
+    
+    public ArrayList<Dashboard> getYearlyList ()
+    {
+        ArrayList<Dashboard> YrList = new ArrayList<>();
+        Connection con = Connect.getConnection();
+        try {
+            ResultSet rs = CRUD.selectJobItemsInfo(con);
+            Dashboard db;
+            while(rs.next()){
+                String itemName = CRUD.getJobItem_ItemName(con, rs.getInt("item_id"));
+                int itemQty = rs.getInt("item_quantity");
+                String jobName = CRUD.getJobName(con, rs.getInt("job_id"));
+                int jobID = rs.getInt("job_id");
+                int catID = CRUD.getCatID(con, jobID);
+                String catName = CRUD.getCleaningCatName(con, catID);
+                Timestamp updatedOn = rs.getTimestamp("updated_date");
+                String updatedBy = CRUD.getUsername(con,rs.getInt("updated_by"));
+                
+                db = new Dashboard(itemName, itemQty, jobName, catName, updatedOn, updatedBy);
+                YrList.add(db);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return YrList;
+    }
+    
+    public void Show_YearlyTable(String year) throws SQLException
+    {
+        ArrayList<Dashboard> list = getYearlyList();
+        DefaultTableModel model = (DefaultTableModel) yearlydashboardtable.getModel();
+        Object[] row = new Object[6];
+        int ctr = 0;
+        for(Dashboard ji : list){
+            if( year.equals(yearFormat.format(ji.getLastUpdated())) ){
+                ctr++;
+                row[0] = ji.getItemName();
+                row[1] = ji.getItemQty();
+                row[2] = ji.getJobName();
+                row[3] = ji.getCleaningCategory();
+                row[4] = dateFormat.format(ji.getLastUpdated());
+                row[5] = ji.getLastUpdater();
+                model.addRow(row);
+            }
+        }
+        if(ctr == 0){
+            JOptionPane.showMessageDialog(null, "No reports for year of "+year);
+        }
+    }
+    
+    public void Clear_MonthlyTable() throws SQLException
+    {
+        DefaultTableModel model = (DefaultTableModel) monthlydashboardtable.getModel();
+        model.setRowCount(0);
+    }
+    
+    public void Clear_WeeklyTable() throws SQLException
+    {
+        DefaultTableModel model = (DefaultTableModel) weeklydashboardtable.getModel();
+        model.setRowCount(0);
+    }
+    
+    public void Clear_YearlyTable() throws SQLException
+    {
+        DefaultTableModel model = (DefaultTableModel) yearlydashboardtable.getModel();
+        model.setRowCount(0);
+    }
+    
+    //
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         whole = new javax.swing.JPanel();
         right_sidebar = new javax.swing.JPanel();
+        dashboard = new javax.swing.JPanel();
+        dashboard_weeklylabel = new javax.swing.JLabel();
+        dashboard_yearlylabel = new javax.swing.JLabel();
+        weeklysmallarrow = new javax.swing.JLabel();
+        monthlysmallarrow = new javax.swing.JLabel();
+        yearlysmallarrow = new javax.swing.JLabel();
+        maindashboardpanel = new javax.swing.JPanel();
+        monthlydashboardpanel = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        monthlydashboardtable = new javax.swing.JTable();
+        yearlydashboardpanel = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        yearlydashboardtable = new javax.swing.JTable();
+        weeklydashboardpanel = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        weeklydashboardtable = new javax.swing.JTable();
+        dashboardBtn = new javax.swing.JPanel();
+        itemsBtn = new javax.swing.JLabel();
+        jobsBtn = new javax.swing.JLabel();
+        categoriesBtn = new javax.swing.JLabel();
+        dashboard_monthlylabel = new javax.swing.JLabel();
+        yearlydate = new javax.swing.JPanel();
+        yearlabel = new javax.swing.JLabel();
+        yearlyGo = new javax.swing.JButton();
+        clearYearTable = new javax.swing.JButton();
+        yearlyChooser = new com.toedter.calendar.JDateChooser();
+        monthlydate = new javax.swing.JPanel();
+        monthlabel1 = new javax.swing.JLabel();
+        monthlyGo = new javax.swing.JButton();
+        monthlyChooser = new com.toedter.calendar.JDateChooser();
+        clearMonthTable = new javax.swing.JButton();
+        weeklydate = new javax.swing.JPanel();
+        monthlabel = new javax.swing.JLabel();
+        weeklyGo = new javax.swing.JButton();
+        jSpinner1 = new javax.swing.JSpinner();
+        weeklyChooser = new com.toedter.calendar.JDateChooser();
+        clearWeekTable = new javax.swing.JButton();
         items = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         Tables = new javax.swing.JTabbedPane();
@@ -794,12 +1043,6 @@ public class Home extends javax.swing.JFrame {
         newitemname = new javax.swing.JTextField();
         Archive = new javax.swing.JButton();
         addItem_save = new javax.swing.JButton();
-        dashboard = new javax.swing.JPanel();
-        dashboard_label = new javax.swing.JLabel();
-        dashboard_label1 = new javax.swing.JLabel();
-        dashboard_label4 = new javax.swing.JLabel();
-        dashboard_label5 = new javax.swing.JLabel();
-        dashboard_label6 = new javax.swing.JLabel();
         jobsPanel = new javax.swing.JPanel();
         jobs_tab = new javax.swing.JTabbedPane();
         jobs = new javax.swing.JPanel();
@@ -811,7 +1054,7 @@ public class Home extends javax.swing.JFrame {
         deleteJob = new javax.swing.JButton();
         jLabel15 = new javax.swing.JLabel();
         jobname = new javax.swing.JTextField();
-        jScrollPane5 = new javax.swing.JScrollPane();
+        jScrollPane7 = new javax.swing.JScrollPane();
         jobsTable = new javax.swing.JTable();
         job_items = new javax.swing.JPanel();
         jScrollPane8 = new javax.swing.JScrollPane();
@@ -845,7 +1088,7 @@ public class Home extends javax.swing.JFrame {
         categories = new javax.swing.JPanel();
         jScrollPane11 = new javax.swing.JScrollPane();
         categoriesTable = new javax.swing.JTable();
-        jScrollPane6 = new javax.swing.JScrollPane();
+        jScrollPane12 = new javax.swing.JScrollPane();
         categoryItemTable = new javax.swing.JTable();
         additems_form1 = new javax.swing.JPanel();
         categoryNameField = new javax.swing.JTextField();
@@ -902,6 +1145,394 @@ public class Home extends javax.swing.JFrame {
         right_sidebar.setBackground(new java.awt.Color(5, 32, 33));
         right_sidebar.setPreferredSize(new java.awt.Dimension(1500, 800));
         right_sidebar.setLayout(null);
+
+        dashboard.setBackground(new java.awt.Color(5, 32, 33));
+        dashboard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        dashboard_weeklylabel.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        dashboard_weeklylabel.setForeground(new java.awt.Color(255, 255, 255));
+        dashboard_weeklylabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        dashboard_weeklylabel.setText("WEEKLY REPORT");
+        dashboard_weeklylabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dashboard_weeklylabelMouseClicked(evt);
+            }
+        });
+        dashboard.add(dashboard_weeklylabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 80, 140, 70));
+
+        dashboard_yearlylabel.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        dashboard_yearlylabel.setForeground(new java.awt.Color(255, 255, 255));
+        dashboard_yearlylabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        dashboard_yearlylabel.setText("YEARLY REPORT");
+        dashboard_yearlylabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dashboard_yearlylabelMouseClicked(evt);
+            }
+        });
+        dashboard.add(dashboard_yearlylabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(452, 80, 160, 70));
+
+        weeklysmallarrow.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\arrow-navigate-close.png")); // NOI18N
+        dashboard.add(weeklysmallarrow, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 200, 70, 30));
+
+        monthlysmallarrow.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\arrow-navigate-close.png")); // NOI18N
+        dashboard.add(monthlysmallarrow, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 200, 70, 30));
+
+        yearlysmallarrow.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\arrow-navigate-close.png")); // NOI18N
+        dashboard.add(yearlysmallarrow, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 200, 70, 30));
+
+        maindashboardpanel.setBackground(new java.awt.Color(15, 74, 74));
+        maindashboardpanel.setLayout(null);
+
+        monthlydashboardpanel.setBackground(new java.awt.Color(15, 74, 74));
+
+        monthlydashboardtable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ITEM", "QUANTITY", "JOB NAME", "CLEANING CATEGORY", "DATE LAST UPDATED", "LAST UPDATED BY"
+            }
+        ));
+        jScrollPane2.setViewportView(monthlydashboardtable);
+
+        javax.swing.GroupLayout monthlydashboardpanelLayout = new javax.swing.GroupLayout(monthlydashboardpanel);
+        monthlydashboardpanel.setLayout(monthlydashboardpanelLayout);
+        monthlydashboardpanelLayout.setHorizontalGroup(
+            monthlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(monthlydashboardpanelLayout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(41, Short.MAX_VALUE))
+        );
+        monthlydashboardpanelLayout.setVerticalGroup(
+            monthlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(monthlydashboardpanelLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                .addGap(27, 27, 27))
+        );
+
+        maindashboardpanel.add(monthlydashboardpanel);
+        monthlydashboardpanel.setBounds(12, 12, 1030, 406);
+
+        yearlydashboardpanel.setBackground(new java.awt.Color(15, 74, 74));
+
+        yearlydashboardtable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ITEM", "QUANTITY", "JOB NAME", "CLEANING CATEGORY", "DATE LAST UPDATED", "LAST UPDATED BY"
+            }
+        ));
+        jScrollPane5.setViewportView(yearlydashboardtable);
+
+        javax.swing.GroupLayout yearlydashboardpanelLayout = new javax.swing.GroupLayout(yearlydashboardpanel);
+        yearlydashboardpanel.setLayout(yearlydashboardpanelLayout);
+        yearlydashboardpanelLayout.setHorizontalGroup(
+            yearlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(yearlydashboardpanelLayout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(41, Short.MAX_VALUE))
+        );
+        yearlydashboardpanelLayout.setVerticalGroup(
+            yearlydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(yearlydashboardpanelLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                .addGap(27, 27, 27))
+        );
+
+        maindashboardpanel.add(yearlydashboardpanel);
+        yearlydashboardpanel.setBounds(12, 12, 1030, 406);
+
+        weeklydashboardpanel.setBackground(new java.awt.Color(15, 74, 74));
+
+        weeklydashboardtable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ITEM", "QUANTITY", "JOB NAME", "CLEANING CATEGORY", "DATE LAST UPDATED", "LAST UPDATED BY"
+            }
+        ));
+        jScrollPane6.setViewportView(weeklydashboardtable);
+
+        javax.swing.GroupLayout weeklydashboardpanelLayout = new javax.swing.GroupLayout(weeklydashboardpanel);
+        weeklydashboardpanel.setLayout(weeklydashboardpanelLayout);
+        weeklydashboardpanelLayout.setHorizontalGroup(
+            weeklydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(weeklydashboardpanelLayout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 962, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(41, Short.MAX_VALUE))
+        );
+        weeklydashboardpanelLayout.setVerticalGroup(
+            weeklydashboardpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(weeklydashboardpanelLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                .addGap(27, 27, 27))
+        );
+
+        maindashboardpanel.add(weeklydashboardpanel);
+        weeklydashboardpanel.setBounds(12, 12, 1030, 406);
+
+        dashboard.add(maindashboardpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, 1050, 430));
+
+        dashboardBtn.setBackground(new java.awt.Color(5, 32, 33));
+
+        itemsBtn.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\chevron_1.png")); // NOI18N
+
+        jobsBtn.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\chevron_2.png")); // NOI18N
+
+        categoriesBtn.setIcon(new javax.swing.ImageIcon("C:\\Users\\Ethan Ray Mosqueda\\Desktop\\OptimalInventorySystem\\img\\chevron_4.png")); // NOI18N
+
+        dashboard_monthlylabel.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        dashboard_monthlylabel.setForeground(new java.awt.Color(255, 255, 255));
+        dashboard_monthlylabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        dashboard_monthlylabel.setText("MONTHLY REPORT");
+        dashboard_monthlylabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dashboard_monthlylabelMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout dashboardBtnLayout = new javax.swing.GroupLayout(dashboardBtn);
+        dashboardBtn.setLayout(dashboardBtnLayout);
+        dashboardBtnLayout.setHorizontalGroup(
+            dashboardBtnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dashboardBtnLayout.createSequentialGroup()
+                .addGap(212, 212, 212)
+                .addComponent(dashboard_monthlylabel, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(188, Short.MAX_VALUE))
+            .addGroup(dashboardBtnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(dashboardBtnLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addGroup(dashboardBtnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(itemsBtn)
+                        .addGroup(dashboardBtnLayout.createSequentialGroup()
+                            .addGap(180, 180, 180)
+                            .addComponent(jobsBtn))
+                        .addGroup(dashboardBtnLayout.createSequentialGroup()
+                            .addGap(360, 360, 360)
+                            .addComponent(categoriesBtn)))
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        dashboardBtnLayout.setVerticalGroup(
+            dashboardBtnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dashboardBtnLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(dashboard_monthlylabel, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(dashboardBtnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(dashboardBtnLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addGroup(dashboardBtnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(itemsBtn)
+                        .addComponent(jobsBtn)
+                        .addComponent(categoriesBtn))
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+
+        dashboard.add(dashboardBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 70, 560, 90));
+
+        yearlydate.setBackground(new java.awt.Color(5, 32, 33));
+
+        yearlabel.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        yearlabel.setForeground(new java.awt.Color(255, 255, 255));
+        yearlabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        yearlabel.setText("PICK A DATE");
+
+        yearlyGo.setBackground(new java.awt.Color(0, 204, 51));
+        yearlyGo.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        yearlyGo.setForeground(new java.awt.Color(255, 255, 255));
+        yearlyGo.setText("GO");
+        yearlyGo.setBorder(null);
+        yearlyGo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                yearlyGoMouseClicked(evt);
+            }
+        });
+
+        clearYearTable.setBackground(new java.awt.Color(175, 174, 174));
+        clearYearTable.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        clearYearTable.setForeground(new java.awt.Color(255, 255, 255));
+        clearYearTable.setText("CLEAR");
+        clearYearTable.setBorder(null);
+        clearYearTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                clearYearTableMouseClicked(evt);
+            }
+        });
+
+        yearlyChooser.setDateFormatString("yyyy/MM/dd");
+
+        javax.swing.GroupLayout yearlydateLayout = new javax.swing.GroupLayout(yearlydate);
+        yearlydate.setLayout(yearlydateLayout);
+        yearlydateLayout.setHorizontalGroup(
+            yearlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(yearlydateLayout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addComponent(yearlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(yearlydateLayout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(yearlyChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(yearlyGo, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(clearYearTable, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE))
+        );
+        yearlydateLayout.setVerticalGroup(
+            yearlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(yearlydateLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(yearlabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                .addGroup(yearlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(yearlyChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                    .addComponent(yearlyGo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(clearYearTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
+        dashboard.add(yearlydate, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 70, 310, -1));
+
+        monthlydate.setBackground(new java.awt.Color(5, 32, 33));
+
+        monthlabel1.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        monthlabel1.setForeground(new java.awt.Color(255, 255, 255));
+        monthlabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        monthlabel1.setText("PICK A DATE");
+
+        monthlyGo.setBackground(new java.awt.Color(0, 204, 51));
+        monthlyGo.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        monthlyGo.setForeground(new java.awt.Color(255, 255, 255));
+        monthlyGo.setText("GO");
+        monthlyGo.setBorder(null);
+        monthlyGo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                monthlyGoMouseClicked(evt);
+            }
+        });
+
+        monthlyChooser.setDateFormatString("yyyy/MM/dd");
+
+        clearMonthTable.setBackground(new java.awt.Color(175, 174, 174));
+        clearMonthTable.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        clearMonthTable.setForeground(new java.awt.Color(255, 255, 255));
+        clearMonthTable.setText("CLEAR");
+        clearMonthTable.setBorder(null);
+        clearMonthTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                clearMonthTableMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout monthlydateLayout = new javax.swing.GroupLayout(monthlydate);
+        monthlydate.setLayout(monthlydateLayout);
+        monthlydateLayout.setHorizontalGroup(
+            monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(monthlydateLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(monthlabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(monthlydateLayout.createSequentialGroup()
+                        .addComponent(monthlyChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(monthlyGo, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(clearMonthTable, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 19, Short.MAX_VALUE)))
+                .addGap(14, 14, 14))
+        );
+        monthlydateLayout.setVerticalGroup(
+            monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(monthlydateLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(monthlabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(monthlydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(monthlyGo, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
+                    .addComponent(monthlyChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(clearMonthTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
+        dashboard.add(monthlydate, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 70, 310, -1));
+
+        weeklydate.setBackground(new java.awt.Color(5, 32, 33));
+
+        monthlabel.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
+        monthlabel.setForeground(new java.awt.Color(255, 255, 255));
+        monthlabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        monthlabel.setText("PICK A DATE");
+
+        weeklyGo.setBackground(new java.awt.Color(0, 204, 51));
+        weeklyGo.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        weeklyGo.setForeground(new java.awt.Color(255, 255, 255));
+        weeklyGo.setText("GO");
+        weeklyGo.setBorder(null);
+        weeklyGo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                weeklyGoMouseClicked(evt);
+            }
+        });
+
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, 1, 1, 1));
+
+        weeklyChooser.setDateFormatString("yyyy/MM/dd");
+
+        clearWeekTable.setBackground(new java.awt.Color(175, 174, 174));
+        clearWeekTable.setFont(new java.awt.Font("Raleway", 0, 14)); // NOI18N
+        clearWeekTable.setForeground(new java.awt.Color(255, 255, 255));
+        clearWeekTable.setText("CLEAR");
+        clearWeekTable.setBorder(null);
+        clearWeekTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                clearWeekTableMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout weeklydateLayout = new javax.swing.GroupLayout(weeklydate);
+        weeklydate.setLayout(weeklydateLayout);
+        weeklydateLayout.setHorizontalGroup(
+            weeklydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(weeklydateLayout.createSequentialGroup()
+                .addGroup(weeklydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(weeklydateLayout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(monthlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(weeklydateLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(weeklyChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(weeklyGo, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(clearWeekTable, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        weeklydateLayout.setVerticalGroup(
+            weeklydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(weeklydateLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(monthlabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(weeklydateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jSpinner1, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                    .addComponent(weeklyChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(weeklyGo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(clearWeekTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+
+        dashboard.add(weeklydate, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 70, 380, -1));
+
+        right_sidebar.add(dashboard);
+        dashboard.setBounds(0, 0, 1250, 720);
 
         items.setBackground(new java.awt.Color(5, 32, 33));
         items.setPreferredSize(new java.awt.Dimension(1500, 800));
@@ -1096,18 +1727,15 @@ public class Home extends javax.swing.JFrame {
         archiveitemtype_formLayout.setHorizontalGroup(
             archiveitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(archiveitemtype_formLayout.createSequentialGroup()
+                .addGap(53, 53, 53)
                 .addGroup(archiveitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(archiveitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(archiveitemtype_formLayout.createSequentialGroup()
-                            .addGap(53, 53, 53)
-                            .addComponent(itemtypedetails2, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(archiveitemtype_formLayout.createSequentialGroup()
-                            .addGap(53, 53, 53)
-                            .addGroup(archiveitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel34)
-                                .addComponent(typename2, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-                                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                        .addComponent(itemtypedetails2, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(archiveitemtype_formLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel34)
+                            .addComponent(typename2, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(279, Short.MAX_VALUE))
         );
         archiveitemtype_formLayout.setVerticalGroup(
@@ -1484,42 +2112,6 @@ public class Home extends javax.swing.JFrame {
         right_sidebar.add(items);
         items.setBounds(0, 0, 1500, 700);
 
-        dashboard.setBackground(new java.awt.Color(5, 32, 33));
-        dashboard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        dashboard_label.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
-        dashboard_label.setForeground(new java.awt.Color(255, 255, 255));
-        dashboard_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        dashboard_label.setText("USERS");
-        dashboard.add(dashboard_label, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 290, 220, 60));
-
-        dashboard_label1.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
-        dashboard_label1.setForeground(new java.awt.Color(255, 255, 255));
-        dashboard_label1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        dashboard_label1.setText("WEEKLY REPORT");
-        dashboard.add(dashboard_label1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 220, 60));
-
-        dashboard_label4.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
-        dashboard_label4.setForeground(new java.awt.Color(255, 255, 255));
-        dashboard_label4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        dashboard_label4.setText("JOBS");
-        dashboard.add(dashboard_label4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 150, 220, 60));
-
-        dashboard_label5.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
-        dashboard_label5.setForeground(new java.awt.Color(255, 255, 255));
-        dashboard_label5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        dashboard_label5.setText("ITEMS");
-        dashboard.add(dashboard_label5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, 220, 60));
-
-        dashboard_label6.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
-        dashboard_label6.setForeground(new java.awt.Color(255, 255, 255));
-        dashboard_label6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        dashboard_label6.setText("CATEGORIES");
-        dashboard.add(dashboard_label6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 220, 220, 60));
-
-        right_sidebar.add(dashboard);
-        dashboard.setBounds(0, 0, 1260, 720);
-
         jobsPanel.setBackground(new java.awt.Color(5, 32, 33));
 
         jobs.setBackground(new java.awt.Color(8, 40, 41));
@@ -1637,7 +2229,7 @@ public class Home extends javax.swing.JFrame {
                 jobsTableMouseClicked(evt);
             }
         });
-        jScrollPane5.setViewportView(jobsTable);
+        jScrollPane7.setViewportView(jobsTable);
 
         javax.swing.GroupLayout jobsLayout = new javax.swing.GroupLayout(jobs);
         jobs.setLayout(jobsLayout);
@@ -1647,7 +2239,7 @@ public class Home extends javax.swing.JFrame {
                 .addGroup(jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jobsLayout.createSequentialGroup()
                         .addGap(54, 54, 54)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 1065, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 1065, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jobsLayout.createSequentialGroup()
                         .addGap(292, 292, 292)
                         .addComponent(crud_jobs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -1657,7 +2249,7 @@ public class Home extends javax.swing.JFrame {
             jobsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jobsLayout.createSequentialGroup()
                 .addGap(22, 22, 22)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(50, 50, 50)
                 .addComponent(crud_jobs, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(51, Short.MAX_VALUE))
@@ -2052,14 +2644,14 @@ public class Home extends javax.swing.JFrame {
                 categoryItemTableMouseClicked(evt);
             }
         });
-        jScrollPane6.setViewportView(categoryItemTable);
+        jScrollPane12.setViewportView(categoryItemTable);
         if (categoryItemTable.getColumnModel().getColumnCount() > 0) {
             categoryItemTable.getColumnModel().getColumn(0).setResizable(false);
             categoryItemTable.getColumnModel().getColumn(1).setResizable(false);
             categoryItemTable.getColumnModel().getColumn(1).setPreferredWidth(5);
         }
 
-        categories.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 60, 400, 350));
+        categories.add(jScrollPane12, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 60, 400, 350));
 
         additems_form1.setBackground(new java.awt.Color(15, 74, 74));
         additems_form1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -2537,11 +3129,19 @@ public class Home extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void dashboard_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboard_sideMouseClicked
-        dashboard();
+        try {
+            dashboard();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_dashboard_sideMouseClicked
 
     private void items_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_items_sideMouseClicked
-        items_sideBar_onclick();
+        try {
+            items_sideBar_onclick();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_items_sideMouseClicked
 
     private void addItem_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addItem_saveActionPerformed
@@ -2889,7 +3489,11 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_ItemTypeNameListActionPerformed
 
     private void jobs_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jobs_sideMouseClicked
-        jobs_sideBar_onclick();
+        try {
+            jobs_sideBar_onclick();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jobs_sideMouseClicked
 
     private void addJobMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addJobMouseClicked
@@ -2921,7 +3525,11 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_addJobMouseClicked
 
     private void users_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_users_sideMouseClicked
-        users_sideBar_onclick();
+        try {
+            users_sideBar_onclick();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_users_sideMouseClicked
 
     private void jobsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jobsTableMouseClicked
@@ -2961,6 +3569,7 @@ public class Home extends javax.swing.JFrame {
         jobitemqty.setText(""+qty);
         jobcombobox.setSelectedItem(JobName);
         JobItemsIDFromTable = (int) model.getValueAt(selectrow,0);
+        System.out.println(JobItemsIDFromTable);
         JobItems_ItemIDFromTable = (int) model.getValueAt(selectrow,1);
     }//GEN-LAST:event_jobItemsTableMouseClicked
 
@@ -3039,97 +3648,109 @@ public class Home extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_deleteJobMouseClicked
 
-    private void addJobItemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addJobItemMouseClicked
+    private void addJobItemMouseClicked(java.awt.event.MouseEvent evt) {                                        
         String itemName = (String) jobitemcombobox.getSelectedItem();
-        int inputqty = parseInt(jobitemqty.getText());
         String jobName = (String) jobcombobox.getSelectedItem();
-        if("".equals(jobitemqty.getText()) && "".equals(itemName) && "".equals(jobName)){
+        if("".equals(jobitemqty.getText()) && jobitemqty.getText().matches("[0-9]+") && "".equals(itemName) && "".equals(jobName)){
             JOptionPane.showMessageDialog(null, "Fields required!");
         }else{
-            try{
-                Connection con = Connect.getConnection();
-                int itemid = CRUD.getJobItem_ItemID(con, itemName);
-                int qty = CRUD.getJobItem_ItemQty(con, itemid);
-                
-                if(inputqty <= qty){
-                    int jobid = CRUD.getJobID(con, jobName);
-                    int qtyDiff = CRUD.DeductJobItemQty(con, inputqty, itemid);
-                    int jobitemID = CRUD.insertJobItemReturnID(con, itemid, inputqty, jobid, userid);
-                    CRUD.UpdateJobItemQty(con, qtyDiff, userid, itemid);
-                    
-                    ResultSet rs = CRUD.selectJobItemsInfoUsingID(con, jobitemID);
-                    rs.next();
-                    JobItem JI = new JobItem(rs.getInt("jobItem_id"),
-                            rs.getInt("item_id"), rs.getInt("item_quantity"),
-                            rs.getInt("job_id"), rs.getString("added_by"), 
-                            rs.getTimestamp("added_date"), rs.getString("updated_by"),
-                            rs.getTimestamp("updated_date"));
-                    addRowToJobItemsTable(JI);
-                    jobitemqty.setText("");
-                    jobitemcombobox.setSelectedItem("");
-                    jobcombobox.setSelectedItem("");
-                    JOptionPane.showMessageDialog(null, "Item has been successfully inserted!");
-                }else{
-                    JOptionPane.showMessageDialog(null, "Quantity inputted is not valid!");
+            if(!jobitemqty.getText().matches("[0-9]+")){
+                JOptionPane.showMessageDialog(null, "Please input a number!");
+            }else{
+                try{
+                    int inputqty = parseInt(jobitemqty.getText());
+                    Connection con = Connect.getConnection();
+                    int itemid = CRUD.getJobItem_ItemID(con, itemName);
+                    int qty = CRUD.getJobItem_ItemQty(con, itemid);
+
+                    if(inputqty <= qty){
+                        int jobid = CRUD.getJobID(con, jobName);
+                        int qtyDiff = CRUD.DeductJobItemQty(con, inputqty, itemid);
+                        int jobitemID = CRUD.insertJobItemReturnID(con, itemid, inputqty, jobid, userid);
+                        CRUD.UpdateJobItemQty(con, qtyDiff, userid, itemid);
+
+                        ResultSet rs = CRUD.selectJobItemsInfoUsingID(con, jobitemID);
+                        rs.next();
+                        JobItem JI = new JobItem(rs.getInt("jobItem_id"),
+                                rs.getInt("item_id"), rs.getInt("item_quantity"),
+                                rs.getInt("job_id"), rs.getString("added_by"), 
+                                rs.getTimestamp("added_date"), rs.getString("updated_by"),
+                                rs.getTimestamp("updated_date"));
+                        addRowToJobItemsTable(JI);
+                        jobitemqty.setText("");
+                        jobitemcombobox.setSelectedItem("");
+                        jobcombobox.setSelectedItem("");
+                        JOptionPane.showMessageDialog(null, "Item has been successfully inserted!");
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Quantity inputted is not valid!");
+                    }
+
+                }catch(HeadlessException | SQLException e){
+                    System.out.println(e);
                 }
-                
-            }catch(HeadlessException | SQLException e){
-                System.out.println(e);
             }
+            
         }
     }//GEN-LAST:event_addJobItemMouseClicked
 
-    private void updateJobItemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_updateJobItemMouseClicked
+    private void updateJobItemMouseClicked(java.awt.event.MouseEvent evt) {                                           
         int dialogButton = JOptionPane.YES_NO_OPTION;
         int dialogResult = JOptionPane.showConfirmDialog (null, "Are you sure "
             + "you want to update?","Confirm", dialogButton);
         
         if(dialogResult == JOptionPane.YES_OPTION){
             String itemName = (String) jobitemcombobox.getSelectedItem();
-            int inputqty = parseInt(jobitemqty.getText());
             String jobName = (String) jobcombobox.getSelectedItem();
             Connection con = Connect.getConnection();
-            if("".equals(jobitemqty.getText()) && "".equals(itemName) && "".equals(jobName)){
+            
+            if("".equals(jobitemqty.getText()) && jobitemqty.getText().matches("[0-9]+") && "".equals(itemName) && "".equals(jobName)){
                 JOptionPane.showMessageDialog(null, "Fields required!");
             }else{
-                if(inputqty > 0){
-                    try{
-                        int jobItemID = JobItemsIDFromTable;
-                        int jobid = CRUD.getJobID(con, jobName);
-                        int itemID = getJobItem_ItemID(con, itemName);
-                        int finalqty = AddDeductItemQty(con, inputqty, jobItemID);
-                        CRUD.UpdateItemQty(con, finalqty, userid, itemID);
-                        CRUD.UpdateJobItem(con, itemID, inputqty, jobid, userid);
+                if(!jobitemqty.getText().matches("[0-9]+")){
+                    JOptionPane.showMessageDialog(null, "Please input a number!");
+                }else{
+                    int inputqty = parseInt(jobitemqty.getText());
+                    if(inputqty > 0){
+                        try{
+                            int jobItemID = JobItemsIDFromTable;
+                            System.out.println("JobItemsIDFromTable  "+jobItemID);
+                            int jobid = CRUD.getJobID(con, jobName);
+                            int itemID = getJobItem_ItemID(con, itemName);
+                            int finalqty = AddDeductItemQty(con, inputqty, jobItemID);
+                            CRUD.UpdateItemQty(con, finalqty, userid, itemID);
+                            CRUD.UpdateJobItem(con, itemID, inputqty, jobid, userid, jobItemID);
 
-                        ResultSet rs = CRUD.selectJobItemsInfoUsingID(con, jobItemID);
-                        rs.next();
-                        DefaultTableModel model = (DefaultTableModel) jobItemsTable.getModel();
-                        for (int i = 0; i < model.getRowCount(); i++) {
-                            Object o = model.getValueAt(i, 0);
-                            if (o.equals(jobItemID)) {
-                                model.setValueAt(rs.getInt("item_id"), i, 1);
-                                model.setValueAt(rs.getInt("item_quantity"), i, 2);
-                                model.setValueAt(rs.getInt("job_id"), i, 3);
-                                model.setValueAt(rs.getString("updated_by"), i, 6);
-                                model.setValueAt(dateFormat.format(rs.getTimestamp("updated_date")), i, 7);
+                            ResultSet rs = CRUD.selectJobItemsInfoUsingID(con, jobItemID);
+                            rs.next();
+                            DefaultTableModel model = (DefaultTableModel) jobItemsTable.getModel();
+                            for (int i = 0; i < model.getRowCount(); i++) {
+                                Object o = model.getValueAt(i, 0);
+                                if (o.equals(jobItemID)) {
+                                    model.setValueAt(rs.getInt("item_id"), i, 1);
+                                    model.setValueAt(rs.getInt("item_quantity"), i, 2);
+                                    model.setValueAt(rs.getInt("job_id"), i, 3);
+                                    model.setValueAt(rs.getString("updated_by"), i, 6);
+                                    model.setValueAt(dateFormat.format(rs.getTimestamp("updated_date")), i, 7);
+                                }
                             }
-                        }
-                        JOptionPane.showMessageDialog(null, "Item has been successfully updated!");
+                            JOptionPane.showMessageDialog(null, "Item has been successfully updated!");
 
-                    }catch(HeadlessException | SQLException e){
-                        System.out.println(e);
+                        }catch(HeadlessException | SQLException e){
+                            System.out.println(e);
+                        }
+                    }else if(inputqty < 0){
+                        JOptionPane.showMessageDialog(null, "Quantity cannot be zero!");
+                        jobitemqty.setText("");
+                        jobitemcombobox.setSelectedItem("");
+                        jobcombobox.setSelectedItem("");
                     }
-                }else if(inputqty < 0){
-                    JOptionPane.showMessageDialog(null, "Quantity cannot be zero!");
-                    jobitemqty.setText("");
-                    jobitemcombobox.setSelectedItem("");
-                    jobcombobox.setSelectedItem("");
-                }
-                    
+                }  
             }
         }else{
             JOptionPane.showMessageDialog(null, "Update cancelled.");
         }
+        
+            
     }//GEN-LAST:event_updateJobItemMouseClicked
 
     private void deleteJobItemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteJobItemMouseClicked
@@ -3165,7 +3786,7 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_deleteJobItemMouseClicked
 
     private void saveEditUserInfoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveEditUserInfoBtnActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_saveEditUserInfoBtnActionPerformed
 
     private void addEditCategoryBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addEditCategoryBtnActionPerformed
@@ -3181,7 +3802,11 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_removeCategoryItemBtnActionPerformed
 
     private void categories_sideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_categories_sideMouseClicked
-        categories_sideBar_onclick();
+        try {
+            categories_sideBar_onclick();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
         initItemDropdown();
     }//GEN-LAST:event_categories_sideMouseClicked
 
@@ -3715,6 +4340,79 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_categoryNameFieldActionPerformed
 
+    private void dashboard_weeklylabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboard_weeklylabelMouseClicked
+        try {
+            dashboard_weekly_onclick();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_dashboard_weeklylabelMouseClicked
+
+    private void dashboard_yearlylabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboard_yearlylabelMouseClicked
+        try {
+            dashboard_yearly_onclick();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_dashboard_yearlylabelMouseClicked
+
+    private void dashboard_monthlylabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboard_monthlylabelMouseClicked
+        try {
+            dashboard_monthly_onclick();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_dashboard_monthlylabelMouseClicked
+
+    private void weeklyGoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_weeklyGoMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_weeklyGoMouseClicked
+
+    private void monthlyGoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_monthlyGoMouseClicked
+        try {
+            Date date = monthlyChooser.getDate();
+            String month = monthFormat.format(date);
+            Show_MonthlyTable(month);
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_monthlyGoMouseClicked
+
+    private void yearlyGoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_yearlyGoMouseClicked
+       try {
+            Date date = yearlyChooser.getDate();
+            String year = yearFormat.format(date);
+            Show_YearlyTable(year);
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_yearlyGoMouseClicked
+
+    private void clearMonthTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clearMonthTableMouseClicked
+        try {
+            Clear_MonthlyTable();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_clearMonthTableMouseClicked
+
+    private void clearYearTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clearYearTableMouseClicked
+        try {
+            Clear_YearlyTable();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_clearYearTableMouseClicked
+
+    private void clearWeekTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clearWeekTableMouseClicked
+        try {
+            Clear_WeeklyTable();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_clearWeekTableMouseClicked
+
     /**
      *
      * @param args
@@ -3753,6 +4451,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JButton archiveItemType;
     private javax.swing.JPanel archiveitemtype_form;
     private javax.swing.JPanel categories;
+    private javax.swing.JLabel categoriesBtn;
     private javax.swing.JTable categoriesTable;
     private javax.swing.JPanel categories_side;
     private javax.swing.JLabel categories_side_label;
@@ -3766,18 +4465,20 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel categoryItemUpdatedDate;
     private javax.swing.JTextField categoryNameField;
     private javax.swing.JButton clearCategoryFieldsBtn;
+    private javax.swing.JButton clearMonthTable;
     private javax.swing.JButton clearUserFieldBtn;
+    private javax.swing.JButton clearWeekTable;
+    private javax.swing.JButton clearYearTable;
     private javax.swing.JPanel crud_jobItems;
     private javax.swing.JPanel crud_jobs;
     private javax.swing.JPanel dashboard;
-    private javax.swing.JLabel dashboard_label;
-    private javax.swing.JLabel dashboard_label1;
-    private javax.swing.JLabel dashboard_label4;
-    private javax.swing.JLabel dashboard_label5;
-    private javax.swing.JLabel dashboard_label6;
+    private javax.swing.JPanel dashboardBtn;
+    private javax.swing.JLabel dashboard_monthlylabel;
     private javax.swing.JPanel dashboard_side;
     private javax.swing.JLabel dashboard_side_label;
     private javax.swing.JLabel dashboard_up_label;
+    private javax.swing.JLabel dashboard_weeklylabel;
+    private javax.swing.JLabel dashboard_yearlylabel;
     private javax.swing.JButton deleteJob;
     private javax.swing.JButton deleteJobItem;
     private javax.swing.JTextField fullnameField;
@@ -3788,6 +4489,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JTextField itemname;
     private javax.swing.JTextField itemqty;
     private javax.swing.JPanel items;
+    private javax.swing.JLabel itemsBtn;
     private javax.swing.JTabbedPane itemsTab;
     private javax.swing.JTable itemsTable;
     private javax.swing.JPanel itemsTablePanel;
@@ -3829,12 +4531,16 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
+    private javax.swing.JScrollPane jScrollPane12;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
+    private javax.swing.JSpinner jSpinner1;
     private javax.swing.JTable jobItemsTable;
     private javax.swing.JPanel job_items;
     private javax.swing.JComboBox<String> jobcat;
@@ -3843,6 +4549,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JTextField jobitemqty;
     private javax.swing.JTextField jobname;
     private javax.swing.JPanel jobs;
+    private javax.swing.JLabel jobsBtn;
     private javax.swing.JPanel jobsPanel;
     private javax.swing.JTable jobsTable;
     private javax.swing.JPanel jobs_side;
@@ -3852,6 +4559,15 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel left_sidebar;
     private javax.swing.JPanel logout_side;
     private javax.swing.JLabel logout_side_label;
+    private javax.swing.JPanel maindashboardpanel;
+    private javax.swing.JLabel monthlabel;
+    private javax.swing.JLabel monthlabel1;
+    private com.toedter.calendar.JDateChooser monthlyChooser;
+    private javax.swing.JButton monthlyGo;
+    private javax.swing.JPanel monthlydashboardpanel;
+    private javax.swing.JTable monthlydashboardtable;
+    private javax.swing.JPanel monthlydate;
+    private javax.swing.JLabel monthlysmallarrow;
     private javax.swing.JPasswordField newPasswordField;
     private javax.swing.JTextField newitemname;
     private javax.swing.JTextField newtypename;
@@ -3882,6 +4598,19 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel users_side;
     private javax.swing.JLabel users_side_label;
     private javax.swing.JLabel users_up_label;
+    private com.toedter.calendar.JDateChooser weeklyChooser;
+    private javax.swing.JButton weeklyGo;
+    private javax.swing.JPanel weeklydashboardpanel;
+    private javax.swing.JTable weeklydashboardtable;
+    private javax.swing.JPanel weeklydate;
+    private javax.swing.JLabel weeklysmallarrow;
     private javax.swing.JPanel whole;
+    private javax.swing.JLabel yearlabel;
+    private com.toedter.calendar.JDateChooser yearlyChooser;
+    private javax.swing.JButton yearlyGo;
+    private javax.swing.JPanel yearlydashboardpanel;
+    private javax.swing.JTable yearlydashboardtable;
+    private javax.swing.JPanel yearlydate;
+    private javax.swing.JLabel yearlysmallarrow;
     // End of variables declaration//GEN-END:variables
 }
