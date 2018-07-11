@@ -574,8 +574,8 @@ public class Home extends javax.swing.JFrame {
             Job job;
             while(rs.next()){
                 job = new Job(rs.getInt("job_id"), rs.getString("job_name"),
-                    rs.getInt("category_id"), rs.getString("added_by"), 
-                    rs.getTimestamp("added_date"), rs.getString("updated_by"),
+                    CRUD.getCleaningCatName(con, rs.getInt("category_id")), CRUD.getUsername(con,rs.getInt("added_by")), 
+                    rs.getTimestamp("added_date"), CRUD.getUsername(con,rs.getInt("updated_by")),
                     rs.getTimestamp("updated_date"));
                 jobList.add(job);
             }
@@ -590,10 +590,11 @@ public class Home extends javax.swing.JFrame {
         ArrayList<Job> list = getJobList();
         DefaultTableModel model = (DefaultTableModel) jobsTable.getModel();
         Object[] row = new Object[7];
+        Connection con = Connect.getConnection();
         for(Job j : list){
             row[0] = j.getID();
             row[1] = j.getName();
-            row[2] = j.getCatID();
+            row[2] = j.getCatName();
             row[3] = j.getAddedBy();
             row[4] = dateFormat.format(j.getAddedOn());
             row[5] = j.getUpdatedBy();  
@@ -610,9 +611,9 @@ public class Home extends javax.swing.JFrame {
             ResultSet rs = CRUD.selectJobItemsInfo(con);
             JobItem jobItem;
             while(rs.next()){
-                jobItem = new JobItem(rs.getInt("jobItem_id"), rs.getInt("item_id"), rs.getInt("item_quantity"), 
-                    rs.getInt("job_id"), rs.getString("added_by"), 
-                    rs.getTimestamp("added_date"), rs.getString("updated_by"),
+                jobItem = new JobItem(rs.getInt("jobItem_id"), CRUD.getJobItem_ItemName(con, rs.getInt("item_id")), rs.getInt("item_quantity"), 
+                    CRUD.getJobName(con, rs.getInt("job_id")), CRUD.getUsername(con,rs.getInt("added_by")), 
+                    rs.getTimestamp("added_date"), CRUD.getUsername(con,rs.getInt("updated_by")),
                     rs.getTimestamp("updated_date"));
                 jobItemList.add(jobItem);
             }
@@ -631,7 +632,7 @@ public class Home extends javax.swing.JFrame {
             row[0] = ji.getID();
             row[1] = ji.getItemID();
             row[2] = ji.getQty();
-            row[3] = ji.getJobID();
+            row[3] = ji.getJob();
             row[4] = ji.getAddedBy();
             row[5] = dateFormat.format(ji.getAddedOn());
             row[6] = ji.getUpdatedBy();  
@@ -646,7 +647,7 @@ public class Home extends javax.swing.JFrame {
         Object[] row = new Object[7];
             row[0] = j.getID();
             row[1] = j.getName();
-            row[2] = j.getCatID();
+            row[2] = j.getCatName();
             row[3] = j.getAddedBy();
             row[4] = dateFormat.format(j.getAddedOn());
             row[5] = j.getUpdatedBy();  
@@ -661,7 +662,7 @@ public class Home extends javax.swing.JFrame {
         row[0] = ji.getID();
         row[1] = ji.getItemID();
         row[2] = ji.getQty();
-        row[3] = ji.getJobID();
+        row[3] = ji.getJob();
         row[4] = ji.getAddedBy();
         row[5] = dateFormat.format(ji.getAddedOn());
         row[6] = ji.getUpdatedBy();  
@@ -1014,6 +1015,7 @@ public class Home extends javax.swing.JFrame {
 
         whole = new javax.swing.JPanel();
         right_sidebar = new javax.swing.JPanel();
+        //Categories
         categories = new javax.swing.JPanel();
         jScrollPane11 = new javax.swing.JScrollPane();
         categoriesTable = new javax.swing.JTable();
@@ -1039,6 +1041,7 @@ public class Home extends javax.swing.JFrame {
         categoryItemAddedBy = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
+        //dashboard
         dashboard = new javax.swing.JPanel();
         dashboard_weeklylabel = new javax.swing.JLabel();
         dashboard_yearlylabel = new javax.swing.JLabel();
@@ -1070,6 +1073,7 @@ public class Home extends javax.swing.JFrame {
         yearlyGo = new javax.swing.JButton();
         clearYearTable = new javax.swing.JButton();
         yearlyChooser = new com.toedter.calendar.JDateChooser();
+        //items
         items = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         Tables = new javax.swing.JTabbedPane();
@@ -1120,6 +1124,7 @@ public class Home extends javax.swing.JFrame {
         newitemname = new javax.swing.JTextField();
         Archive = new javax.swing.JButton();
         addItem_save = new javax.swing.JButton();
+        //jobs
         jobsPanel = new javax.swing.JPanel();
         jobs_tab = new javax.swing.JTabbedPane();
         jobs = new javax.swing.JPanel();
@@ -1146,6 +1151,7 @@ public class Home extends javax.swing.JFrame {
         jobitemcombobox = new javax.swing.JComboBox<>();
         jLabel19 = new javax.swing.JLabel();
         jobcombobox = new javax.swing.JComboBox<>();
+        //users
         users = new javax.swing.JPanel();
         jScrollPane9 = new javax.swing.JScrollPane();
         usersTable = new javax.swing.JTable();
@@ -1162,6 +1168,7 @@ public class Home extends javax.swing.JFrame {
         fullnameField = new javax.swing.JTextField();
         clearUserFieldBtn = new javax.swing.JButton();
         removeUserBtn = new javax.swing.JButton();
+        //panels and labels
         upper_dashboard_panel = new javax.swing.JPanel();
         dashboard_up_label = new javax.swing.JLabel();
         upper_items_panel = new javax.swing.JPanel();
@@ -2431,7 +2438,7 @@ public class Home extends javax.swing.JFrame {
                         .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jobname, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
 
         jobsTable.setAutoCreateRowSorter(true);
@@ -2443,6 +2450,7 @@ public class Home extends javax.swing.JFrame {
                 "JOB ID", "JOB NAME", "JOB CATEGORY", "ADDED BY", "DATE ADDED", "UPDATED BY", "DATE UPDATED"
             }
         ));
+
         jobsTable.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jobsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -2488,6 +2496,7 @@ public class Home extends javax.swing.JFrame {
                 "ID", "ITEM ID", "ITEM QUANTITY", "JOB ID", "ADDED BY", "DATE ADDED", "UPDATED BY", "DATE UPDATED"
             }
         ));
+
         jobItemsTable.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jobItemsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -2617,7 +2626,7 @@ public class Home extends javax.swing.JFrame {
                     .addComponent(deleteJobItem, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jobcombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout job_itemsLayout = new javax.swing.GroupLayout(job_items);
@@ -2664,7 +2673,7 @@ public class Home extends javax.swing.JFrame {
         right_sidebar.add(jobsPanel);
         jobsPanel.setBounds(0, 0, 1660, 720);
 
-        users.setBackground(new java.awt.Color(5, 32, 33));
+         users.setBackground(new java.awt.Color(5, 32, 33));
         users.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         usersTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -2816,7 +2825,7 @@ public class Home extends javax.swing.JFrame {
 
         right_sidebar.add(users);
         users.setBounds(0, 0, 1250, 720);
-
+        
         whole.add(right_sidebar);
         right_sidebar.setBounds(250, 80, 1260, 720);
 
@@ -2937,7 +2946,7 @@ public class Home extends javax.swing.JFrame {
         );
 
         left_sidebar.add(dashboard_side);
-        dashboard_side.setBounds(0, 280, 250, 62);
+        dashboard_side.setBounds(0, 280, 250, 60);
 
         items_side.setBackground(new java.awt.Color(8, 40, 41));
         items_side.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -2969,7 +2978,7 @@ public class Home extends javax.swing.JFrame {
         );
 
         left_sidebar.add(items_side);
-        items_side.setBounds(0, 340, 250, 62);
+        items_side.setBounds(0, 340, 250, 60);
 
         jobs_side.setBackground(new java.awt.Color(8, 40, 41));
         jobs_side.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -3097,7 +3106,7 @@ public class Home extends javax.swing.JFrame {
         );
 
         left_sidebar.add(logout_side);
-        logout_side.setBounds(0, 580, 250, 60);
+        logout_side.setBounds(0, 580, 250, 58);
 
         whole.add(left_sidebar);
         left_sidebar.setBounds(0, 80, 250, 720);
@@ -3500,8 +3509,8 @@ public class Home extends javax.swing.JFrame {
                 ResultSet rs = CRUD.selectJobsInfoUsingID(con, jobID);
                 rs.next();
                 Job j = new Job(rs.getInt("job_id"), rs.getString("job_name"),
-                    rs.getInt("category_id"), rs.getString("added_by"), 
-                    rs.getTimestamp("added_date"), rs.getString("updated_by"),
+                    CRUD.getCleaningCatName(con, rs.getInt("category_id")), CRUD.getUsername(con,rs.getInt("added_by")), 
+                    rs.getTimestamp("added_date"), CRUD.getUsername(con,rs.getInt("updated_by")),
                     rs.getTimestamp("updated_date"));
                 addRowToJobsTable(j);
                 JOptionPane.showMessageDialog(null, "Job has been successfully inserted!");
@@ -3540,14 +3549,18 @@ public class Home extends javax.swing.JFrame {
 
     private void jobItemsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jobItemsTableMouseClicked
        selectrow = jobItemsTable.getSelectedRow();
+       Connection con = Connect.getConnection();
         DefaultTableModel model = (DefaultTableModel)jobItemsTable.getModel();
-        int itemid = (int) model.getValueAt(selectrow,1);
+        String itemString = (String) model.getValueAt(selectrow,1);
+        
         int qty = (int) model.getValueAt(selectrow,2);
-        int jobid = (int) model.getValueAt(selectrow,3);
-        Connection con = Connect.getConnection();
+        String jobString = (String) model.getValueAt(selectrow,3);
+        
         String ItemName, JobName;
         ItemName = JobName = "";
         try {
+            int jobid = CRUD.getJobID(con, jobString);
+            int itemid = CRUD.getJobItem_ItemID(con, itemString);
             ItemName = CRUD.getJobItem_ItemName(con, itemid);
             JobName = CRUD.getJobName(con, jobid);
             
@@ -3559,7 +3572,12 @@ public class Home extends javax.swing.JFrame {
         jobcombobox.setSelectedItem(JobName);
         JobItemsIDFromTable = (int) model.getValueAt(selectrow,0);
         System.out.println(JobItemsIDFromTable);
-        JobItems_ItemIDFromTable = (int) model.getValueAt(selectrow,1);
+        String itemIDFromTable = (String) model.getValueAt(selectrow,1);
+        try {
+            JobItems_ItemIDFromTable = CRUD.getJobItem_ItemID(con, itemIDFromTable);
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jobItemsTableMouseClicked
 
     private void updateJobMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_updateJobMouseClicked
@@ -3661,9 +3679,9 @@ public class Home extends javax.swing.JFrame {
                         ResultSet rs = CRUD.selectJobItemsInfoUsingID(con, jobitemID);
                         rs.next();
                         JobItem JI = new JobItem(rs.getInt("jobItem_id"),
-                                rs.getInt("item_id"), rs.getInt("item_quantity"),
-                                rs.getInt("job_id"), rs.getString("added_by"), 
-                                rs.getTimestamp("added_date"), rs.getString("updated_by"),
+                                CRUD.getJobItem_ItemName(con, rs.getInt("item_id")), rs.getInt("item_quantity"),
+                                CRUD.getJobName(con, rs.getInt("job_id")), CRUD.getUsername(con,rs.getInt("added_by")), 
+                                rs.getTimestamp("added_date"), CRUD.getUsername(con,rs.getInt("updated_by")),
                                 rs.getTimestamp("updated_date"));
                         addRowToJobItemsTable(JI);
                         jobitemqty.setText("");
@@ -3715,10 +3733,10 @@ public class Home extends javax.swing.JFrame {
                             for (int i = 0; i < model.getRowCount(); i++) {
                                 Object o = model.getValueAt(i, 0);
                                 if (o.equals(jobItemID)) {
-                                    model.setValueAt(rs.getInt("item_id"), i, 1);
+                                    model.setValueAt(CRUD.getJobItem_ItemName(con, rs.getInt("item_id")), i, 1);
                                     model.setValueAt(rs.getInt("item_quantity"), i, 2);
-                                    model.setValueAt(rs.getInt("job_id"), i, 3);
-                                    model.setValueAt(rs.getString("updated_by"), i, 6);
+                                    model.setValueAt(CRUD.getJobName(con, rs.getInt("job_id")), i, 3);
+                                    model.setValueAt(CRUD.getUsername(con,rs.getInt("updated_by")), i, 6);
                                     model.setValueAt(dateFormat.format(rs.getTimestamp("updated_date")), i, 7);
                                 }
                             }
